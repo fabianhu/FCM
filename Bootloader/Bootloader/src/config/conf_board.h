@@ -1,0 +1,37 @@
+/*
+LOCK0 = [ ]
+LOCK1 = [ ]
+LOCK2 = [ ]
+LOCK3 = [ ]
+LOCK4 = [ ]
+LOCK5 = [ ]
+LOCK6 = [ ]
+LOCK7 = [ ]
+LOCK8 = [ ]
+LOCK9 = [ ]
+LOCK10 = [ ]
+LOCK11 = [ ]
+LOCK12 = [ ]
+LOCK13 = [ ]
+LOCK14 = [ ]
+LOCK15 = [ ]
+EPFL = EPFL_NO_LOCK
+BOOTPROT = BOOTAREA_16KB
+BODLEVEL = BOD_LEVEL_1V52
+BODHYST = BODHYST_ENABLED
+BODEN = BOD_ENABLED_RESET_ENABLED
+
+FGPFRLO = 0xED75FFFF (valid)
+
+
+*/
+
+
+
+#ifndef CONF_BOARD_H_INCLUDED
+#define CONF_BOARD_H_INCLUDED
+
+// Enable UART Port
+
+
+#endif /* CONF_BOARD_H_INCLUDED */
