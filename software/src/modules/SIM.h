@@ -23,8 +23,12 @@
 #ifndef SIM_H_
 #define SIM_H_
 
+#define SIM_DT 0.01
+#define SIMPOWERFILTER 0.03
 
-
-
+quaternion_t SimGetorientation(void); // get simulated orientation out of simulation
+vector3_t SimGetPos_m(void); // get the simulated position out of the simulation
+void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa); // input the rotational command + thrust into simulation
+void SimReset(void); //reset the simulation to 0
 
 #endif /* SIM_H_ */

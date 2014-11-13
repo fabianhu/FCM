@@ -38,6 +38,8 @@
 #define NOEMSTOP 0  // DO NEVER SET TO 1 IF YOU INTEND TO LIVE.
 // skip the RC init and set to SUMD, just to satisfy the init sequence.
 #define SKIPRCINIT 0
+// "fly" in simulated mode, all loops will be closed by simulation (SIM.c)
+#define SIMULATION 1 
 
 //usart2 = lower = GPS
 //usart0 = upper, 

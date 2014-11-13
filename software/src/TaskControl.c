@@ -1,6 +1,6 @@
 /*
  * TaskControl.c
- * using spi and com1 and servos and PWM
+ * This is where the magic happens (most of)
  *
  * Created: 06.09.2012 09:40:25
  *
@@ -267,6 +267,10 @@ void TaskControl(void)
 		{
 			q_ActualOrientation = MahonyAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,v_acc_frame_mpss.x,v_acc_frame_mpss.y,v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
 		}
+		#if SIMULATION == 1
+		q_ActualOrientation = SimGetorientation();
+		#endif
+		
 
 		// calculate normalized acceleration	
 		v_acc_global_mpss = quaternion_rotateVector(v_acc_frame_mpss,quaternion_inverse(q_ActualOrientation));
@@ -614,10 +618,17 @@ void TaskControl(void)
 		
 		if(LED_GetFlightstate()== FS_fly)
 		{
+			#if SIMULATION == 0
 			MixSetOut(ox, oy, oz, oa);
+			#else
+			SimDoLoop(ox, oy, oz, oa);
+			#endif
 		}
 		else
 		{
+			#if SIMULATION == 1
+			SimReset();
+			#endif
 			//  throttle cal only!!!
 			if(myPar.DirectMode.sValue == 1)
 			{
@@ -628,7 +639,7 @@ void TaskControl(void)
 				servo_out_set(4,cmd_thr);
 				servo_out_set(5,cmd_thr);
 			}
-			else if(myPar.DirectMode.sValue <0 && abs(IMUdata.pitch_deg) < 10 && abs(IMUdata.roll_deg) < 10 ) // todo naming is actually wrong, because global!!
+			else if(myPar.DirectMode.sValue <0 && abs(IMUdata.pitch_deg) < 10 && abs(IMUdata.roll_deg) < 10 ) //direct mode with negative numbers runs individual motors, but only if angle <10° // todo naming is actually wrong, because global!!
 			{
 				for(int i=0;i<6;i++)
 				{

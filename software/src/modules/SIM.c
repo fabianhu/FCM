@@ -29,42 +29,53 @@
 #include "modules/governing.h"
 #include "SIM.h"
 
-vector3_t sim_orient_rad;
-float sim_power_mpss;
+quaternion_t sim_orientation= {1,0,0,0};
+vector3_t sim_pos_m= {0,0,0};
+vector3_t sim_vel_mps= {0,0,0};
+float sim_accel_mpss;
+vector3_t sim_rotationalspeed_radps = {0,0,0};
 
-vector3_t sim_pos_m;
-vector3_t sim_vel_mps;
 
 
-
-// one simulation step
-void SimStep10ms(void)
+quaternion_t SimGetorientation(void)
 {
-	
-	
+	return sim_orientation;
 }
-
-#define SIMBANKFILTER 0.1
-#define SIMPOWERFILTER 0.3
-
-// set the desired angles of orientation (before inputting to orientation governors, taken as the actual value here)
-void SimSetBankRot_rad(vector3_t orientation_rad, float power_mpss)
-{
-	// filter the stuff
-	sim_orient_rad.x = Filter_f(sim_orient_rad.x, orientation_rad.x, SIMBANKFILTER);
-	sim_orient_rad.y = Filter_f(sim_orient_rad.y, orientation_rad.y, SIMBANKFILTER);
-	sim_orient_rad.z = Filter_f(sim_orient_rad.z, orientation_rad.z, SIMBANKFILTER);
-	sim_power_mpss = Filter_f(sim_power_mpss, power_mpss, SIMPOWERFILTER);
-	
-}
-
 
 vector3_t SimGetPos_m(void)
 {
+	return sim_pos_m;	
+}
+
+// one simulation step
+void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotational command + thrust into simulation (values +- 4000 or 0..8000 for thrust)
+{
+	// calc acceleration caused by trust:
+	float accel_mpss = oa;
+	accel_mpss /= 8000.0;
+	accel_mpss *= 9.81*2.0; // max acceleration is 2g
+	Filter_f(sim_accel_mpss, accel_mpss, SIMPOWERFILTER);
+	
+	//create accelleration vector
+	vector3_t v_accel_mpss;
+	v_accel_mpss.x = 0;
+	v_accel_mpss.y = 0;
+	v_accel_mpss.z = accel_mpss;//make length = delta v
+	v_accel_mpss = quaternion_rotateVector(v_accel_mpss,sim_orientation); // rotate into orientation
+	
+	//add distance by v to actual pos
+	sim_pos_m = vector_add(sim_pos_m, vector_scale(sim_vel_mps,SIM_DT));
+	
+	
+	
+	quaternion_t qdiff;
+	quaternion_from_euler()
+	
 	
 }
 
-vector3_t SimGetxxx(void)
+
+void SimReset(void) //reset the simulation to 0
 {
 	
 }

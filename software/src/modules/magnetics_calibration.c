@@ -25,6 +25,17 @@
 #include "magnetics_calibration.h"
 #include <fastmath.h>
 
+/*
+How this works:
+We assume, that the measured field is uniform.
+We assume, that the sensitivity of the sensor is about the same for all axes.
+This leads to the assumption, that all points of measurement are placed on a sphere (kind of..)
+
+The rest of the algorithm is described in the single steps below.
+This is an iterative process. the center of the sphere gets approximated over time.
+
+*/
+
 #define MAGCOMPFACTOR 0.25 // todo make dynamical, taking number of measurements into account!
 #define MAGCOMPMINCHANGE 40000  // minimum change in vector difference from last measurement, at which a new measurement is taken
 #define MAGCOMPMINCYCLES 15 // minimum cycles, at which the change must be large enough
