@@ -53,6 +53,7 @@
 #include "modules/NAV.h"
 #include "TaskNavi.h"
 #include "modules/usart.h"
+#include "modules/SIM.h"
 
 void TaskControl(void);
 void acc_calibrate(vector3_t* g);

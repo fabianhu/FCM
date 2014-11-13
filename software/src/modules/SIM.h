@@ -25,6 +25,7 @@
 
 #define SIM_DT 0.01
 #define SIMPOWERFILTER 0.03
+#define SIMROT 0.0001 // fixme experiment with it !
 
 quaternion_t SimGetorientation(void); // get simulated orientation out of simulation
 vector3_t SimGetPos_m(void); // get the simulated position out of the simulation
