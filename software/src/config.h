@@ -57,7 +57,7 @@
 
 // final checks
 
-#if TEST_RUN + NOEMSTOP + SKIPRCINIT != 0
+#if TEST_RUN + NOEMSTOP + SKIPRCINIT +SIMULATION != 0
 	#warning DO NOT FLY
 #endif
 

@@ -47,6 +47,12 @@ vector3_t SimGetPos_m(void)
 	return sim_pos_m;	
 }
 
+vector3_t SimGetVel_m(void)
+{
+	return sim_vel_mps;
+}
+
+
 // one simulation step
 void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotational command + thrust into simulation (values +- 4000 or 0..8000 for thrust)
 {
@@ -56,7 +62,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	accel_mpss *= 9.81*2.0; // max acceleration is 2g
 	Filter_f(sim_accel_mpss, accel_mpss, SIMPOWERFILTER);
 	
-	//create accelleration vector
+	//create acceleration vector
 	vector3_t vAccel_mpss;
 	vAccel_mpss.x = 0;
 	vAccel_mpss.y = 0;
@@ -64,8 +70,25 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	vAccel_mpss = quaternion_rotateVector(vAccel_mpss,sim_orientation); // rotate into orientation
 	vAccel_mpss.z -=9.81; // subtract earths acceleration.
 	
-	// add delta-v caused by acceleration to actual velocity (fixme: reduce the velocity by kind of air resistance)
+	//reduce the velocity by kind of air resistance
+	// F = r * cw * A * v^2 /2
+	// r = air density in kg/m³
+	// A = area in m²
+
+	
+	// F = m*a
+	// a = F / m
+
+	vector3_t vAccAir_mpss;
+	vAccAir_mpss.x = -(SIMAIRDENSITY*SIMCWVALUE*SIMCOPTERAREA* (sim_vel_mps.x*sim_vel_mps.x)* 0.5) / SIMCOPTERMASS;
+	vAccAir_mpss.y = -(SIMAIRDENSITY*SIMCWVALUE*SIMCOPTERAREA* (sim_vel_mps.y*sim_vel_mps.y)* 0.5) / SIMCOPTERMASS;
+	vAccAir_mpss.z = -(SIMAIRDENSITY*SIMCWVALUE*SIMCOPTERAREA* (sim_vel_mps.z*sim_vel_mps.z)* 0.5) / SIMCOPTERMASS; 
+	
+	vAccel_mpss = vector_add(&vAccel_mpss,&vAccAir_mpss); // add to total acceleration
+	
+	// add delta-v caused by acceleration to actual velocity reduce the velocity by kind of air resistance)
 	vector3_t vDv = vector_scale(&vAccel_mpss,SIM_DT);
+	
 	sim_vel_mps = vector_add(&sim_vel_mps,&vDv);
 	
 

@@ -31,6 +31,9 @@
 #include "../menu/menu_variant.h"
 #include "../config.h"
 #include "testsuite.h"
+#include "vector.h"
+#include "quaternions/quaternions.h"
+#include "SIM.h"
 
 // slowly updated values from GPS and baro
 vector3_t slowPos_m;
@@ -154,6 +157,12 @@ pos: gps position and barometer height
 */
 void Superfilter(vector3_t acc_mpss, vector3_t* pos_act, vector3_t* v_act)
 {
+#if SIMULATION == 1
+
+*pos_act = SimGetPos_m();
+*v_act = SimGetVel_m();
+
+#else //SIMULATION == 0
 
 #if DISABLE_SENSOR_FUSION_GPS == 1
 
@@ -202,6 +211,7 @@ pos_act->z = alfa_pos*(pos_act->z + v_act->z * dt_s) + (1.0-alfa_pos)*(slowPos_m
 // debug_mag = vector_copy(&acc_mpss);
 // debug_gov = vector_copy(&slowPos_m);
 
+#endif //SIMULATION == 0
 }
 
 
