@@ -29,7 +29,8 @@
 #include "modules/governing.h"
 #include "SIM.h"
 
-quaternion_t sim_orientation= {1,0,0,0};
+quaternion_t sim_orientation= {1,0,0,0}; // fixme sth is wrong with my orientations anyway... 
+vector3_t sim_rate;
 vector3_t sim_pos_m= {0,0,0};
 vector3_t sim_vel_mps= {0,0,0};
 float sim_accel_mpss = 0;
@@ -40,6 +41,11 @@ vector3_t sim_rotationalspeed_radps = {0,0,0};
 quaternion_t SimGetorientation(void)
 {
 	return sim_orientation;
+}
+
+vector3_t SimGetRate(void)
+{
+	return sim_rate;
 }
 
 vector3_t SimGetPos_m(void)
@@ -102,16 +108,23 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	qdiff = quaternion_from_euler(ox*SIMROT,oy*SIMROT,oz*SIMROT);
 	sim_orientation = quaternion_multiply_flip_norm(qdiff,sim_orientation);
 	
+	sim_rate.x = Filter_f(sim_rate.x,ox,SIMRATEFLT)*SIMRATEFACT;
+	sim_rate.y = Filter_f(sim_rate.y,oy,SIMRATEFLT)*SIMRATEFACT;
+	sim_rate.z = Filter_f(sim_rate.z,oz,SIMRATEFLT)*SIMRATEFACT;
+	
 	
 }
 
 
 void SimReset(void) //reset the simulation to 0 // fixme do not reset while h > 0! ;-) we want to see a crash!!!!
 {
-	sim_orientation.w = 0;
+	sim_orientation.w = 1;
 	sim_orientation.x = 0;
 	sim_orientation.y = 0;
 	sim_orientation.z = 0;
+	sim_rate.x = 0;
+	sim_rate.y = 0;
+	sim_rate.z = 0;
 	sim_pos_m.x= 0;
 	sim_pos_m.y= 0;
 	sim_pos_m.z= 0;	

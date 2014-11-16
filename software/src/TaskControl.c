@@ -237,7 +237,13 @@ void TaskControl(void)
 		UpdatePotsFromTX(); // get poti values to parameters
 		
 		gyro_getValues_flt(&v_gyro_raw); // +- 10000 max
+
 		v_gyro_raw = vector_subtract(&v_gyro_raw,&gyro_cal); // calibrate gyro values
+
+		#if SIMULATION == 1
+			v_gyro_raw = SimGetRate();
+		#endif
+
 		// convert gyros to rad/s
 		v_gyro_radps.x = l3gd20_raw_to_rad(v_gyro_raw.x); // convert to rad / s
 		v_gyro_radps.y = l3gd20_raw_to_rad(v_gyro_raw.y);
