@@ -29,13 +29,11 @@
 #include "modules/governing.h"
 #include "SIM.h"
 
-quaternion_t sim_orientation= {1,0,0,0}; // fixme sth is wrong with my orientations anyway... 
-vector3_t sim_rate;
-vector3_t sim_pos_m= {0,0,0};
-vector3_t sim_vel_mps= {0,0,0};
-float sim_accel_mpss = 0;
-vector3_t sim_rotationalspeed_radps = {0,0,0};
-
+quaternion_t sim_orientation= {1,0,0,0};  
+vector3_t sim_rate; // rotational speed
+vector3_t sim_pos_m= {0,0,0}; // world position
+vector3_t sim_vel_mps= {0,0,0}; // world velocity
+float sim_accel_mpss = 0; // acceleration by thrust (filtered,therefore static)
 
 
 quaternion_t SimGetorientation(void)
@@ -113,10 +111,15 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	sim_rate.z = Filter_f(sim_rate.z,oz,SIMRATEFLT)*SIMRATEFACT;
 	
 	
+	if(sim_pos_m.z < 0.0)
+	{
+		SimReset();
+	}
+	
 }
 
 
-void SimReset(void) //reset the simulation to 0 // fixme do not reset while h > 0! ;-) we want to see a crash!!!!
+void SimReset(void) //reset the simulation to 0
 {
 	sim_orientation.w = 1;
 	sim_orientation.x = 0;
@@ -132,7 +135,5 @@ void SimReset(void) //reset the simulation to 0 // fixme do not reset while h > 
 	sim_vel_mps.y= 0;
 	sim_vel_mps.z= 0;
 	sim_accel_mpss = 0;
-	sim_rotationalspeed_radps.x = 0;
-	sim_rotationalspeed_radps.y = 0;
-	sim_rotationalspeed_radps.z = 0;
+
 }
