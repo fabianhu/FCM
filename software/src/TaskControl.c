@@ -770,15 +770,15 @@ void TaskControl(void)
 				quaternion_t qtest;
 				qtest = quaternion_from_euler(dx,dy,dz);*/
 				
-				TXQuaternions.qDiff[0]= q_Diff.w;//
-				TXQuaternions.qDiff[1]= q_Diff.x;//
-				TXQuaternions.qDiff[2]= q_Diff.y;//
-				TXQuaternions.qDiff[3]= q_Diff.z;//
+				TXQuaternions.qDiff[0]= q_ActualOrientation.w;//
+				TXQuaternions.qDiff[1]= q_ActualOrientation.x;//
+				TXQuaternions.qDiff[2]= q_ActualOrientation.y;//
+				TXQuaternions.qDiff[3]= q_ActualOrientation.z;//
 			
 			
-				TXQuaternions.gov_x = ox;
-				TXQuaternions.gov_y = oy;
-				TXQuaternions.gov_z = oz;
+				TXQuaternions.vPos[0] = v_pos_act_m.x;
+				TXQuaternions.vPos[1] = v_pos_act_m.y;
+				TXQuaternions.vPos[2] = v_pos_act_m.z;
 				TXQuaternions.temp[1] = temperature_degC;
 				
 				strncpy(TXQuaternions.footer,"~~~",3);

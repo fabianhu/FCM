@@ -52,7 +52,7 @@ typedef struct fcm_quaternion_tag
 	float qActAtt[4];				// measured / estimated attitude
 	float qSet[4];					// setpoint attitude
 	float qDiff[4];					// attitude error
-	int32_t gov_x,gov_y,gov_z;		// Governor out
+	float vPos[4];					// World position
 	int32_t h;						// height in mm (barometric measurement)
 	int16_t temp[2];				// Temperature in 10th °C
 	char footer[4];					// ~~~0
