@@ -30,7 +30,7 @@
 #include "SIM.h"
 
 quaternion_t sim_orientation= {1,0,0,0};  
-vector3_t sim_rate; // rotational speed
+vector3_t sim_rate= {0,0,0}; // rotational speed in rad/s
 vector3_t sim_pos_m= {0,0,0}; // world position
 vector3_t sim_vel_mps= {0,0,0}; // world velocity
 float sim_accel_mpss = 0; // acceleration by thrust (filtered,therefore static)
@@ -63,7 +63,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	// calc acceleration caused by trust:
 	float accel_mpss = oa;
 	accel_mpss /= 8000.0;
-	accel_mpss *= 9.81*2.0; // max acceleration is 2g
+	accel_mpss *= 9.81*2.5; // max acceleration is 2g
 	Filter_f(sim_accel_mpss, accel_mpss, SIMPOWERFILTER);
 	
 	//create acceleration vector
@@ -71,7 +71,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	vAccel_mpss.x = 0;
 	vAccel_mpss.y = 0;
 	vAccel_mpss.z = accel_mpss;//make length = delta v
-	vAccel_mpss = quaternion_rotateVector(vAccel_mpss,sim_orientation); // rotate into orientation
+	vAccel_mpss = quaternion_rotateVector(vAccel_mpss,quaternion_inverse(sim_orientation)); // rotate into world orientation
 	vAccel_mpss.z -=9.81; // subtract earths acceleration.
 	
 	//reduce the velocity by kind of air resistance
@@ -100,16 +100,16 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	vector3_t vTemp2 = vector_scale(&sim_vel_mps,SIM_DT);
 	sim_pos_m = vector_add(&sim_pos_m, &vTemp2);
 	
+	sim_rate.x = Filter_f(sim_rate.x,ox*SIMRATEFACT,SIMRATEFLT); 
+	sim_rate.y = Filter_f(sim_rate.y,oy*SIMRATEFACT,SIMRATEFLT);
+	sim_rate.z = Filter_f(sim_rate.z,oz*SIMRATEFACT,SIMRATEFLT);
+	
 	
 	// rotate the actual rotation by a tiny amount
 	quaternion_t qdiff;
-	qdiff = quaternion_from_euler(ox*SIMROT,oy*SIMROT,oz*SIMROT);
-	sim_orientation = quaternion_multiply_flip_norm(qdiff,sim_orientation);
-	
-	sim_rate.x = Filter_f(sim_rate.x,ox,SIMRATEFLT)*SIMRATEFACT;
-	sim_rate.y = Filter_f(sim_rate.y,oy,SIMRATEFLT)*SIMRATEFACT;
-	sim_rate.z = Filter_f(sim_rate.z,oz,SIMRATEFLT)*SIMRATEFACT;
-	
+	qdiff = quaternion_from_euler(sim_rate.x*SIM_DT,sim_rate.y*SIM_DT,sim_rate.z*SIM_DT);
+	sim_orientation = quaternion_multiply_flip_norm(sim_orientation,qdiff);
+		
 	
 	if(sim_pos_m.z < 0.0)
 	{

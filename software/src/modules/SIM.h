@@ -23,11 +23,10 @@
 #ifndef SIM_H_
 #define SIM_H_
 
-#define SIM_DT 0.01
-#define SIMPOWERFILTER 0.03
-#define SIMROT 0.000001 // fixme experiment with it !
-#define SIMRATEFLT 0.1 // fixme experiment with it !
-#define SIMRATEFACT 0.1
+#define SIM_DT 0.01 // fixed 10ms in our case
+#define SIMPOWERFILTER 0.95 // for delaying the power application
+#define SIMRATEFLT 0.95 // fixme experiment with it !
+#define SIMRATEFACT 0.0001 // factor by which the input rotation command is multiplied to get the rotation response from simulated copter fixme experiment with it !
 
 #define SIMAIRDENSITY 1.1839	// in kg/m³
 #define SIMCWVALUE    1.1		// cw value without unit
