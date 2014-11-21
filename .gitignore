@@ -1,0 +1,4 @@
+software/Debug/*
+*.atsuo
+*.b#*
+*.s#*

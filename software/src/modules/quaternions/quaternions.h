@@ -21,6 +21,8 @@
 
 
 /*
+http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/steps/index.htm
+
 
 A rotation is represented by:
 

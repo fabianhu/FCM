@@ -23,11 +23,20 @@
 #ifndef SIM_H_
 #define SIM_H_
 
-#define SIM_DT 0.01
-#define SIMPOWERFILTER 0.03
+#define SIM_DT 0.01 // fixed 10ms in our case
+#define SIMPOWERFILTER 0.95 // for delaying the power application
+#define SIMRATEFLT 0.95 // fixme experiment with it !
+#define SIMRATEFACT 0.0001 // factor by which the input rotation command is multiplied to get the rotation response from simulated copter fixme experiment with it !
+
+#define SIMAIRDENSITY 1.1839	// in kg/m³
+#define SIMCWVALUE    1.1		// cw value without unit
+#define SIMCOPTERAREA 0.02		// im m² // 0.05*0.4
+#define SIMCOPTERMASS 0.8		// in kg
 
 quaternion_t SimGetorientation(void); // get simulated orientation out of simulation
+vector3_t SimGetRate(void); // get simulated rotation rate (equivalent to gyro output)
 vector3_t SimGetPos_m(void); // get the simulated position out of the simulation
+vector3_t SimGetVel_m(void); // get the simulated velocity out of the simulation
 void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa); // input the rotational command + thrust into simulation
 void SimReset(void); //reset the simulation to 0
 
