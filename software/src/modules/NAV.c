@@ -336,7 +336,7 @@ vector3_t NAV_Governor( vector3_t* pos_act_m, vector3_t* target_m, vector3_t* sp
 	float nav_kd = myPar.pid_nav_d.sValue*0.1;
 	float h_kp = myPar.pid_h_p.sValue*0.01;
 	float h_ki = myPar.pid_h_i.sValue*0.0001;
-	float h_kd = myPar.pid_h_d.sValue*0.01;
+	float h_kd = myPar.pid_h_d.sValue*0.1;
 
 	float nav_max_accelint = myPar.nav_max_accelint.sValue*0.1; // m/s^2
 	float nav_max_accel = myPar.nav_max_accel.sValue*0.1; // m/s^2
@@ -422,9 +422,9 @@ void GetBankAndThrustFromAccel(vector3_t acc_cmd, vector2_t* bank, float* thrust
 		len = vector_len(&acc);
 	}
 	
-	if(acc.z <= 0)
+	if(acc.z <= 0) // fixme taugt nix, vollgas und umdrehen!
 	{
-		*thrust = 0.5; // half throttle
+		*thrust = 0.0;
 	}
 	else
 	{

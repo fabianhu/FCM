@@ -44,7 +44,7 @@
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
     <OverrideVtorValue>exception_table</OverrideVtorValue>
-    <eraseonlaunchrule>4</eraseonlaunchrule>
+    <eraseonlaunchrule>1</eraseonlaunchrule>
     <AsfFrameworkConfig>
       <framework-data>
         <options>

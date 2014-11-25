@@ -312,7 +312,7 @@ void TaskControl(void)
 			float fTrgNavHeading_rad;
 			float fHeadingDiff_rad;
 
-			if(swPosHold) // wirklich? (h-gov?) --> ja, scheint sinnvoll.
+			if(swPosHold) // wirklich? (h-gov?) -->  fixme falsch, h-gov geht nicht alleine
 			{
 				// calculate command for returning to last position
 				v_pos_target_m = vector_copy(&v_pos_last_m);
