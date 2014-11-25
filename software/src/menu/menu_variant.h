@@ -81,7 +81,7 @@ void menue_sendpar(uint8_t item);
 
  #define	MENUESIZE	98	// number of menu itmes (array size)
  #define	MAX_ITEM_NAME_CHARLENGTH	17	// max name length
- #define	MENUGENUID	36582	// Generation UID
+ #define	MENUGENUID	1453	// Generation UID
 // Enum definitions
 typedef enum
 {
@@ -106,7 +106,7 @@ typedef struct myPar_tag
       Parameter_t pid_y_i;	// (21)
       Parameter_t pid_y_d;	// (16)
       Parameter_t nav_max_angle;	// The max lean angle in degrees (30)
-      Parameter_t nav_max_accel;	// The max acceleration out of nav in 110 ms^2  (2)
+      Parameter_t nav_max_acc_lim;	// The max acceleration out of nav in 110 ms^2  (2)
       Parameter_t nav_max_accelint;	// The max acceleration integrator windup out of nav in 110  ms^2  (2)
       Parameter_t nav_set_speed;	// the desired cruise speed ms (5)
       Parameter_t nav_decel_radius;	// The radius in meters, at which the cruise speed starts to decelerate (20)
@@ -124,9 +124,9 @@ typedef struct myPar_tag
       Parameter_t pid_nav_p;	// (25)
       Parameter_t pid_nav_i;	// (0)
       Parameter_t pid_nav_d;	// (30)
-      Parameter_t pid_h_p;	// (4)
-      Parameter_t pid_h_i;	// (0)
-      Parameter_t pid_h_d;	// (0)
+      Parameter_t pid_h_p;	// (300)
+      Parameter_t pid_h_i;	// (50)
+      Parameter_t pid_h_d;	// (1000)
       Parameter_t max_power;	// Max throttle (6500)
       Parameter_t idle_power;	// Min throttle, use above 1500 for idle running props
       Parameter_t Agilityfactor;	// How aggressive the copter reacts to RC (1-2)
@@ -290,7 +290,7 @@ myPar_t myPar = { \
 /*pid_y_i*/ {	0, 0, 1000, 1, perc}, \
 /*pid_y_d*/ {	0, 0, 1000, 1, perc}, \
 /*nav_max_angle*/ {	0, 1, 60, 1, none}, \
-/*nav_max_accel*/ {	0, 1, 100, 1, none}, \
+/*nav_max_acc_lim*/ {	0, 1, 100, 1, none}, \
 /*nav_max_accelint*/ {	0, 1, 100, 1, none}, \
 /*nav_set_speed*/ {	0, 0, 30, 1, mps}, \
 /*nav_decel_radius*/ {	0, 0, 50, 1, m}, \
@@ -310,7 +310,7 @@ myPar_t myPar = { \
 /*pid_nav_d*/ {	0, 0, 1000, 1, perc}, \
 /*pid_h_p*/ {	0, 0, 1000, 1, perc}, \
 /*pid_h_i*/ {	0, 0, 1000, 1, perc}, \
-/*pid_h_d*/ {	0, 0, 1000, 1, perc}, \
+/*pid_h_d*/ {	0, 0, 2000, 1, perc}, \
 /*max_power*/ {	0, 0, 10000, 100, perc}, \
 /*idle_power*/ {	0, 0, 3000, 100, perc}, \
 /*Agilityfactor*/ {	0, 1, 2, 1, none}, \
@@ -390,7 +390,7 @@ MenuItem_t m_items[MENUESIZE] = { \
 	/* 32*/	{txtHD,	 0,	 &myPar.pid_h_d,	0,	2,	FLASH}, \
 	/* 33*/	{txtBACK,	 0,	 0,	22,	22,	FLASH}, \
 	/* 34*/	{txtMAXANGLE,	 0,	 &myPar.nav_max_angle,	0,	22,	FLASH}, \
-	/* 35*/	{txtMAXACCEL,	 0,	 &myPar.nav_max_accel,	0,	22,	FLASH}, \
+	/* 35*/	{txtMAXACCEL,	 0,	 &myPar.nav_max_acc_lim,	0,	22,	FLASH}, \
 	/* 36*/	{txtMAXACCINT,	 0,	 &myPar.nav_max_accelint,	0,	22,	FLASH}, \
 	/* 37*/	{txtSPEEDNAV,	 0,	 &myPar.nav_set_speed,	0,	22,	FLASH}, \
 	/* 38*/	{txtRADIUSNAV,	 0,	 &myPar.nav_decel_radius,	0,	22,	FLASH}, \

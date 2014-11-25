@@ -311,7 +311,7 @@ vector3_t NAV_Governor_vel( vector3_t* pos_act_m, vector3_t* target_m, vector3_t
 	float h_kd = myPar.pid_h_d.sValue*0.01;
 
 	float nav_max_accelint = myPar.nav_max_accelint.sValue*0.1; // m/s^2
-	float nav_max_accel = myPar.nav_max_accel.sValue*0.1; // m/s^2
+	float nav_max_accel = myPar.nav_max_acc_lim.sValue*0.1; // m/s^2
 	
 	accel_command.x = PIDf(&pid_nav_x,speed_act_mps->x,setSpeed.x, nav_kp, nav_ki, nav_kd, -nav_max_accelint, nav_max_accelint); // tested
 	accel_command.y = PIDf(&pid_nav_y,speed_act_mps->y,setSpeed.y, nav_kp, nav_ki, nav_kd, -nav_max_accelint, nav_max_accelint);
@@ -339,7 +339,7 @@ vector3_t NAV_Governor( vector3_t* pos_act_m, vector3_t* target_m, vector3_t* sp
 	float h_kd = myPar.pid_h_d.sValue*0.1;
 
 	float nav_max_accelint = myPar.nav_max_accelint.sValue*0.1; // m/s^2
-	float nav_max_accel = myPar.nav_max_accel.sValue*0.1; // m/s^2
+	float nav_max_accel = myPar.nav_max_acc_lim.sValue*0.1; // m/s^2
 	
 //	accel_command.x = PIDfxD(&pid_nav_x,pos_act_m->x, target_m->x, nav_kp, nav_ki, nav_kd, -nav_max_accelint, nav_max_accelint, speed_act_mps->x);
 //	accel_command.y = PIDfxD(&pid_nav_y,pos_act_m->y, target_m->y, nav_kp, nav_ki, nav_kd, -nav_max_accelint, nav_max_accelint, speed_act_mps->y);

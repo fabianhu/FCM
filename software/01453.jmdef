@@ -22,9 +22,9 @@
         <node text="Max Angle" imageindex="3" tagType="parameter" tagID="34" tagInfo="nav_max_angle" tagParUpper="60" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="The max lean angle in degrees (30)" />
         <node text="Max Accel" imageindex="3" tagType="parameter" tagID="35" tagInfo="nav_max_acc_lim" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="The max acceleration out of nav in 1/10 m/s^2  (2)" />
         <node text="Max Acc int" imageindex="3" tagType="parameter" tagID="36" tagInfo="nav_max_accelint" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="The max acceleration integrator windup out of nav in 1/10  m/s^2  (2)" />
-        <node text="Speed NAV" imageindex="3" tagType="parameter" tagID="37" tagInfo="nav_set_speed" tagParUpper="30" tagParLower="0" tagParStepSize="1" tagParType="mps" tagParDesc="the desired cruise speed m/s (5)" />
+        <node text="Speed NAV" imageindex="3" tagType="parameter" tagID="37" tagInfo="nav_set_speedx" tagParUpper="30" tagParLower="0" tagParStepSize="1" tagParType="mps" tagParDesc="the desired cruise speed m/s (5)" />
         <node text="Radius NAV" imageindex="3" tagType="parameter" tagID="38" tagInfo="nav_decel_radius" tagParUpper="50" tagParLower="0" tagParStepSize="1" tagParType="m" tagParDesc="The radius in meters, at which the cruise speed starts to decelerate (20)" />
-        <node text="Speed h" imageindex="3" tagType="parameter" tagID="39" tagInfo="nav_set_speedh" tagParUpper="30" tagParLower="0" tagParStepSize="1" tagParType="mps" tagParDesc="the desired height change speed m/s (5)" />
+        <node text="Speed h" imageindex="3" tagType="parameter" tagID="39" tagInfo="nav_set_speedhx" tagParUpper="30" tagParLower="0" tagParStepSize="1" tagParType="mps" tagParDesc="the desired height change speed m/s (5)" />
         <node text="Radius h" imageindex="3" tagType="parameter" tagID="40" tagInfo="nav_decel_radiush" tagParUpper="50" tagParLower="0" tagParStepSize="1" tagParType="m" tagParDesc="The radius in meters, at which the height change speed starts to decelerate (20)" />
       </node>
       <node text="NAV Filters" imageindex="0" tagType="normal" tagID="23" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="Navigation Governor Parameters">
