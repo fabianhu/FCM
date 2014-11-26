@@ -57,6 +57,12 @@ vector3_t SimGetVel_m(void)
 }
 
 
+float signf(float s)
+{
+	return (s<0.0f?-1.0f:1.0f);
+}
+
+
 // one simulation step
 void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotational command + thrust into simulation (values +- 4000 or 0..8000 for thrust)
 {
@@ -78,15 +84,14 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	// F = r * cw * A * v^2 /2
 	// r = air density in kg/m³
 	// A = area in m²
-
 	
 	// F = m*a
 	// a = F / m
 
 	vector3_t vAccAir_mpss;
-	vAccAir_mpss.x = -(SIMAIRDENSITY*SIMCWVALUE*SIMCOPTERAREA* (sim_vel_mps.x*sim_vel_mps.x)* 0.5) / SIMCOPTERMASS;
-	vAccAir_mpss.y = -(SIMAIRDENSITY*SIMCWVALUE*SIMCOPTERAREA* (sim_vel_mps.y*sim_vel_mps.y)* 0.5) / SIMCOPTERMASS;
-	vAccAir_mpss.z = -(SIMAIRDENSITY*SIMCWVALUE*SIMCOPTERAREA* (sim_vel_mps.z*sim_vel_mps.z)* 0.5) / SIMCOPTERMASS; 
+	vAccAir_mpss.x = -signf(sim_vel_mps.x)*(SIMAIRDENSITY*SIMCWVALUE*SIMCOPTERAREA* (sim_vel_mps.x*sim_vel_mps.x)* 0.5) / SIMCOPTERMASS; // do not forget tho keep the sign, as it gets lost during squaring the speed.
+	vAccAir_mpss.y = -signf(sim_vel_mps.y)*(SIMAIRDENSITY*SIMCWVALUE*SIMCOPTERAREA* (sim_vel_mps.y*sim_vel_mps.y)* 0.5) / SIMCOPTERMASS;
+	vAccAir_mpss.z = -signf(sim_vel_mps.z)*(SIMAIRDENSITY*SIMCWVALUE*SIMCOPTERAREA* (sim_vel_mps.z*sim_vel_mps.z)* 0.5) / SIMCOPTERMASS; 
 	
 	vAccel_mpss = vector_add(&vAccel_mpss,&vAccAir_mpss); // add to total acceleration
 	
@@ -95,7 +100,6 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	
 	sim_vel_mps = vector_add(&sim_vel_mps,&vDv);
 	
-
 	//add distance caused by v to actual pos
 	vector3_t vTemp2 = vector_scale(&sim_vel_mps,SIM_DT);
 	sim_pos_m = vector_add(&sim_pos_m, &vTemp2);

@@ -305,6 +305,7 @@ void TaskControl(void)
 		extern int32_t debug_TWI_CountOfMisReads;  // dirty hack to keep flying, even if TWI crashes (which it usually only does during debugging)
 		
 		// get automatic flying setpoint
+		fix the switch over !!!
 		if((swRTH || swPosHold || swHGov || RCtimeout) && debug_TWI_CountOfMisReads==0)
 		{	// quaternion based flying in auto level mode
 			
