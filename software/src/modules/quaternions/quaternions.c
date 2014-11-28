@@ -35,9 +35,9 @@ int debug_perlmutti=0;
 What is the magic here ?
 
 1. quaternion to euler and quaternion from euler should give same result.
-2. the order is Roll-Pitch-Yaw (airplane-like!)
+2. the priority order is Roll-Pitch-Yaw (airplane-like!)
 3. orientation of quaternion MUST be the same as in madgwicks algo
-4. the driections must be right
+4. the directions must be right
 */
 quaternion_t quaternion_from_euler(float fPitch, float fRoll, float fYaw)
 {

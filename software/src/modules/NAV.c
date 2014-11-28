@@ -79,12 +79,16 @@ static uint32_t lastGPSTime;
 
 bool NAV_GPS_OK(void)
 {
+	#if SIMULATION == 1
+	return 1;
+	#else //SIMULATION == 0
+	
 	uint32_t time = OS_GetTicks();
 	if(time- lastGPSTime > NAVGPSTIMEOUT_ms )
 	return false;
 	else
 	return true;
-
+	#endif
 }	
 	
 // fixme handle timeout!

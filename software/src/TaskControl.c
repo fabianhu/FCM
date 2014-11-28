@@ -240,10 +240,6 @@ void TaskControl(void)
 
 		v_gyro_raw = vector_subtract(&v_gyro_raw,&gyro_cal); // calibrate gyro values
 
-		#if SIMULATION == 1
-			v_gyro_raw = SimGetRate();
-		#endif
-
 		// convert gyros to rad/s
 		v_gyro_radps.x = l3gd20_raw_to_rad(v_gyro_raw.x); // convert to rad / s
 		v_gyro_radps.y = l3gd20_raw_to_rad(v_gyro_raw.y);
@@ -264,7 +260,18 @@ void TaskControl(void)
 		v_mag = magcal_compensate(&v_mag,&mag_cal, DoMagCal); // hard iron error compensation; todo: save results
 		
 		temperature_degC = twi_get_temp();
+
+		// here all sensors are acquired completely.
 		
+		#if SIMULATION == 1
+		// overwrite by simulation
+		v_gyro_radps = SimGetRate();
+		// to be done in simulation
+		// v_mag =
+		// v_acc_frame_mpss = 
+		
+		#endif
+
 		// calculate actual attitude estimation
 		if(myPar.madgwick.sValue == 1)
 		{
@@ -274,7 +281,9 @@ void TaskControl(void)
 		{
 			q_ActualOrientation = MahonyAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,v_acc_frame_mpss.x,v_acc_frame_mpss.y,v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
 		}
+		
 		#if SIMULATION == 1
+		// this is a lazy workaround. todo: calculate acc and magneto and let the AHRS do the job in sim too.
 		q_ActualOrientation = SimGetorientation();
 		#endif
 		
@@ -305,15 +314,14 @@ void TaskControl(void)
 		extern int32_t debug_TWI_CountOfMisReads;  // dirty hack to keep flying, even if TWI crashes (which it usually only does during debugging)
 		
 		// get automatic flying setpoint
-		fix the switch over !!!
-		if((swRTH || swPosHold || swHGov || RCtimeout) && debug_TWI_CountOfMisReads==0)
+		if((swRTH || swPosHold || RCtimeout) && debug_TWI_CountOfMisReads==0)
 		{	// quaternion based flying in auto level mode
 			
 			float fTrgNavDistance_m;
 			float fTrgNavHeading_rad;
 			float fHeadingDiff_rad;
 
-			if(swPosHold) // wirklich? (h-gov?) -->  fixme falsch, h-gov geht nicht alleine
+			if(swPosHold)
 			{
 				// calculate command for returning to last position
 				v_pos_target_m = vector_copy(&v_pos_last_m);
@@ -358,9 +366,10 @@ void TaskControl(void)
 			{
 				v_accel_command_mpss.z = 0; // overwrite Z command to zero, if h governor is off.
 			}
-			if((!swRTH && !swPosHold && !RCtimeout) || !NAV_GPS_OK())
+			
+			if(!NAV_GPS_OK())
 			{
-				v_accel_command_mpss.x = 0; // overwrite command to zero, if pos governor is off.
+				v_accel_command_mpss.x = 0; // overwrite command to zero, if pos governor is not possible.
 				v_accel_command_mpss.y = 0;
 			}
 				
@@ -370,7 +379,7 @@ void TaskControl(void)
 			fSetHeading_rad += (float)cmd_yaw*0.00001; // magic number (try)
 		
 			// add rotation to target
-			fSetHeading_rad += fHeadingDiff_rad*0.1;
+			fSetHeading_rad += fHeadingDiff_rad*0.1; // fixme limit to a certain rate!
 		
 			// limit rotation
 			float fDiffheading_rad = rectify_rad(fActHeading_rad - fSetHeading_rad);
