@@ -30,7 +30,7 @@
 #include "SIM.h"
 
 quaternion_t sim_orientation= {1,0,0,0};  
-vector3_t sim_rate= {0,0,0}; // rotational speed in rad/s
+vector3_t sim_rate_radps= {0,0,0}; // rotational speed in rad/s
 vector3_t sim_pos_m= {0,0,0}; // world position
 vector3_t sim_vel_mps= {0,0,0}; // world velocity
 float sim_accel_mpss = 0; // acceleration by thrust (filtered,therefore static)
@@ -43,7 +43,7 @@ quaternion_t SimGetorientation(void)
 
 vector3_t SimGetRate(void)
 {
-	return sim_rate;
+	return sim_rate_radps;
 }
 
 vector3_t SimGetPos_m(void)
@@ -104,14 +104,17 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	vector3_t vTemp2 = vector_scale(&sim_vel_mps,SIM_DT);
 	sim_pos_m = vector_add(&sim_pos_m, &vTemp2);
 	
-	sim_rate.x = Filter_f(sim_rate.x,ox*SIMRATEFACT,SIMRATEFLT); 
-	sim_rate.y = Filter_f(sim_rate.y,oy*SIMRATEFACT,SIMRATEFLT);
-	sim_rate.z = Filter_f(sim_rate.z,oz*SIMRATEFACT,SIMRATEFLT);
+	// add influence of governor
+	sim_rate_radps.x = Filter_f(sim_rate_radps.x,(float)ox*SIMRATEFACT,SIMRATEFLT); 
+	sim_rate_radps.y = Filter_f(sim_rate_radps.y,(float)oy*SIMRATEFACT,SIMRATEFLT);
+	sim_rate_radps.z = Filter_f(sim_rate_radps.z,(float)oz*SIMRATEFACT,SIMRATEFLT); // fixme different pars for yaw !!!
 	
+fixme
+parameters too hefty (D needs to be reduced to 0)
 	
 	// rotate the actual rotation by a tiny amount
 	quaternion_t qdiff;
-	qdiff = quaternion_from_euler(sim_rate.x*SIM_DT,sim_rate.y*SIM_DT,sim_rate.z*SIM_DT);
+	qdiff = quaternion_from_euler(sim_rate_radps.x*SIM_DT,sim_rate_radps.y*SIM_DT,sim_rate_radps.z*SIM_DT);
 	sim_orientation = quaternion_multiply_flip_norm(sim_orientation,qdiff);
 		
 	
@@ -129,9 +132,9 @@ void SimReset(void) //reset the simulation to 0
 	sim_orientation.x = 0;
 	sim_orientation.y = 0;
 	sim_orientation.z = 0;
-	sim_rate.x = 0;
-	sim_rate.y = 0;
-	sim_rate.z = 0;
+	sim_rate_radps.x = 0;
+	sim_rate_radps.y = 0;
+	sim_rate_radps.z = 0;
 	sim_pos_m.x= 0;
 	sim_pos_m.y= 0;
 	sim_pos_m.z= 0;	

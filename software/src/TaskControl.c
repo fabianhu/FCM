@@ -261,11 +261,12 @@ void TaskControl(void)
 		
 		temperature_degC = twi_get_temp();
 
-		// here all sensors are acquired completely.
+		// at this point all sensors have been acquired.
 		
 		#if SIMULATION == 1
-		// overwrite by simulation
+		// overwrite sensors by simulation
 		v_gyro_radps = SimGetRate();
+		v_gyro_raw = vector_scale(&v_gyro_radps,818.5); // reverse of the l3gd20_raw_to_rad
 		// to be done in simulation
 		// v_mag =
 		// v_acc_frame_mpss = 
@@ -310,11 +311,11 @@ void TaskControl(void)
 		IMUdata.mag_heading_deg = fActHeading_rad*57.295779f;
 		IMUdata.height_dm = v_pos_act_m.z *100; // info
 		
-		float thrust;
+		float thrustfactor=1;
 		extern int32_t debug_TWI_CountOfMisReads;  // dirty hack to keep flying, even if TWI crashes (which it usually only does during debugging)
 		
 		// get automatic flying setpoint
-		if((swRTH || swPosHold || RCtimeout) && debug_TWI_CountOfMisReads==0)
+		if((swRTH || swPosHold || RCtimeout) && (debug_TWI_CountOfMisReads==0 || SIMULATION == 1))
 		{	// quaternion based flying in auto level mode
 			
 			float fTrgNavDistance_m;
@@ -373,7 +374,7 @@ void TaskControl(void)
 				v_accel_command_mpss.y = 0;
 			}
 				
-			GetBankAndThrustFromAccel(v_accel_command_mpss, &bank, &thrust); // tested
+			GetBankAndThrustFromAccel(v_accel_command_mpss, &bank, &thrustfactor); // tested
 
 			// obtain rotation offset by RC command input
 			fSetHeading_rad += (float)cmd_yaw*0.00001; // magic number (try)
@@ -452,22 +453,12 @@ void TaskControl(void)
 		oz = PID(&s_t_pid_z, v_gyro_raw.z, res_cmd.z, myPar.pid_y_p.sValue*pct/100L, myPar.pid_y_i.sValue*pct/100L, myPar.pid_y_d.sValue*pct/100L, -myPar.integrator_limit.sValue, myPar.integrator_limit.sValue);
 
 		
-		if(swHGov && RCtimeout==0) // switch on h governor // fixme h governor for RTH/ Waypoint
-		{
-			// h gov on
-			float thr;
-			thr = (float)cmd_thr*thrust; // fixme limit? test !
+		float thr;
+		thr = (float)cmd_thr*limit(thrustfactor,0.5,1.5); // factor is 1 in acro mode
 			
 			
-			oa = limit((int32_t)thr,0,myPar.max_power.sValue); // always needed.
-		}
-		else
-		{
-			
-			oa = limit(cmd_thr,0,myPar.max_power.sValue); // always needed.
-			
-		}
-		
+		oa = limit((int32_t)thr,0,myPar.max_power.sValue); // always needed.
+
 		
 
 		if(cmd_thr < 1200) // set output to zero on stick max low.
@@ -739,9 +730,9 @@ void TaskControl(void)
 				else
 				{
 					// "normal" data
-					TXData.gx = v_gyro_raw.x;
-					TXData.gy = v_gyro_raw.y;
-					TXData.gz = v_gyro_raw.z;
+					TXData.gx = v_gyro_radps.x*radgra;
+					TXData.gy = v_gyro_radps.y*radgra;
+					TXData.gz = v_gyro_radps.z*radgra;
 					TXData.ax = v_acc_frame_mpss.x*1000;
 					TXData.ay = v_acc_frame_mpss.y*1000;
 					TXData.az = v_acc_frame_mpss.z*1000;
