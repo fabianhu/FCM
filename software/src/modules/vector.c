@@ -25,86 +25,83 @@
 #include "vector.h"
 
 
-vector3_t vector_subtract (  vector3_t* srcV1, vector3_t* srcV2 )
+vector3_t vector_subtract (  vector3_t* a, vector3_t* b )
 {
-	vector3_t dstV;
+	vector3_t res;
 	
-	dstV.x = srcV1->x - srcV2->x;
-	dstV.y = srcV1->y - srcV2->y;
-	dstV.z = srcV1->z - srcV2->z;
+	res.x = a->x - b->x;
+	res.y = a->y - b->y;
+	res.z = a->z - b->z;
 	
-	return dstV;
+	return res;
 }
 
 
-vector3_t vector_add (  vector3_t* srcV1, vector3_t* srcV2 )
+vector3_t vector_add (  vector3_t* a, vector3_t* b )
 {
-	vector3_t dstV;
+	vector3_t res;
 	
-	dstV.x = srcV1->x + srcV2->x;
-	dstV.y = srcV1->y + srcV2->y;
-	dstV.z = srcV1->z + srcV2->z;
+	res.x = a->x + b->x;
+	res.y = a->y + b->y;
+	res.z = a->z + b->z;
 	
-	return dstV;
+	return res;
 }
 
 
-vector3_t vector_scale (  vector3_t* srcV,                    /* ptr to source vector */
-float sclVal                    /* scale value (Q.15 fractional) */
-)
+vector3_t vector_scale (  vector3_t* a,  float f )
 {
-	vector3_t dstV;
+	vector3_t res;
 	
-	dstV.x = srcV->x * sclVal;
-	dstV.y = srcV->y * sclVal;
-	dstV.z = srcV->z * sclVal;
+	res.x = a->x * f;
+	res.y = a->y * f;
+	res.z = a->z * f;
 	
-	return dstV;
+	return res;
 }
 
 
-float vector_len(vector3_t* in )
+float vector_len(vector3_t* a )
 {
-	return sqrtf( in->x * in->x  + in->y * in->y  + in->z * in->z  )	;
+	return sqrtf( a->x * a->x  + a->y * a->y  + a->z * a->z  )	;
 }
 
-vector3_t vector_normalize( vector3_t* input )
+vector3_t vector_normalize( vector3_t* a )
 {
 	float magnitude ;
-	vector3_t result;
-	magnitude = vector_len( input ) ;
+	vector3_t res;
+	magnitude = vector_len( a ) ;
 	if ( magnitude > 0 )
 	{
-		result.x = input->x / magnitude;
-		result.y = input->y / magnitude;
-		result.z = input->z / magnitude;
+		res.x = a->x / magnitude;
+		res.y = a->y / magnitude;
+		res.z = a->z / magnitude;
 	}
 	else
 	{
-		result.x=result.y=result.z=0;
+		res.x=res.y=res.z=0;
 	}
-	return result ;
+	return res ;
 }
 
-vector3_t vector_copy( vector3_t* input )
+vector3_t vector_copy( vector3_t* a )
 {
-	vector3_t result;
+	vector3_t res;
 
-	result.x = input->x ;
-	result.y = input->y ;
-	result.z = input->z ;
+	res.x = a->x ;
+	res.y = a->y ;
+	res.z = a->z ;
 
-	return result ;
+	return res ;
 }
 
 // adjust to +-pi
-float rectify_rad( float fSetHeading )
+float rectify_rad( float rad )
 {
-	if(fSetHeading > M_PI) fSetHeading -= 2*M_PI;
-	if(fSetHeading < -M_PI) fSetHeading += 2*M_PI;
-	return fSetHeading;
+	if(rad > M_PI) rad -= 2*M_PI;
+	if(rad < -M_PI) rad += 2*M_PI;
+	return rad;
 }
-
 
 
 float vector2len(float x, float y)
@@ -112,91 +109,3 @@ float vector2len(float x, float y)
 	return sqrt(x*x+y*y);
 }
 
-/*
-float vector2angle(float x, float y) ccw rotation
-{
-	volatile float angle;
-	
-	angle = atan2(y, x);
-	
-	if (angle < 0.0) 
-	angle = angle + 2 * M_PI;
-	
-	if (angle >=  2 * M_PI) 
-	angle = angle - 2 * M_PI;
-	
-	return angle;
-}
-*/
-
-
-/*vector_t vector_copy_result(results_t* input )
-{
-	vector_t result;
-
-	result.x = input->x ;
-	result.y = input->y ;
-	result.z = input->z ;
-
-	return result ;
-}*/
-
-/*
-fractional* VectorMultiply (     // Vector elem-to-elem multiply 
-							// dstV[elem] =                 
-							//    = srcV1[elem] * srcV2[elem] 
-							// (in place capable) 
-							// (with itself capable) 
-							int16_t numElems,                        // number elements in srcV[1,2] (N) 
-							fractional* dstV,                    // ptr to destination vector 
-							fractional* srcV1,                   // ptr to source vector one 
-							fractional* srcV2                    // ptr to source vector two 
-							
-							// dstV returned 
-							)
-{
-	int16_t i;
-	for (i=0; i< numElems; i++) {
-		dstV[i] = fl2fr(fr2fl(srcV1[i]) * fr2fl(srcV2[i]));
-	}
-	return dstV;
-}
-
-
-fractional VectorDotProduct (    // Vector dot product 
-							 // dotVal =                     
-							 //    = sum(srcV1[elem]*srcV2[elem]) 
-							 // (with itself capable) 
-							 int16_t numElems,                        // number elements in srcV[1,2] (N) 
-							 fractional* srcV1,                   // ptr to source vector one 
-							 fractional* srcV2                    // ptr to source vector two 
-							 
-							 // dot product value returned 
-							 )
-{
-	fractional sum = 0;
-	int16_t i;
-	for (i=0; i< numElems; i++) {
-		sum += fl2fr(fr2fl(srcV1[i]) * fr2fl(srcV2[i]));
-	}
-	return sum;
-}
-
-
-fractional VectorPower (         // Vector power 
-						// powVal =                     
-						//    = sum(srcV[elem]^2)       
-						int16_t numElems,                       // number elements in srcV (N) 
-						fractional* srcV                     // ptr to source vector one
-						
-						// power value returned 
-						)
-{
-	fractional sum = 0;
-	int16_t i;
-	for (i=0; i< numElems; i++) {
-		sum += fl2fr(fr2fl(srcV[i]) * fr2fl(srcV[i]));
-	}
-	return sum;
-}
-*/

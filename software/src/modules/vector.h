@@ -36,16 +36,15 @@ typedef struct vector2_tag
 	float y;
 } vector2_t;
 
-//vector_t vector_copy_result(results_t* input );
-float vector_len(vector3_t* in );
+
+float vector_len(vector3_t* a );
 vector3_t vector_normalize( vector3_t* input );
-vector3_t vector_subtract ( vector3_t* srcV1, vector3_t* srcV2 );
-vector3_t vector_scale (   vector3_t* srcV,  float sclVal  );
-vector3_t vector_copy( vector3_t* input );
-vector3_t vector_add (  vector3_t* srcV1, vector3_t* srcV2 );
-float rectify_rad( float fSetHeading );
+vector3_t vector_subtract ( vector3_t* a, vector3_t* b );
+vector3_t vector_scale (   vector3_t* a,  float f  );
+vector3_t vector_copy( vector3_t* a );
+vector3_t vector_add (  vector3_t* a, vector3_t* b );
+float rectify_rad( float rad );
 float vector2len(float x, float y);
-//float vector2angle(float x, float y); not very used.
 
 
 #endif /* VECTOR_H_ */
