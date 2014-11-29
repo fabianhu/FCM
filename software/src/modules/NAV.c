@@ -337,10 +337,10 @@ vector3_t NAV_Governor( vector3_t* pos_act_m, vector3_t* target_m, vector3_t* sp
 	
 	float nav_kp = myPar.pid_nav_p.sValue*0.1;
 	float nav_ki = myPar.pid_nav_i.sValue*0.0001;
-	float nav_kd = myPar.pid_nav_d.sValue*0.1;
+	float nav_kd = myPar.pid_nav_d.sValue*1.0;
 	float h_kp = myPar.pid_h_p.sValue*0.01;
 	float h_ki = myPar.pid_h_i.sValue*0.0001;
-	float h_kd = myPar.pid_h_d.sValue*0.1;
+	float h_kd = myPar.pid_h_d.sValue*1.0;
 
 	float nav_max_accelint = myPar.nav_max_accelint.sValue*0.1; // m/s^2
 	float nav_max_accel = myPar.nav_max_acc_lim.sValue*0.1; // m/s^2

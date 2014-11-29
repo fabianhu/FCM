@@ -108,10 +108,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	sim_rate_radps.x = Filter_f(sim_rate_radps.x,(float)ox*SIMRATEFACT,SIMRATEFLT); 
 	sim_rate_radps.y = Filter_f(sim_rate_radps.y,(float)oy*SIMRATEFACT,SIMRATEFLT);
 	sim_rate_radps.z = Filter_f(sim_rate_radps.z,(float)oz*SIMRATEFACT,SIMRATEFLT); // fixme different pars for yaw !!!
-	
-fixme
-parameters too hefty (D needs to be reduced to 0)
-	
+
 	// rotate the actual rotation by a tiny amount
 	quaternion_t qdiff;
 	qdiff = quaternion_from_euler(sim_rate_radps.x*SIM_DT,sim_rate_radps.y*SIM_DT,sim_rate_radps.z*SIM_DT);
