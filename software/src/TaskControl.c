@@ -780,15 +780,15 @@ void TaskControl(void)
 				#if SIMULATION == 1
 				quaternion_t q_simulated;
 				q_simulated = SimGetorientation();				
-				TXQuaternions.qDiff[0]= q_simulated.w;
-				TXQuaternions.qDiff[1]= q_simulated.x;
-				TXQuaternions.qDiff[2]= q_simulated.y;
-				TXQuaternions.qDiff[3]= q_simulated.z;
+				TXQuaternions.qSim[0]= q_simulated.w;
+				TXQuaternions.qSim[1]= q_simulated.x;
+				TXQuaternions.qSim[2]= q_simulated.y;
+				TXQuaternions.qSim[3]= q_simulated.z;
 				#else
-				TXQuaternions.qDiff[0]= 1;
-				TXQuaternions.qDiff[1]= 0;
-				TXQuaternions.qDiff[2]= 0;
-				TXQuaternions.qDiff[3]= 0;
+				TXQuaternions.qSim[0]= 1;
+				TXQuaternions.qSim[1]= 0;
+				TXQuaternions.qSim[2]= 0;
+				TXQuaternions.qSim[3]= 0;
 				#endif
 			
 			
