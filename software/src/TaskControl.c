@@ -139,6 +139,7 @@ void TaskControl(void)
 	static quaternion_t q_RC_Set = {1,0,0,0}; // the official setpoint for the orientation.
 	quaternion_t q_nav_global;
 	quaternion_t q_set_global; // combined nav and rc
+
 	float fActHeading_rad;
 	
 	vector3_t v_TrgDistance_m; // the distance to the target
@@ -266,10 +267,9 @@ void TaskControl(void)
 		#if SIMULATION == 1
 		// overwrite sensors by simulation
 		v_gyro_radps = SimGetRate();
-		v_gyro_raw = vector_scale(&v_gyro_radps,818.5); // reverse of the l3gd20_raw_to_rad
-		// to be done in simulation
-		// v_mag =
-		// v_acc_frame_mpss = 
+		v_gyro_raw = vector_scale(&v_gyro_radps,818.5); // reverse of the l3gd20_raw_to_rad // fixe check, if algo is possible without raw value.
+		v_mag = SimGetMag();
+		v_acc_frame_mpss = SimGetAcc();
 		
 		#endif
 
@@ -283,12 +283,6 @@ void TaskControl(void)
 			q_ActualOrientation = MahonyAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,v_acc_frame_mpss.x,v_acc_frame_mpss.y,v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
 		}
 		
-		#if SIMULATION == 1
-		// this is a lazy workaround. todo: calculate acc and magneto and let the AHRS do the job in sim too.
-		q_ActualOrientation = SimGetorientation();
-		#endif
-		
-
 		// calculate normalized acceleration	
 		v_acc_global_mpss = quaternion_rotateVector(v_acc_frame_mpss,quaternion_inverse(q_ActualOrientation));
 		v_acc_global_mpss.z -= 9.81; // subtract the z acceleration here.
@@ -331,7 +325,7 @@ void TaskControl(void)
 			{
 				v_pos_target_m.x = 0;
 				v_pos_target_m.y = 0;
-				v_pos_target_m.z = 2; // 2 m above ground, that it is still reachable
+				v_pos_target_m.z = 2; // 2 m above ground, that it is still reachable // fixme set trg h to last until we are near!!
 
 				v_pos_last_m  = vector_copy(&v_pos_act_m);
 			}
@@ -757,10 +751,19 @@ void TaskControl(void)
 			}else if  (fcmcp_getStreamState() == fcmcp_stream_quat)
 			{
 				strncpy(TXQuaternions.hdr,"---Q",4);
+				#if SIMULATION == 1
+				quaternion_t q_simulated;
+				q_simulated = SimGetorientation();
+				TXQuaternions.qActAtt[0]= q_simulated.w;
+				TXQuaternions.qActAtt[1]= q_simulated.x;
+				TXQuaternions.qActAtt[2]= q_simulated.y;
+				TXQuaternions.qActAtt[3]= q_simulated.z;	
+				#else
 				TXQuaternions.qActAtt[0]= q_ActualOrientation.w;
 				TXQuaternions.qActAtt[1]= q_ActualOrientation.x;
 				TXQuaternions.qActAtt[2]= q_ActualOrientation.y;
 				TXQuaternions.qActAtt[3]= q_ActualOrientation.z;
+				#endif
 				TXQuaternions.qSet[0]= q_set_global.w;
 				TXQuaternions.qSet[1]= q_set_global.x;
 				TXQuaternions.qSet[2]= q_set_global.y;

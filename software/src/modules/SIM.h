@@ -33,10 +33,18 @@
 #define SIMCOPTERAREA 0.05		// im m² 
 #define SIMCOPTERMASS 0.8		// in kg
 
+#define SIM_MAGFIELD_nT 60000.0f
+#define SIM_MAGINC_DEG  60.0f
+#define SIM_MAGDEFAULT_X 0.0f
+#define SIM_MAGDEFAULT_Y -cos(SIM_MAGINC_DEG/radgra)*SIM_MAGFIELD_nT // fixme dont understand why negative!
+#define SIM_MAGDEFAULT_Z -sin(SIM_MAGINC_DEG/radgra)*SIM_MAGFIELD_nT
+
 quaternion_t SimGetorientation(void); // get simulated orientation out of simulation
 vector3_t SimGetRate(void); // get simulated rotation rate (equivalent to gyro output)
 vector3_t SimGetPos_m(void); // get the simulated position out of the simulation
 vector3_t SimGetVel_m(void); // get the simulated velocity out of the simulation
+vector3_t SimGetMag(void);
+vector3_t SimGetAcc(void);
 void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa); // input the rotational command + thrust into simulation
 void SimReset(void); //reset the simulation to 0
 float signf(float s);

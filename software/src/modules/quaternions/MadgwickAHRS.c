@@ -82,7 +82,7 @@ bool MadgwickStart(void) // cyclic call every 10ms until returns true.
 
 //---------------------------------------------------------------------------------------------------
 // AHRS algorithm update
-
+// accepts acceleration only in the range of 9.81 +-1.5 mpss !!
 quaternion_t MadgwickAHRSupdate(float gy, float gx, float gz, float ay, float ax, float az, float my, float mx, float mz) {
 	quaternion_t ret;
 	float recipNorm;

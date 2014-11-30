@@ -23,7 +23,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */ 
 
+#define radgra 57.295779513f
+
 #include <asf.h>
+#include <fastmath.h>
 #include "modules/vector.h"
 #include "modules/quaternions/quaternions.h"
 #include "modules/governing.h"
@@ -34,7 +37,8 @@ vector3_t sim_rate_radps= {0,0,0}; // rotational speed in rad/s
 vector3_t sim_pos_m= {0,0,0}; // world position
 vector3_t sim_vel_mps= {0,0,0}; // world velocity
 float sim_accel_mpss = 0; // acceleration by thrust (filtered,therefore static)
-
+vector3_t sim_accel_frame_mpss = {0,0,-9.81f};
+vector3_t sim_magneto_frame_nT = {0,0,0};
 
 quaternion_t SimGetorientation(void)
 {
@@ -56,6 +60,15 @@ vector3_t SimGetVel_m(void)
 	return sim_vel_mps;
 }
 
+vector3_t SimGetMag(void)
+{
+	return sim_magneto_frame_nT;
+}
+
+vector3_t SimGetAcc(void)
+{
+	return sim_accel_frame_mpss;
+}
 
 float signf(float s)
 {
@@ -79,6 +92,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	vAccel_mpss.z = accel_mpss;//make length = delta v
 	vAccel_mpss = quaternion_rotateVector(vAccel_mpss,quaternion_inverse(sim_orientation)); // rotate into world orientation
 	vAccel_mpss.z -=9.81; // subtract earths acceleration.
+	// in steady state, the earths acceleration and the "oa" acceleration neutralize to 0.
 	
 	//reduce the velocity by kind of air resistance
 	// F = r * cw * A * v^2 /2
@@ -94,6 +108,12 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	vAccAir_mpss.z = -signf(sim_vel_mps.z)*(SIMAIRDENSITY*SIMCWVALUE*SIMCOPTERAREA* (sim_vel_mps.z*sim_vel_mps.z)* 0.5) / SIMCOPTERMASS; 
 	
 	vAccel_mpss = vector_add(&vAccel_mpss,&vAccAir_mpss); // add to total acceleration
+	
+	sim_accel_frame_mpss = vector_copy(&vAccel_mpss);
+	sim_accel_frame_mpss.x = -sim_accel_frame_mpss.x; //invert own, as we want to see the "experienced" acc.
+	sim_accel_frame_mpss.y = -sim_accel_frame_mpss.y; //invert own, as we want to see the "experienced" acc.
+	sim_accel_frame_mpss.z = -sim_accel_frame_mpss.z +9.81  ; // subtract earths acceleration and invert own, as we want to see the "experienced" acc.
+	sim_accel_frame_mpss =  quaternion_rotateVector(sim_accel_frame_mpss,sim_orientation); // simulation output
 	
 	// add delta-v caused by acceleration to actual velocity reduce the velocity by kind of air resistance)
 	vector3_t vDv = vector_scale(&vAccel_mpss,SIM_DT);
@@ -120,6 +140,13 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 		SimReset();
 	}
 	
+	vector3_t mag_world;
+	
+	mag_world.x = SIM_MAGDEFAULT_X;
+	mag_world.y = SIM_MAGDEFAULT_Y;
+	mag_world.z = SIM_MAGDEFAULT_Z;
+	sim_magneto_frame_nT = quaternion_rotateVector(mag_world,sim_orientation); // simulation output
+	
 }
 
 
@@ -129,9 +156,7 @@ void SimReset(void) //reset the simulation to 0
 	sim_orientation.x = 0;
 	sim_orientation.y = 0;
 	sim_orientation.z = 0;
-	sim_rate_radps.x = 0;
-	sim_rate_radps.y = 0;
-	sim_rate_radps.z = 0;
+
 	sim_pos_m.x= 0;
 	sim_pos_m.y= 0;
 	sim_pos_m.z= 0;	
@@ -139,5 +164,17 @@ void SimReset(void) //reset the simulation to 0
 	sim_vel_mps.y= 0;
 	sim_vel_mps.z= 0;
 	sim_accel_mpss = 0;
+
+	sim_rate_radps.x = 0;
+	sim_rate_radps.y = 0;
+	sim_rate_radps.z = 0;
+	
+	sim_accel_frame_mpss.x = 0;
+	sim_accel_frame_mpss.y = 0;
+	sim_accel_frame_mpss.z = 9.81f; // earths acceleration.
+	
+	sim_magneto_frame_nT.x = SIM_MAGDEFAULT_X;
+	sim_magneto_frame_nT.y = SIM_MAGDEFAULT_Y;
+	sim_magneto_frame_nT.z = SIM_MAGDEFAULT_Z;
 
 }

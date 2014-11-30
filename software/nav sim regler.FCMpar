@@ -4,13 +4,13 @@
 \GYRO PID\Q Gain	5000
 \GYRO PID\Swash P	66
 \GYRO PID\Swash I	37
-\GYRO PID\Swash D	15
-\GYRO PID\Yaw P  	58
-\GYRO PID\Yaw I  	20
-\GYRO PID\Yaw D  	15
-\NAV\NAV P	15
-\NAV\NAV I	10
-\NAV\NAV D	400
+\GYRO PID\Swash D	10
+\GYRO PID\Yaw P  	60
+\GYRO PID\Yaw I  	10
+\GYRO PID\Yaw D  	5
+\NAV\NAV P	5
+\NAV\NAV I	15
+\NAV\NAV D	150
 \NAV\H P  	200
 \NAV\H I  	50
 \NAV\H D  	200
@@ -47,7 +47,7 @@
 \Calibration\Mag X	-5250
 \Calibration\Mag Y	6575
 \Calibration\Mag Z	9795
-\Calibration\Filters\Gyro Filter	1
+\Calibration\Filters\Gyro Filter	4
 \Calibration\Filters\Accel Filter	4
 \Calibration\Filters\Magneto Flt	1
 \Calibration\Filters\Baro Filter	32
@@ -63,7 +63,7 @@
 \RC Channels\Poti P	5
 \RC Channels\Poti I	6
 \RC Channels\Poti D	7
-\Test\Madgwick	0
-\Test\alpha Madg	0
-\Test\prop Mah	0
-\Test\integr Mah	0
+\Test\Madgwick	1
+\Test\alpha Madg	10
+\Test\prop Mah	50
+\Test\integr Mah	10
