@@ -24,19 +24,19 @@
 #define SIM_H_
 
 #define SIM_DT 0.01 // fixed 10ms in our case
-#define SIMPOWERFILTER 0.98 // for delaying the power application
-#define SIMRATEFLT 0.50 // fixme experiment with it !
-#define SIMRATEFACT 0.0002 // factor by which the input rotation command is multiplied to get the rotation response from simulated copter fixme experiment with it !
+#define SIM_POWERFILTER 0.98 // for delaying the power application
+#define SIM_RATEFLT 0.50 // delaying the application of the rate (simulated motor lag) fixme experiment with it !
+#define SIM_RATEFACT 0.0002 // factor by which the input rotation command is multiplied to get the rotation response from simulated copter fixme experiment with it !
 
-#define SIMAIRDENSITY 1.1839	// in kg/m³
-#define SIMCWVALUE    1.1		// cw value without unit (for a cube)
-#define SIMCOPTERAREA 0.05		// im m² 
-#define SIMCOPTERMASS 0.8		// in kg
+#define SIM_AIRDENSITY 1.1839	// in kg/m³
+#define SIM_CWVALUE    1.1		// cw value without unit (for a cube)
+#define SIM_COPTERAREA 0.05		// im m² 
+#define SIM_COPTERMASS 0.8		// in kg
 
 #define SIM_MAGFIELD_nT 60000.0f
 #define SIM_MAGINC_DEG  60.0f
 #define SIM_MAGDEFAULT_X 0.0f
-#define SIM_MAGDEFAULT_Y -cos(SIM_MAGINC_DEG/radgra)*SIM_MAGFIELD_nT // fixme dont understand why negative!
+#define SIM_MAGDEFAULT_Y -cos(SIM_MAGINC_DEG/radgra)*SIM_MAGFIELD_nT // fixme dont understand why negative, but this way it works.
 #define SIM_MAGDEFAULT_Z -sin(SIM_MAGINC_DEG/radgra)*SIM_MAGFIELD_nT
 
 quaternion_t SimGetorientation(void); // get simulated orientation out of simulation

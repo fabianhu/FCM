@@ -325,9 +325,19 @@ void TaskControl(void)
 			{
 				v_pos_target_m.x = 0;
 				v_pos_target_m.y = 0;
-				v_pos_target_m.z = 2; // 2 m above ground, that it is still reachable // fixme set trg h to last until we are near!!
-
-				v_pos_last_m  = vector_copy(&v_pos_act_m);
+				// set trg h to last until we are near!!
+				if(vector2len(v_pos_act_m.x,v_pos_act_m.y) > (float)myPar.nav_decel_radius.sValue)
+				{
+					v_pos_target_m.z = max(v_pos_last_m.z,2.0f);
+					v_pos_last_m  = vector_copy(&v_pos_act_m);
+					v_pos_last_m.z = v_pos_target_m.z; // preserve "last"
+				}
+				else
+				{
+					v_pos_target_m.z = 2.0f; // 2 m above ground, that it is still reachable
+					v_pos_last_m  = vector_copy(&v_pos_act_m);
+				}
+				
 			}
 		
 			// remember for waypoint flight: v_target_m = NAV_ConvertGPS_to_m(gpspos_setpoint,5); // calculate the setpoint in meter coordinates
@@ -751,19 +761,12 @@ void TaskControl(void)
 			}else if  (fcmcp_getStreamState() == fcmcp_stream_quat)
 			{
 				strncpy(TXQuaternions.hdr,"---Q",4);
-				#if SIMULATION == 1
-				quaternion_t q_simulated;
-				q_simulated = SimGetorientation();
-				TXQuaternions.qActAtt[0]= q_simulated.w;
-				TXQuaternions.qActAtt[1]= q_simulated.x;
-				TXQuaternions.qActAtt[2]= q_simulated.y;
-				TXQuaternions.qActAtt[3]= q_simulated.z;	
-				#else
+
 				TXQuaternions.qActAtt[0]= q_ActualOrientation.w;
 				TXQuaternions.qActAtt[1]= q_ActualOrientation.x;
 				TXQuaternions.qActAtt[2]= q_ActualOrientation.y;
-				TXQuaternions.qActAtt[3]= q_ActualOrientation.z;
-				#endif
+				TXQuaternions.qActAtt[3]= q_ActualOrientation.z;	
+
 				TXQuaternions.qSet[0]= q_set_global.w;
 				TXQuaternions.qSet[1]= q_set_global.x;
 				TXQuaternions.qSet[2]= q_set_global.y;
@@ -774,10 +777,19 @@ void TaskControl(void)
 				quaternion_t qtest;
 				qtest = quaternion_from_euler(dx,dy,dz);*/
 				
-				TXQuaternions.qDiff[0]= q_ActualOrientation.w;//
-				TXQuaternions.qDiff[1]= q_ActualOrientation.x;//
-				TXQuaternions.qDiff[2]= q_ActualOrientation.y;//
-				TXQuaternions.qDiff[3]= q_ActualOrientation.z;//
+				#if SIMULATION == 1
+				quaternion_t q_simulated;
+				q_simulated = SimGetorientation();				
+				TXQuaternions.qDiff[0]= q_simulated.w;
+				TXQuaternions.qDiff[1]= q_simulated.x;
+				TXQuaternions.qDiff[2]= q_simulated.y;
+				TXQuaternions.qDiff[3]= q_simulated.z;
+				#else
+				TXQuaternions.qDiff[0]= 1;
+				TXQuaternions.qDiff[1]= 0;
+				TXQuaternions.qDiff[2]= 0;
+				TXQuaternions.qDiff[3]= 0;
+				#endif
 			
 			
 				TXQuaternions.vPos[0] = v_pos_act_m.x;

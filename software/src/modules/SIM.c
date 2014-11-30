@@ -83,7 +83,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	float accel_mpss = oa;
 	accel_mpss /= 8000.0;
 	accel_mpss *= 9.81*2.5; // max acceleration is 2g
-	Filter_f(sim_accel_mpss, accel_mpss, SIMPOWERFILTER);
+	Filter_f(sim_accel_mpss, accel_mpss, SIM_POWERFILTER);
 	
 	//create acceleration vector
 	vector3_t vAccel_mpss;
@@ -103,10 +103,12 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	// a = F / m
 
 	vector3_t vAccAir_mpss;
-	vAccAir_mpss.x = -signf(sim_vel_mps.x)*(SIMAIRDENSITY*SIMCWVALUE*SIMCOPTERAREA* (sim_vel_mps.x*sim_vel_mps.x)* 0.5) / SIMCOPTERMASS; // do not forget tho keep the sign, as it gets lost during squaring the speed.
-	vAccAir_mpss.y = -signf(sim_vel_mps.y)*(SIMAIRDENSITY*SIMCWVALUE*SIMCOPTERAREA* (sim_vel_mps.y*sim_vel_mps.y)* 0.5) / SIMCOPTERMASS;
-	vAccAir_mpss.z = -signf(sim_vel_mps.z)*(SIMAIRDENSITY*SIMCWVALUE*SIMCOPTERAREA* (sim_vel_mps.z*sim_vel_mps.z)* 0.5) / SIMCOPTERMASS; 
-	
+	vAccAir_mpss.x = -signf(sim_vel_mps.x)*(SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (sim_vel_mps.x*sim_vel_mps.x)* 0.5) / SIM_COPTERMASS; // do not forget tho keep the sign, as it gets lost during squaring the speed.
+	vAccAir_mpss.y = -signf(sim_vel_mps.y)*(SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (sim_vel_mps.y*sim_vel_mps.y)* 0.5) / SIM_COPTERMASS;
+	vAccAir_mpss.z = -signf(sim_vel_mps.z)*(SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (sim_vel_mps.z*sim_vel_mps.z)* 0.5) / SIM_COPTERMASS; 
+
+	// todo: calculate above in vehicle orientation to account for different air resistance in (xy) and z.
+
 	vAccel_mpss = vector_add(&vAccel_mpss,&vAccAir_mpss); // add to total acceleration
 	
 	sim_accel_frame_mpss = vector_copy(&vAccel_mpss);
@@ -125,9 +127,9 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	sim_pos_m = vector_add(&sim_pos_m, &vTemp2);
 	
 	// add influence of governor
-	sim_rate_radps.x = Filter_f(sim_rate_radps.x,(float)ox*SIMRATEFACT,SIMRATEFLT); 
-	sim_rate_radps.y = Filter_f(sim_rate_radps.y,(float)oy*SIMRATEFACT,SIMRATEFLT);
-	sim_rate_radps.z = Filter_f(sim_rate_radps.z,(float)oz*SIMRATEFACT,SIMRATEFLT); // fixme different pars for yaw !!!
+	sim_rate_radps.x = Filter_f(sim_rate_radps.x,(float)ox*SIM_RATEFACT,SIM_RATEFLT); 
+	sim_rate_radps.y = Filter_f(sim_rate_radps.y,(float)oy*SIM_RATEFACT,SIM_RATEFLT);
+	sim_rate_radps.z = Filter_f(sim_rate_radps.z,(float)oz*SIM_RATEFACT,SIM_RATEFLT); // fixme different pars for yaw !!!
 
 	// rotate the actual rotation by a tiny amount
 	quaternion_t qdiff;
