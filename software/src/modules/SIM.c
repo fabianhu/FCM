@@ -47,6 +47,9 @@ quaternion_t SimGetorientation(void)
 
 vector3_t SimGetRate(void)
 {
+	//vector3_t gyro_drift = {0.03,0.03,0.03};
+	
+	//return vector_add(&gyro_drift, &sim_rate_radps);
 	return sim_rate_radps;
 }
 
@@ -77,22 +80,22 @@ float signf(float s)
 
 
 // one simulation step
-void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotational command + thrust into simulation (values +- 4000 or 0..8000 for thrust)
+void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the rotational command + thrust into simulation (values +- 4000 or 0..8000 for thrust)
 {
 	// calc acceleration caused by trust:
-	float accel_mpss = oa;
-	accel_mpss /= 8000.0;
-	accel_mpss *= 9.81*2.5; // max acceleration is 2g
-	Filter_f(sim_accel_mpss, accel_mpss, SIM_POWERFILTER);
+	float thrust_mpss = o_thrust;
+	thrust_mpss /= 8000.0;
+	thrust_mpss *= 9.81*2.5; // max acceleration is 2g
+	Filter_f(sim_accel_mpss, thrust_mpss, SIM_POWERFILTER);
 	
 	//create acceleration vector
 	vector3_t vAccel_mpss;
 	vAccel_mpss.x = 0;
 	vAccel_mpss.y = 0;
-	vAccel_mpss.z = accel_mpss;//make length = delta v
+	vAccel_mpss.z = thrust_mpss;
 	vAccel_mpss = quaternion_rotateVector(vAccel_mpss,quaternion_inverse(sim_orientation)); // rotate into world orientation
 	vAccel_mpss.z -=9.81; // subtract earths acceleration.
-	// in steady state, the earths acceleration and the "oa" acceleration neutralize to 0.
+	// in steady state, the earths acceleration and the "o_thrust" acceleration neutralize to 0.
 	
 	//reduce the velocity by kind of air resistance
 	// F = r * cw * A * v^2 /2
@@ -103,9 +106,10 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	// a = F / m
 
 	vector3_t vAccAir_mpss;
-	vAccAir_mpss.x = -signf(sim_vel_mps.x)*(SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (sim_vel_mps.x*sim_vel_mps.x)* 0.5) / SIM_COPTERMASS; // do not forget tho keep the sign, as it gets lost during squaring the speed.
-	vAccAir_mpss.y = -signf(sim_vel_mps.y)*(SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (sim_vel_mps.y*sim_vel_mps.y)* 0.5) / SIM_COPTERMASS;
-	vAccAir_mpss.z = -signf(sim_vel_mps.z)*(SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (sim_vel_mps.z*sim_vel_mps.z)* 0.5) / SIM_COPTERMASS; 
+	// do not forget tho keep the sign, as it gets lost during squaring the speed.
+	vAccAir_mpss.x = -signf(sim_vel_mps.x) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (sim_vel_mps.x*sim_vel_mps.x)* 0.5) / SIM_COPTERMASS; 
+	vAccAir_mpss.y = -signf(sim_vel_mps.y) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (sim_vel_mps.y*sim_vel_mps.y)* 0.5) / SIM_COPTERMASS;
+	vAccAir_mpss.z = -signf(sim_vel_mps.z) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (sim_vel_mps.z*sim_vel_mps.z)* 0.5) / SIM_COPTERMASS; 
 
 	// todo: calculate above in vehicle orientation to account for different air resistance in (xy) and z.
 
@@ -147,7 +151,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa) // input the rotat
 	mag_world.x = SIM_MAGDEFAULT_X;
 	mag_world.y = SIM_MAGDEFAULT_Y;
 	mag_world.z = SIM_MAGDEFAULT_Z;
-	sim_magneto_frame_nT = quaternion_rotateVector(mag_world,sim_orientation); // simulation output
+	sim_magneto_frame_nT = quaternion_rotateVector(mag_world,sim_orientation); // simulation output rotated into world frame
 	
 }
 

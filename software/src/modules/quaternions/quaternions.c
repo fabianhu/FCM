@@ -24,8 +24,6 @@
 #include "../vector.h"
 #include "quaternions.h"
 
-quaternion_t perlmutt(quaternion_t qi, int n);
-
 int debug_perlmutti=0;
  
 // all angles are in radians.

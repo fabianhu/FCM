@@ -62,4 +62,6 @@ void quaternion_copy(quaternion_t* qm, quaternion_t* qa);
 vector3_t quaternion_rotateVector(vector3_t _V, quaternion_t _Q);
 quaternion_t RC_Get_Offset(int32_t cmd_elev,int32_t cmd_roll,float yaw_rad);
 
+quaternion_t perlmutt(quaternion_t qi, int n);
+
 #endif /* QUATERNIONS_H_ */
