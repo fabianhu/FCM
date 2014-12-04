@@ -79,9 +79,9 @@ void menue_sendpar(uint8_t item);
 //******** START OF AUTO-GENERATED HEADER DO NOT EDIT!!! *********
 //********          Generated with Treebuilder.exe       *********
 
- #define	MENUESIZE	98	// number of menu itmes (array size)
+ #define	MENUESIZE	100	// number of menu itmes (array size)
  #define	MAX_ITEM_NAME_CHARLENGTH	17	// max name length
- #define	MENUGENUID	1453	// Generation UID
+ #define	MENUGENUID	3613	// Generation UID
 // Enum definitions
 typedef enum
 {
@@ -164,11 +164,13 @@ typedef struct myPar_tag
       Parameter_t a_madg;	// x 0.01 --> 100 = 1.0 (10)
       Parameter_t P_mahony;	// x 0.01 --> 100 = 1.0 (50)
       Parameter_t I_mahony;	// x 0.01 --> 100 = 1.0 (10)
+      Parameter_t test_in;	// 
+      Parameter_t test_out;	// 
 } myPar_t;
 
 extern myPar_t myPar;
 
- #define	MENUE_PARCOUNT	68	// number of parameters
+ #define	MENUE_PARCOUNT	70	// number of parameters
 
 // Action Prototypes
 void actSwashasPot (void);	// Use Potis as PID settings for Swash (x&y)
@@ -273,6 +275,8 @@ char	txtMADGWICK[] 	PROGMEM="Madgwick"; \
 char	txtALPHAMADG[] 	PROGMEM="alpha Madg"; \
 char	txtPROPMAH[] 	PROGMEM="prop Mah"; \
 char	txtINTEGRMAH[] 	PROGMEM="integr Mah"; \
+char	txtTESTIN[] 	PROGMEM="test in"; \
+char	txtTESTOUT[] 	PROGMEM="test out"; \
 
 #endif
 
@@ -344,10 +348,12 @@ myPar_t myPar = { \
 /*PotiP*/ {	0, 0, 12, 1, ch}, \
 /*PotiI*/ {	0, 0, 12, 1, ch}, \
 /*PotiD*/ {	0, 0, 12, 1, ch}, \
-/*madgwick*/ {	0, 0, 1, 1, none}, \
+/*madgwick*/ {	0, 0, 2, 1, none}, \
 /*a_madg*/ {	0, 1, 100, 1, none}, \
 /*P_mahony*/ {	0, 1, 100, 1, none}, \
 /*I_mahony*/ {	0, 1, 100, 1, none}, \
+/*test_in*/ {	0, 1, 100, 1, none}, \
+/*test_out*/ {	0, 1, 100, 1, none}, \
 };
 #endif
 
@@ -453,6 +459,8 @@ MenuItem_t m_items[MENUESIZE] = { \
 	/* 95*/	{txtALPHAMADG,	 0,	 &myPar.a_madg,	0,	8,	FLASH}, \
 	/* 96*/	{txtPROPMAH,	 0,	 &myPar.P_mahony,	0,	8,	FLASH}, \
 	/* 97*/	{txtINTEGRMAH,	 0,	 &myPar.I_mahony,	0,	8,	FLASH}, \
+	/* 98*/	{txtTESTIN,	 0,	 &myPar.test_in,	0,	8,	FLASH}, \
+	/* 99*/	{txtTESTOUT,	 0,	 &myPar.test_out,	0,	8,	FLASH}, \
 };
 #endif
 

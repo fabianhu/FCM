@@ -16,8 +16,16 @@ works: unknown
 #include "FabOS/FabOS.h"
 #include "../menu/menu.h"
 #include "../menu/menu_variant.h"
+#include "AHRS2.h"
 
-quaternion_t AHRS(vector3_t Gyro, vector3_t Accel, vector3_t Mag)
+#define DRIFT_AccelKp 0.01
+#define DRIFT_MagKp   0.01
+#define FAST_RATE 0.001
+
+float M1,M2,M3,M4,M5,M6,M7,M8,M9;
+vector3_t Gyroerror = {0,0,0};
+
+quaternion_t AHRS2(vector3_t Gyro, vector3_t Accel, vector3_t Mag)
 {
 
 // ****************************************************************************
@@ -30,6 +38,10 @@ quaternion_t AHRS(vector3_t Gyro, vector3_t Accel, vector3_t Mag)
 
 // Compose the Measured Rotation Matrix from Accelerometer and Magnetometer Vectors
 // Global Z axis in Local Frame/ RM Third Row - Accelerometer (already normalised)
+
+float RM7,RM8,RM9,RM6,RM5,RM4,RM1,RM2,RM3;
+
+float q1,q2,q3,q4;
 
 RM7 = Accel.x;
 RM8 = Accel.y;
@@ -58,9 +70,9 @@ RM3 = RM3/temp;
 
 // CREATE THE ESTIMATED ROTATION MATRIX //
 // The measured quaternion updates the estimated quaternion via the Gyro.*.error terms applied to the gyros
-float g1 = (Gyro.x - Gyro.X.error*DRIFT_AccelKp)/(float)FAST_RATE;
-float g2 = (Gyro.y - Gyro.Y.error*DRIFT_AccelKp)/(float)FAST_RATE;
-float g3 = (Gyro.z - Gyro.Z.error*DRIFT_MagKp)/(float)FAST_RATE;
+float g1 = (Gyro.x - Gyroerror.x*DRIFT_AccelKp)/(float)FAST_RATE;
+float g2 = (Gyro.y - Gyroerror.y*DRIFT_AccelKp)/(float)FAST_RATE;
+float g3 = (Gyro.z - Gyroerror.z*DRIFT_MagKp)/(float)FAST_RATE;
 
 // Increment the Estimated Rotation Matrix by the Gyro Rate
 //First row is M1, M2, M3 - World X axis in local frame
@@ -79,7 +91,7 @@ M1 = M1 - M4*(MX_dot_MY/2);
 M2 = M2 - M5*(MX_dot_MY/2);
 M3 = M3 - M6*(MX_dot_MY/2);
 
-float sumsqu = finvSqrt(M1*M1 + M2*M2 + M3*M3);
+float sumsqu = invSqrt(M1*M1 + M2*M2 + M3*M3);
 M1 = M1*sumsqu;
 M2 = M2*sumsqu;
 M3 = M3*sumsqu;
@@ -88,7 +100,7 @@ M4 = M4 - M1*(MX_dot_MY/2);
 M5 = M5 - M2*(MX_dot_MY/2);
 M6 = M6 - M3*(MX_dot_MY/2);
 
-sumsqu = finvSqrt(M4*M4 + M5*M5 + M6*M6);
+sumsqu = invSqrt(M4*M4 + M5*M5 + M6*M6);
 M4 = M4*sumsqu;
 M5 = M5*sumsqu;
 M6 = M6*sumsqu;
@@ -98,7 +110,7 @@ M7 = M2*M6 - M3*M5;
 M8 = M3*M4 - M1*M6;
 M9 = M1*M5 - M2*M4;
 
-sumsqu = finvSqrt(M7*M7 + M8*M8 + M9*M9);
+sumsqu = invSqrt(M7*M7 + M8*M8 + M9*M9);
 M7 = M7*sumsqu;
 M8 = M8*sumsqu;
 M9 = M9*sumsqu;
@@ -106,11 +118,11 @@ M9 = M9*sumsqu;
 // CALCULATE GYRO BIAS //
 // The gyro errores adjust the estimated matrix towards the measured rotation matrix.
 // Use x and y components of the Cross Product between the z vector from each Rotation Matrix for Gyro Biases
-Gyro.X.error = RM9*M8 - RM8*M9;
-Gyro.Y.error = RM7*M9 - RM9*M7;
+Gyroerror.x = RM9*M8 - RM8*M9;
+Gyroerror.y = RM7*M9 - RM9*M7;
 
 // Use z component of the cross product between the x vector from each rotation matrix to create the Z gyro error
-Gyro.Z.error = RM2*M1 - RM1*M2;
+Gyroerror.z = RM2*M1 - RM1*M2;
 
 
 // CALCULATE THE ESTIMATED QUATERNION //
@@ -145,18 +157,28 @@ q3 = (M8 + M6 ) / s;
 q4 = 0.25f * s;
 }
 }	
+
 q1 = q1;
 q2 = -q2;
 q3 = -q3;
 q4 = -q4;
 
 // renormalise using fast inverse sq12re root
-sumsqu = finvSqrt(q1*q1 + q2*q2 + q3*q3 + q4*q4);
+sumsqu = invSqrt(q1*q1 + q2*q2 + q3*q3 + q4*q4);
 q1 *= sumsqu;
 q2 *= sumsqu;
 q3 *= sumsqu;
 q4 *= sumsqu;
 
 
+quaternion_t q;
+q.w = q1;
+q.x = q2;
+q.y = q3;
+q.z = q4;
+
+q = perlmutt(q,myPar.test_out.sValue);
+
+return q;
 
 }

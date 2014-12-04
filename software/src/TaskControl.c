@@ -43,6 +43,7 @@
 #include "modules/quaternions/quaternions.h"
 #include "modules/quaternions/MadgwickAHRS.h"
 #include "modules/quaternions/MahonyAHRS.h"
+#include "modules/quaternions/AHRS2.h" // in test !
 #include "modules/emergency.h"
 #include "modules/magnetics_calibration.h"
 #include "modules/governing.h"
@@ -274,14 +275,21 @@ void TaskControl(void)
 		#endif
 
 		// calculate actual attitude estimation
-		if(myPar.madgwick.sValue == 1)
+		switch(myPar.madgwick.sValue)
 		{
-			q_ActualOrientation = MadgwickAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,v_acc_frame_mpss.x,v_acc_frame_mpss.y,v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
+			case 0:
+				q_ActualOrientation = MahonyAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,v_acc_frame_mpss.x,v_acc_frame_mpss.y,v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
+				break;
+			case 1:
+				q_ActualOrientation = MadgwickAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,v_acc_frame_mpss.x,v_acc_frame_mpss.y,v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
+				break;
+			case 2:
+				q_ActualOrientation = AHRS2(v_gyro_radps,v_acc_frame_mpss,v_mag);
+				break;
+			default:
+				emstop(77);
 		}
-		else
-		{
-			q_ActualOrientation = MahonyAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,v_acc_frame_mpss.x,v_acc_frame_mpss.y,v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
-		}
+		
 		
 		// calculate normalized acceleration	
 		v_acc_global_mpss = quaternion_rotateVector(v_acc_frame_mpss,quaternion_inverse(q_ActualOrientation));
@@ -384,7 +392,9 @@ void TaskControl(void)
 			fSetHeading_rad += (float)cmd_yaw*0.00001; // magic number (try)
 		
 			// add rotation to target
-			fSetHeading_rad += fHeadingDiff_rad*0.1; // fixme limit to a certain rate!
+			#if SIMULATION != 1
+				fSetHeading_rad += fHeadingDiff_rad*0.1; // fixme limit to a certain rate!
+			#endif
 		
 			// limit rotation
 			float fDiffheading_rad = rectify_rad(fActHeading_rad - fSetHeading_rad);
@@ -765,12 +775,7 @@ void TaskControl(void)
 				TXQuaternions.qActAtt[0]= q_ActualOrientation.w;
 				TXQuaternions.qActAtt[1]= q_ActualOrientation.x;
 				TXQuaternions.qActAtt[2]= q_ActualOrientation.y;
-				TXQuaternions.qActAtt[3]= q_ActualOrientation.z;	
-
-				TXQuaternions.qSet[0]= q_set_global.w;
-				TXQuaternions.qSet[1]= q_set_global.x;
-				TXQuaternions.qSet[2]= q_set_global.y;
-				TXQuaternions.qSet[3]= q_set_global.z;
+				TXQuaternions.qActAtt[3]= q_ActualOrientation.z;
 				
 				/*float dx,dy,dz;
 				quaternion_to_euler(q_ActualOrientation,&dx,&dy,&dz);
@@ -778,19 +783,29 @@ void TaskControl(void)
 				qtest = quaternion_from_euler(dx,dy,dz);*/
 				
 				#if SIMULATION == 1
+
 				quaternion_t q_simulated;
 				q_simulated = SimGetorientation();				
+				TXQuaternions.qSet[0]= q_simulated.w;// q_set_global.w;
+				TXQuaternions.qSet[1]= q_simulated.x;//q_set_global.x;
+				TXQuaternions.qSet[2]= q_simulated.y;//q_set_global.y;
+				TXQuaternions.qSet[3]= q_simulated.z;//q_set_global.z;
+				
 				TXQuaternions.qSim[0]= q_simulated.w;
 				TXQuaternions.qSim[1]= q_simulated.x;
 				TXQuaternions.qSim[2]= q_simulated.y;
 				TXQuaternions.qSim[3]= q_simulated.z;
 				#else
-				TXQuaternions.qSim[0]= 1;
-				TXQuaternions.qSim[1]= 0;
-				TXQuaternions.qSim[2]= 0;
-				TXQuaternions.qSim[3]= 0;
+				TXQuaternions.qSet[0]= q_set_global.w;
+				TXQuaternions.qSet[1]= q_set_global.x;
+				TXQuaternions.qSet[2]= q_set_global.y;
+				TXQuaternions.qSet[3]= q_set_global.z;
+				
+				TXQuaternions.qSim[0]= q_ActualOrientation.w;
+				TXQuaternions.qSim[1]= q_ActualOrientation.x;
+				TXQuaternions.qSim[2]= q_ActualOrientation.y;
+				TXQuaternions.qSim[3]= q_ActualOrientation.z;
 				#endif
-			
 			
 				TXQuaternions.vPos[0] = v_pos_act_m.x;
 				TXQuaternions.vPos[1] = v_pos_act_m.y;

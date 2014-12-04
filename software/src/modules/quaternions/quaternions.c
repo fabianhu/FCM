@@ -24,8 +24,6 @@
 #include "../vector.h"
 #include "quaternions.h"
 
-quaternion_t perlmutt(quaternion_t qi, int n);
-
 int debug_perlmutti=0;
  
 // all angles are in radians.
@@ -232,17 +230,23 @@ quaternion_t quaternion_nlerp(quaternion_t qa, quaternion_t qb, float t)
 }
 
 
-void quaternion_copy(quaternion_t* qm, quaternion_t* qa)
+void quaternion_copy(quaternion_t* qtrg, quaternion_t* qsrc)
 {
-	qm->w = qa->w;
-	qm->x = qa->x;
-	qm->y = qa->y;
-	qm->z = qa->z;
+	qtrg->w = qsrc->w;
+	qtrg->x = qsrc->x;
+	qtrg->y = qsrc->y;
+	qtrg->z = qsrc->z;
 }
 
 
 vector3_t quaternion_rotateVector(vector3_t _V, quaternion_t _Q)
 {
+
+//  	if(_Q.w <0)
+//  	{
+// 	 	quaternion_flip(&_Q);
+//  	}
+
 // 	quaternion_t _Q;
 // 	_Q = perlmutt(_Qi,debug_perlmutti);
 	
