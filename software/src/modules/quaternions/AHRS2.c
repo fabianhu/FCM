@@ -18,9 +18,9 @@ works: unknown
 #include "../menu/menu_variant.h"
 #include "AHRS2.h"
 
-#define DRIFT_AccelKp 0.1
-#define DRIFT_MagKp   0.1
-#define FAST_RATE 0.01
+#define DRIFT_AccelKp 0.01
+#define DRIFT_MagKp   0.01
+#define FAST_RATE 0.001
 
 float M1,M2,M3,M4,M5,M6,M7,M8,M9;
 vector3_t Gyroerror = {0,0,0};

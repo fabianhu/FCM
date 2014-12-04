@@ -35,7 +35,7 @@
 quaternion_t sim_orientation= {1,0,0,0};  
 vector3_t sim_rate_radps= {0,0,0}; // rotational speed in rad/s
 vector3_t sim_pos_m= {0,0,0}; // world position
-vector3_t sim_vel_mps= {0,0,0}; // world velocity
+vector3_t sim_vel_world_mps= {0,0,0}; // world velocity
 float sim_accel_mpss = 0; // acceleration by thrust (filtered,therefore static)
 vector3_t sim_accel_frame_mpss = {0,0,-9.81f};
 vector3_t sim_magneto_frame_nT = {0,0,0};
@@ -60,7 +60,7 @@ vector3_t SimGetPos_m(void)
 
 vector3_t SimGetVel_m(void)
 {
-	return sim_vel_mps;
+	return sim_vel_world_mps;
 }
 
 vector3_t SimGetMag(void)
@@ -88,46 +88,53 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	thrust_mpss *= 9.81*2.5; // max acceleration is 2g
 	Filter_f(sim_accel_mpss, thrust_mpss, SIM_POWERFILTER);
 	
-	//create acceleration vector
+	quaternion_t q;
+	quaternion_copy(&q,&sim_orientation);
+ 	if(q.w <0)
+ 	{
+ 		quaternion_flip(&q);
+ 	}	
+	quaternion_t qi = quaternion_inverse(sim_orientation);
+	if(qi.w <0)
+	{
+		quaternion_flip(&qi);
+	}	
+	
+	vector3_t vel_vehicle;
+	// rotate into vehicle orientation
+	vel_vehicle = quaternion_rotateVector(sim_vel_world_mps,qi); // rotate into vehicle orientation
+	
+	//create vehicle acceleration vector
 	vector3_t vAccel_mpss;
 	vAccel_mpss.x = 0;
 	vAccel_mpss.y = 0;
 	vAccel_mpss.z = thrust_mpss;
-	vAccel_mpss = quaternion_rotateVector(vAccel_mpss,quaternion_inverse(sim_orientation)); // rotate into world orientation
+	
+	//reduce the velocity by air resistance
+	// F = r * cw * A * v^2 /2
+	// r = air density in kg/m³
+	// A = area in m²	
+	// F = m*a
+	// a = F / m
+	vAccel_mpss.x -= signf(vel_vehicle.x) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (vel_vehicle.x*vel_vehicle.x)* 0.5) / SIM_COPTERMASS; 
+	vAccel_mpss.y -= signf(vel_vehicle.y) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (vel_vehicle.y*vel_vehicle.y)* 0.5) / SIM_COPTERMASS;
+	vAccel_mpss.z -= signf(vel_vehicle.z) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREATOP* (vel_vehicle.z*vel_vehicle.z)* 0.5) / SIM_COPTERMASS; 
+
+	sim_accel_frame_mpss = vector_copy(&vAccel_mpss);// simulation output
+	
+	// rotate into world orientation
+
+	
+	vAccel_mpss = quaternion_rotateVector(vAccel_mpss,qi); 
 	vAccel_mpss.z -=9.81; // subtract earths acceleration.
 	// in steady state, the earths acceleration and the "o_thrust" acceleration neutralize to 0.
 	
-	//reduce the velocity by kind of air resistance
-	// F = r * cw * A * v^2 /2
-	// r = air density in kg/m³
-	// A = area in m²
-	
-	// F = m*a
-	// a = F / m
-
-	vector3_t vAccAir_mpss;
-	// do not forget tho keep the sign, as it gets lost during squaring the speed.
-	vAccAir_mpss.x = -signf(sim_vel_mps.x) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (sim_vel_mps.x*sim_vel_mps.x)* 0.5) / SIM_COPTERMASS; 
-	vAccAir_mpss.y = -signf(sim_vel_mps.y) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (sim_vel_mps.y*sim_vel_mps.y)* 0.5) / SIM_COPTERMASS;
-	vAccAir_mpss.z = -signf(sim_vel_mps.z) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (sim_vel_mps.z*sim_vel_mps.z)* 0.5) / SIM_COPTERMASS; 
-
-	// todo: calculate above in vehicle orientation to account for different air resistance in (xy) and z.
-
-	vAccel_mpss = vector_add(&vAccel_mpss,&vAccAir_mpss); // add to total acceleration
-	
-	sim_accel_frame_mpss = vector_copy(&vAccel_mpss);
-	sim_accel_frame_mpss.x = -sim_accel_frame_mpss.x; //invert own, as we want to see the "experienced" acc.
-	sim_accel_frame_mpss.y = -sim_accel_frame_mpss.y; //invert own, as we want to see the "experienced" acc.
-	sim_accel_frame_mpss.z = -sim_accel_frame_mpss.z +9.81  ; // subtract earths acceleration and invert own, as we want to see the "experienced" acc.
-	sim_accel_frame_mpss =  quaternion_rotateVector(sim_accel_frame_mpss,sim_orientation); // simulation output
-	
-	// add delta-v caused by acceleration to actual velocity reduce the velocity by kind of air resistance)
 	vector3_t vDv = vector_scale(&vAccel_mpss,SIM_DT);
 	
-	sim_vel_mps = vector_add(&sim_vel_mps,&vDv);
+	sim_vel_world_mps = vector_add(&sim_vel_world_mps,&vDv);
 	
 	//add distance caused by v to actual pos
-	vector3_t vTemp2 = vector_scale(&sim_vel_mps,SIM_DT);
+	vector3_t vTemp2 = vector_scale(&sim_vel_world_mps,SIM_DT);
 	sim_pos_m = vector_add(&sim_pos_m, &vTemp2);
 	
 	// add influence of governor
@@ -140,7 +147,6 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	qdiff = quaternion_from_euler(sim_rate_radps.x*SIM_DT,sim_rate_radps.y*SIM_DT,sim_rate_radps.z*SIM_DT);
 	sim_orientation = quaternion_multiply_flip_norm(sim_orientation,qdiff);
 		
-	
 	if(sim_pos_m.z < 0.0)
 	{
 		SimReset();
@@ -166,9 +172,9 @@ void SimReset(void) //reset the simulation to 0
 	sim_pos_m.x= 0;
 	sim_pos_m.y= 0;
 	sim_pos_m.z= 0;	
-	sim_vel_mps.x= 0;
-	sim_vel_mps.y= 0;
-	sim_vel_mps.z= 0;
+	sim_vel_world_mps.x= 0;
+	sim_vel_world_mps.y= 0;
+	sim_vel_world_mps.z= 0;
 	sim_accel_mpss = 0;
 
 	sim_rate_radps.x = 0;

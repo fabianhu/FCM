@@ -103,10 +103,12 @@
     <node text="*Diag mode" imageindex="4" tagType="action" tagID="7" tagInfo="act_diag" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="Display diag page (press enter to leave)" />
     <node text="Test" imageindex="0" tagType="normal" tagID="8" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
       <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="93" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
-      <node text="Madgwick" imageindex="3" tagType="parameter" tagID="94" tagInfo="madgwick" tagParUpper="1" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      <node text="Madgwick" imageindex="3" tagType="parameter" tagID="94" tagInfo="madgwick" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
       <node text="alpha Madg" imageindex="3" tagType="parameter" tagID="95" tagInfo="a_madg" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="x 0.01 --&gt; 100 = 1.0 (10)" />
       <node text="prop Mah" imageindex="3" tagType="parameter" tagID="96" tagInfo="P_mahony" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="x 0.01 --&gt; 100 = 1.0 (50)" />
       <node text="integr Mah" imageindex="3" tagType="parameter" tagID="97" tagInfo="I_mahony" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="x 0.01 --&gt; 100 = 1.0 (10)" />
+      <node text="test in" imageindex="3" tagType="parameter" tagID="98" tagInfo="test_in" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      <node text="test out" imageindex="3" tagType="parameter" tagID="99" tagInfo="test_out" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="" />
     </node>
   </node>
 </TreeView>

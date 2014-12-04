@@ -807,7 +807,6 @@ void TaskControl(void)
 				TXQuaternions.qSim[3]= q_ActualOrientation.z;
 				#endif
 			
-			
 				TXQuaternions.vPos[0] = v_pos_act_m.x;
 				TXQuaternions.vPos[1] = v_pos_act_m.y;
 				TXQuaternions.vPos[2] = v_pos_act_m.z;

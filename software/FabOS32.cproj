@@ -1019,6 +1019,21 @@
     <Compile Include="src\modules\mavlink\protocol.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\modules\quaternions\AHRS2.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="src\modules\quaternions\IMU.c">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="src\modules\quaternions\AHRS2.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\modules\quaternions\AHRS3.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\modules\quaternions\AHRS3.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\modules\SIM.c">
       <SubType>compile</SubType>
     </Compile>
