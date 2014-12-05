@@ -79,9 +79,9 @@ void menue_sendpar(uint8_t item);
 //******** START OF AUTO-GENERATED HEADER DO NOT EDIT!!! *********
 //********          Generated with Treebuilder.exe       *********
 
- #define	MENUESIZE	100	// number of menu itmes (array size)
+ #define	MENUESIZE	121	// number of menu itmes (array size)
  #define	MAX_ITEM_NAME_CHARLENGTH	17	// max name length
- #define	MENUGENUID	3613	// Generation UID
+ #define	MENUGENUID	41325	// Generation UID
 // Enum definitions
 typedef enum
 {
@@ -164,13 +164,24 @@ typedef struct myPar_tag
       Parameter_t a_madg;	// x 0.01 --> 100 = 1.0 (10)
       Parameter_t P_mahony;	// x 0.01 --> 100 = 1.0 (50)
       Parameter_t I_mahony;	// x 0.01 --> 100 = 1.0 (10)
-      Parameter_t test_in;	// 
-      Parameter_t test_out;	// 
+      Parameter_t test_P;	// 
+      Parameter_t test_I;	// 
+      Parameter_t test_D;	// 
+      Parameter_t wind_freq;	// 
+      Parameter_t wind_ampl;	// 
+      Parameter_t mag_mis_freq;	// 
+      Parameter_t mag_mis_ampl;	// 
+      Parameter_t gyro_freq;	// 
+      Parameter_t gyro_ampl;	// 
+      Parameter_t accel_freq;	// 
+      Parameter_t accel_ampl;	// 
+      Parameter_t magneto_freq;	// 
+      Parameter_t magneto_ampl;	// 
 } myPar_t;
 
 extern myPar_t myPar;
 
- #define	MENUE_PARCOUNT	70	// number of parameters
+ #define	MENUE_PARCOUNT	81	// number of parameters
 
 // Action Prototypes
 void actSwashasPot (void);	// Use Potis as PID settings for Swash (x&y)
@@ -275,8 +286,24 @@ char	txtMADGWICK[] 	PROGMEM="Madgwick"; \
 char	txtALPHAMADG[] 	PROGMEM="alpha Madg"; \
 char	txtPROPMAH[] 	PROGMEM="prop Mah"; \
 char	txtINTEGRMAH[] 	PROGMEM="integr Mah"; \
-char	txtTESTIN[] 	PROGMEM="test in"; \
-char	txtTESTOUT[] 	PROGMEM="test out"; \
+char	txtTESTP[] 	PROGMEM="test P"; \
+char	txtTESTI[] 	PROGMEM="test I"; \
+char	txtTESTD[] 	PROGMEM="test D"; \
+char	txtWIND[] 	PROGMEM="wind"; \
+char	txtMAGMIS[] 	PROGMEM="mag_mis"; \
+char	txtGYRO[] 	PROGMEM="gyro"; \
+char	txtACCEL[] 	PROGMEM="accel"; \
+char	txtMAGNETO[] 	PROGMEM="magneto"; \
+char	txtWINDFREQ[] 	PROGMEM="wind_freq"; \
+char	txtWINDAMPL[] 	PROGMEM="wind_ampl"; \
+char	txtMAGMISFREQ[] 	PROGMEM="mag_mis_freq"; \
+char	txtMAGMISAMPL[] 	PROGMEM="mag_mis_ampl"; \
+char	txtGYROFREQ[] 	PROGMEM="gyro_freq"; \
+char	txtGYROAMPL[] 	PROGMEM="gyro_ampl"; \
+char	txtACCELFREQ[] 	PROGMEM="accel_freq"; \
+char	txtACCELAMPL[] 	PROGMEM="accel_ampl"; \
+char	txtMAGNETOFREQ[] 	PROGMEM="magneto_freq"; \
+char	txtMAGNETOAMPL[] 	PROGMEM="magneto_ampl"; \
 
 #endif
 
@@ -352,8 +379,19 @@ myPar_t myPar = { \
 /*a_madg*/ {	0, 1, 100, 1, none}, \
 /*P_mahony*/ {	0, 1, 100, 1, none}, \
 /*I_mahony*/ {	0, 1, 100, 1, none}, \
-/*test_in*/ {	0, 1, 100, 1, none}, \
-/*test_out*/ {	0, 1, 100, 1, none}, \
+/*test_P*/ {	0, 1, 100, 1, none}, \
+/*test_I*/ {	0, 1, 100, 1, none}, \
+/*test_D*/ {	0, 1, 100, 1, none}, \
+/*wind_freq*/ {	0, 0, 100, 5, none}, \
+/*wind_ampl*/ {	0, 0, 100, 5, none}, \
+/*mag_mis_freq*/ {	0, 0, 100, 5, none}, \
+/*mag_mis_ampl*/ {	0, 0, 100, 5, none}, \
+/*gyro_freq*/ {	0, 0, 100, 5, none}, \
+/*gyro_ampl*/ {	0, 0, 100, 5, none}, \
+/*accel_freq*/ {	0, 0, 100, 5, none}, \
+/*accel_ampl*/ {	0, 0, 100, 5, none}, \
+/*magneto_freq*/ {	0, 0, 100, 5, none}, \
+/*magneto_ampl*/ {	0, 0, 100, 5, none}, \
 };
 #endif
 
@@ -459,8 +497,29 @@ MenuItem_t m_items[MENUESIZE] = { \
 	/* 95*/	{txtALPHAMADG,	 0,	 &myPar.a_madg,	0,	8,	FLASH}, \
 	/* 96*/	{txtPROPMAH,	 0,	 &myPar.P_mahony,	0,	8,	FLASH}, \
 	/* 97*/	{txtINTEGRMAH,	 0,	 &myPar.I_mahony,	0,	8,	FLASH}, \
-	/* 98*/	{txtTESTIN,	 0,	 &myPar.test_in,	0,	8,	FLASH}, \
-	/* 99*/	{txtTESTOUT,	 0,	 &myPar.test_out,	0,	8,	FLASH}, \
+	/* 98*/	{txtTESTP,	 0,	 &myPar.test_P,	0,	8,	FLASH}, \
+	/* 99*/	{txtTESTI,	 0,	 &myPar.test_I,	0,	8,	FLASH}, \
+	/* 100*/	{txtTESTD,	 0,	 &myPar.test_D,	0,	8,	FLASH}, \
+	/* 101*/	{txtWIND,	 0,	 0,	106,	8,	FLASH}, \
+	/* 102*/	{txtMAGMIS,	 0,	 0,	109,	8,	FLASH}, \
+	/* 103*/	{txtGYRO,	 0,	 0,	112,	8,	FLASH}, \
+	/* 104*/	{txtACCEL,	 0,	 0,	115,	8,	FLASH}, \
+	/* 105*/	{txtMAGNETO,	 0,	 0,	118,	8,	FLASH}, \
+	/* 106*/	{txtWINDFREQ,	 0,	 &myPar.wind_freq,	0,	101,	FLASH}, \
+	/* 107*/	{txtWINDAMPL,	 0,	 &myPar.wind_ampl,	0,	101,	FLASH}, \
+	/* 108*/	{txtBACK,	 0,	 0,	101,	101,	FLASH}, \
+	/* 109*/	{txtMAGMISFREQ,	 0,	 &myPar.mag_mis_freq,	0,	102,	FLASH}, \
+	/* 110*/	{txtMAGMISAMPL,	 0,	 &myPar.mag_mis_ampl,	0,	102,	FLASH}, \
+	/* 111*/	{txtBACK,	 0,	 0,	102,	102,	FLASH}, \
+	/* 112*/	{txtGYROFREQ,	 0,	 &myPar.gyro_freq,	0,	103,	FLASH}, \
+	/* 113*/	{txtGYROAMPL,	 0,	 &myPar.gyro_ampl,	0,	103,	FLASH}, \
+	/* 114*/	{txtBACK,	 0,	 0,	103,	103,	FLASH}, \
+	/* 115*/	{txtACCELFREQ,	 0,	 &myPar.accel_freq,	0,	104,	FLASH}, \
+	/* 116*/	{txtACCELAMPL,	 0,	 &myPar.accel_ampl,	0,	104,	FLASH}, \
+	/* 117*/	{txtBACK,	 0,	 0,	104,	104,	FLASH}, \
+	/* 118*/	{txtMAGNETOFREQ,	 0,	 &myPar.magneto_freq,	0,	105,	FLASH}, \
+	/* 119*/	{txtMAGNETOAMPL,	 0,	 &myPar.magneto_ampl,	0,	105,	FLASH}, \
+	/* 120*/	{txtBACK,	 0,	 0,	105,	105,	FLASH}, \
 };
 #endif
 

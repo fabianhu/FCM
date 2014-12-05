@@ -30,10 +30,15 @@
 #include "modules/vector.h"
 #include "modules/quaternions/quaternions.h"
 #include "modules/governing.h"
+#include "../menu/menu.h"
+#include "../menu/menu_variant.h"
+#include "../FabOS_config.h"
+#include "../FabOS/FabOS.h"
 #include "SIM.h"
 
 quaternion_t sim_orientation= {1,0,0,0};  
 vector3_t sim_rate_radps= {0,0,0}; // rotational speed in rad/s
+vector3_t sim_rate_radps_dist= {0,0,0}; // rotational speed in rad/s
 vector3_t sim_pos_m= {0,0,0}; // world position
 vector3_t sim_vel_world_mps= {0,0,0}; // world velocity
 float sim_accel_mpss = 0; // acceleration by thrust (filtered,therefore static)
@@ -82,6 +87,11 @@ float signf(float s)
 // one simulation step
 void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the rotational command + thrust into simulation (values +- 4000 or 0..8000 for thrust)
 {
+	static vector3_t DisturbAngleGyro;
+	static vector3_t DisturbAngleAcc;
+	static vector3_t DisturbAngleMag;
+	static vector3_t DisturbAngleWind;
+	
 	// calc acceleration caused by trust:
 	float thrust_mpss = o_thrust;
 	thrust_mpss /= 8000.0;
@@ -119,13 +129,15 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	vAccel_mpss.x -= signf(vel_vehicle.x) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (vel_vehicle.x*vel_vehicle.x)* 0.5) / SIM_COPTERMASS; 
 	vAccel_mpss.y -= signf(vel_vehicle.y) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (vel_vehicle.y*vel_vehicle.y)* 0.5) / SIM_COPTERMASS;
 	vAccel_mpss.z -= signf(vel_vehicle.z) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREATOP* (vel_vehicle.z*vel_vehicle.z)* 0.5) / SIM_COPTERMASS; 
-
+OS_DISABLEALLINTERRUPTS
 	sim_accel_frame_mpss = vector_copy(&vAccel_mpss);// simulation output
-	
+	SimDisturbVector(&sim_accel_frame_mpss,&DisturbAngleAcc,myPar.accel_freq.sValue, myPar.accel_ampl.sValue/10.0f); // add noise only for simulated measurement
+OS_ENABLEALLINTERRUPTS	
 	// rotate into world orientation
-
-	
-	vAccel_mpss = quaternion_rotateVector(vAccel_mpss,qi); 
+	vAccel_mpss = quaternion_rotateVector(vAccel_mpss,qi);
+	static vector3_t accel_wind;
+	SimDisturbVector(&accel_wind,&DisturbAngleWind,myPar.accel_freq.sValue, myPar.accel_ampl.sValue/10.0f); // add wind
+	 
 	vAccel_mpss.z -=9.81; // subtract earths acceleration.
 	// in steady state, the earths acceleration and the "o_thrust" acceleration neutralize to 0.
 	
@@ -142,6 +154,9 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	sim_rate_radps.y = Filter_f(sim_rate_radps.y,(float)oy*SIM_RATEFACT,SIM_RATEFLT);
 	sim_rate_radps.z = Filter_f(sim_rate_radps.z,(float)oz*SIM_RATEFACT,SIM_RATEFLT); // fixme different pars for yaw !!!
 
+	sim_rate_radps_dist = vector_copy(&sim_rate_radps);
+	SimDisturbVector(&sim_rate_radps_dist,&DisturbAngleGyro,myPar.gyro_freq.sValue, myPar.gyro_ampl.sValue/10.0f); // add noise
+
 	// rotate the actual rotation by a tiny amount
 	quaternion_t qdiff;
 	qdiff = quaternion_from_euler(sim_rate_radps.x*SIM_DT,sim_rate_radps.y*SIM_DT,sim_rate_radps.z*SIM_DT);
@@ -157,7 +172,9 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	mag_world.x = SIM_MAGDEFAULT_X;
 	mag_world.y = SIM_MAGDEFAULT_Y;
 	mag_world.z = SIM_MAGDEFAULT_Z;
-	sim_magneto_frame_nT = quaternion_rotateVector(mag_world,sim_orientation); // simulation output rotated into world frame
+	mag_world = quaternion_rotateVector(mag_world,sim_orientation); // simulation output rotated into world frame
+	SimDisturbVector(&mag_world,&DisturbAngleMag,myPar.wind_freq.sValue/100.0f, myPar.magneto_ampl.sValue/10.0f); // add noise
+	sim_magneto_frame_nT = vector_copy( &mag_world);
 	
 }
 
@@ -189,4 +206,45 @@ void SimReset(void) //reset the simulation to 0
 	sim_magneto_frame_nT.y = SIM_MAGDEFAULT_Y;
 	sim_magneto_frame_nT.z = SIM_MAGDEFAULT_Z;
 
+}
+
+void SimDisturbStep(float* value, float* angle, float frequency_hz, float amplitude)
+{
+	if(frequency_hz <= 0.0f) return;
+		
+	*angle += (2*M_PI)/(frequency_hz*SIM_DT);
+	if(*angle > 2*M_PI)
+	{
+		*angle = 0.0f;
+	}
+	
+	*value += (sinf(*angle)*amplitude);
+}
+
+
+void SimDisturbVector(vector3_t *value, vector3_t *angle, float frequency_hz, float amplitude)
+{
+	if(frequency_hz <= 0.0f) return;
+	
+	angle->x += (2*M_PI)/(frequency_hz*SIM_DT);
+	if(angle->x > 2*M_PI)
+	{
+		angle->x = 0.0f;
+	}	
+	
+	angle->y += (2*M_PI)/(frequency_hz*SIM_DT);
+	if(angle->y > 2*M_PI+M_PI_2)
+	{
+		angle->y = M_PI_2;
+	}
+	
+	angle->z += (2*M_PI)/(frequency_hz*SIM_DT);
+	if(angle->z > 2*M_PI+M_PI_4)
+	{
+		angle->z = M_PI_4;
+	}
+	
+	value->x += (sinf(angle->x)*amplitude);
+	value->y += (sinf(angle->y)*amplitude);
+	value->z += (sinf(angle->z)*amplitude);
 }

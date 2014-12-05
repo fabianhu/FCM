@@ -107,8 +107,34 @@
       <node text="alpha Madg" imageindex="3" tagType="parameter" tagID="95" tagInfo="a_madg" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="x 0.01 --&gt; 100 = 1.0 (10)" />
       <node text="prop Mah" imageindex="3" tagType="parameter" tagID="96" tagInfo="P_mahony" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="x 0.01 --&gt; 100 = 1.0 (50)" />
       <node text="integr Mah" imageindex="3" tagType="parameter" tagID="97" tagInfo="I_mahony" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="x 0.01 --&gt; 100 = 1.0 (10)" />
-      <node text="test in" imageindex="3" tagType="parameter" tagID="98" tagInfo="test_in" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="" />
-      <node text="test out" imageindex="3" tagType="parameter" tagID="99" tagInfo="test_out" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      <node text="test P" imageindex="3" tagType="parameter" tagID="98" tagInfo="test_P" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      <node text="test I" imageindex="3" tagType="parameter" tagID="99" tagInfo="test_I" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      <node text="test D" imageindex="3" tagType="parameter" tagID="100" tagInfo="test_D" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      <node text="wind" imageindex="0" tagType="normal" tagID="101" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
+        <node text="wind_freq" imageindex="3" tagType="parameter" tagID="106" tagInfo="wind_freq" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="wind_ampl" imageindex="3" tagType="parameter" tagID="107" tagInfo="wind_ampl" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="108" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      </node>
+      <node text="mag_mis" imageindex="0" tagType="normal" tagID="102" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
+        <node text="mag_mis_freq" imageindex="3" tagType="parameter" tagID="109" tagInfo="mag_mis_freq" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="mag_mis_ampl" imageindex="3" tagType="parameter" tagID="110" tagInfo="mag_mis_ampl" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="111" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      </node>
+      <node text="gyro" imageindex="0" tagType="normal" tagID="103" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
+        <node text="gyro_freq" imageindex="3" tagType="parameter" tagID="112" tagInfo="gyro_freq" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="gyro_ampl" imageindex="3" tagType="parameter" tagID="113" tagInfo="gyro_ampl" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="114" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      </node>
+      <node text="accel" imageindex="0" tagType="normal" tagID="104" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
+        <node text="accel_freq" imageindex="3" tagType="parameter" tagID="115" tagInfo="accel_freq" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="accel_ampl" imageindex="3" tagType="parameter" tagID="116" tagInfo="accel_ampl" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="117" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      </node>
+      <node text="magneto" imageindex="0" tagType="normal" tagID="105" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
+        <node text="magneto_freq" imageindex="3" tagType="parameter" tagID="118" tagInfo="magneto_freq" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="magneto_ampl" imageindex="3" tagType="parameter" tagID="119" tagInfo="magneto_ampl" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="120" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      </node>
     </node>
   </node>
 </TreeView>
