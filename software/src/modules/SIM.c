@@ -173,7 +173,14 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	mag_world.x = SIM_MAGDEFAULT_X;
 	mag_world.y = SIM_MAGDEFAULT_Y;
 	mag_world.z = SIM_MAGDEFAULT_Z;
-	mag_world = quaternion_rotateVector(mag_world,sim_orientation); // simulation output rotated into world frame
+	float rotation_disturbance = 0;
+	static float rotation_disturbance_angle = 0;
+	SimDisturbStep(&rotation_disturbance,&rotation_disturbance_angle,(float)myPar.mag_mis_freq.sValue*0.01f,(float)myPar.mag_mis_ampl.sValue*0.06283f); // max disturbance 2Pi
+	
+	quaternion_t rotation = quaternion_from_euler(0,0,rotation_disturbance);
+	rotation = quaternion_multiply_flip_norm(sim_orientation,rotation);
+	
+	mag_world = quaternion_rotateVector(mag_world,rotation); // simulation output rotated into vehicle frame
 	SimDisturbVector(&mag_world,&DisturbAngleMag, (float)myPar.magneto_freq.sValue*0.01, (float)myPar.magneto_ampl.sValue*1000.0f); // add noise
 	sim_magneto_frame_nT = vector_copy( &mag_world);
 	
@@ -211,6 +218,9 @@ void SimReset(void) //reset the simulation to 0
 
 void SimDisturbStep(float* value, float* angle, float frequency_hz, float amplitude)
 {
+	if(frequency_hz <=0.001)
+		return amplitude;
+	
 	*angle += (frequency_hz*SIM_DT)*(2*M_PI);
 	while(*angle > 2*M_PI)
 	{
@@ -223,6 +233,12 @@ void SimDisturbStep(float* value, float* angle, float frequency_hz, float amplit
 
 void SimDisturbVector(vector3_t *value, vector3_t *angle, float frequency_hz, float amplitude)
 {
+	if(frequency_hz <=0.001)
+	{
+		value->x = amplitude;
+		value->y = amplitude;
+		value->z = amplitude;
+	}
 	
 	angle->x += (frequency_hz*SIM_DT)*(2*M_PI);
 	while(angle->x > 2*M_PI)
