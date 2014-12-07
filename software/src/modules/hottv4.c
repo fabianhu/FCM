@@ -629,10 +629,10 @@ void _hott_update_gps_msg() {
 	
 	
 	// update GPS telemetry data
-	hott_gps_msg->msl_altitude_H = (gps_dataset.altitude + 500) >> 8;  //meters above sea level -500	
-	hott_gps_msg->msl_altitude_L = (gps_dataset.altitude + 500) & 0xff;  
+	hott_gps_msg->msl_altitude_H = ((int32_t)gps_dataset.altitude + 500) >> 8;  //meters above sea level -500	
+	hott_gps_msg->msl_altitude_L = ((int32_t)gps_dataset.altitude + 500) & 0xff;  
 
-	uint16_t gpsspeed = gps_dataset.ground_speed;
+	uint16_t gpsspeed = gps_dataset.ground_speed_mps/3.6;
 	hott_gps_msg->gps_speed_H = gpsspeed >> 8;
 	hott_gps_msg->gps_speed_L = gpsspeed & 0xff;
 

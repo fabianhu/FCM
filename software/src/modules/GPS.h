@@ -38,52 +38,53 @@ typedef struct {
   uint8_t    numsats:4;
 } GPS_STATUS_REGISTER;
 
-typedef struct {
- uint8_t     poshold:1;
- uint8_t     resume:1;
- uint8_t     set_wp:1;
- uint8_t     activate_wp:1;
- uint8_t     wp:4;
-} GPS_COMMAND_REGISTER;
+// typedef struct {
+//  uint8_t     poshold:1;
+//  uint8_t     resume:1;
+//  uint8_t     set_wp:1;
+//  uint8_t     activate_wp:1;
+//  uint8_t     wp:4;
+// } GPS_COMMAND_REGISTER;
 
-typedef struct {
- uint8_t     active_wp:4;
- uint8_t     pervious_wp:4;
-} WAYPOINT_REGISTER;
+// typedef struct {
+//  uint8_t     active_wp:4;
+//  uint8_t     pervious_wp:4;
+// } WAYPOINT_REGISTER;
 
 typedef struct {
   int32_t      lat;            //degree*10 000 000
   int32_t      lon;            //degree*10 000 000
 } gps_coordinates_t;
 
-typedef struct {
-  uint8_t   wp_reach_distance;		//If we are within this distance (in meters) then assumed that the waypoint is reached. Default value = 2m
-  uint8_t   reserved;				//reserved for future use
-} GPS_nav_par_t;
+// typedef struct {
+//   uint8_t   wp_reach_distance;		//If we are within this distance (in meters) then assumed that the waypoint is reached. Default value = 2m
+//   uint8_t   reserved;				//reserved for future use
+// } GPS_nav_par_t;
 
-typedef struct {
-  GPS_STATUS_REGISTER       status;            // 0x00  status register
-  GPS_COMMAND_REGISTER      command;           // 0x01  command register
-  WAYPOINT_REGISTER     wp_reg;            // 0x06  active waypoint and pervious waypoint (good for cross track error calculation)
-  uint16_t              ground_speed;      // 0x07-0x08 ground speed from gps km/h
-  int16_t               altitude;          // 0x09-0x0a gps altitude
-  uint32_t		time;	           // 0x0b-0x0e UTC Time from GPS
-
-  uint16_t              distance;          // 0x0f-0x10 distance to active coordinates  (calculated)
-  int16_t               direction;         // 0x11-0x12 direction to active coordinates (calculated)   
-  gps_coordinates_t       gps_loc;           // 0x13 current location (8 byte)
-  gps_coordinates_t       gps_wp[16];         // 16 waypoints, WP#0 is RTH position
-  GPS_nav_par_t			wp_nav_par1;		//waypoint navigation parameter register 1
-  uint16_t				ground_course;		// 0x9c GPS ground cource
-} GPS_interface_t;
+// typedef struct {
+//   GPS_STATUS_REGISTER       status;            // 0x00  status register
+//   GPS_COMMAND_REGISTER      command;           // 0x01  command register
+//   WAYPOINT_REGISTER     wp_reg;            // 0x06  active waypoint and pervious waypoint (good for cross track error calculation)
+//   uint16_t              ground_speed;      // 0x07-0x08 ground speed from gps km/h
+//   int16_t               altitude;          // 0x09-0x0a gps altitude
+//   uint32_t		time;	           // 0x0b-0x0e UTC Time from GPS
+// 
+//   uint16_t              distance;          // 0x0f-0x10 distance to active coordinates  (calculated)
+//   int16_t               direction;         // 0x11-0x12 direction to active coordinates (calculated)   
+//   gps_coordinates_t       gps_loc;           // 0x13 current location (8 byte)
+//   gps_coordinates_t       gps_wp[16];         // 16 waypoints, WP#0 is RTH position
+//   GPS_nav_par_t			wp_nav_par1;		//waypoint navigation parameter register 1
+//   uint16_t				ground_course;		// 0x9c GPS ground cource
+// } GPS_interfaceold_t;
 
 typedef struct {
 	float              ground_speed_mps;      // 0x07-0x08 ground speed from gps m/s
 	float			   ground_course_rad;		// 0x9c GPS ground cource
 	float              altitude;          // 0x09-0x0a gps altitude
 	uint32_t		   time;	           // 0x0b-0x0e UTC Time from GPS
+	GPS_STATUS_REGISTER       status;            // 0x00  status register
 	gps_coordinates_t  gps_loc;           // 0x13 current location (8 byte)
-} GPS_interface2_t;
+} GPS_interface_t;
 
 void gps_init(void);
 

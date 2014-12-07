@@ -43,7 +43,6 @@
 #define DIGIT_TO_VAL(_x) (_x - '0')
 
 GPS_interface_t   gps_dataset; 
-GPS_interface2_t   gps_dataset2; // fixme replace all locations by this, the old one contains too many unused stuff
 
 // this is used to offset the shrinking longitude as we go towards the poles
 //static float	GPS_scaleLonDown;
@@ -324,12 +323,12 @@ bool GPS_NMEA_newFrame(char c) {
 			switch(param)
 			{
 				case 7: 
-					gps_dataset.ground_speed = (atof(string)*1.852); //convert knots to km/h (original value here was wrong)
-					gps_dataset2.ground_speed_mps = (atof(string)* 0.51444444444f); // convert knots to m/s
+					//gps_dataset.ground_speed = (atof(string)*1.852); //convert knots to km/h (original value here was wrong)
+					gps_dataset.ground_speed_mps = (atof(string)* 0.51444444444f); // convert knots to m/s
 				break;
 				case 8: 
-					gps_dataset.ground_course = (atof(string)*10); //Convert to degrees *10 (.1 precision)
-					gps_dataset2.ground_course_rad = (atof(string)*0.01745329251994329576923690768489f); // convert to rad
+					//gps_dataset.ground_course = (atof(string)*10); //Convert to degrees *10 (.1 precision)
+					gps_dataset.ground_course_rad = (atof(string)*0.01745329251994329576923690768489f); // convert to rad
 				break;
 			}
 
@@ -377,7 +376,7 @@ void gps_init() {
   for (i=0;i<sizeof(gps_dataset);i++) { *ptr = 0; ptr++;}
 
   //Set up default parameters
-  gps_dataset.wp_nav_par1.wp_reach_distance = 2;			//If we are within 2 meters, consider the waypoint reached
+  //gps_dataset.wp_nav_par1.wp_reach_distance = 2;			//If we are within 2 meters, consider the waypoint reached
     
 
 }
@@ -436,8 +435,8 @@ int GPSgetVelocity(float* pf_speed, float* pf_dir)
 {
 	if(gps_dataset.status.gps3dfix /*|| gps_dataset.status.gps2dfix*/ )
 	{
-		*pf_speed = gps_dataset2.ground_speed_mps;
-		*pf_dir  = gps_dataset2.ground_course_rad;
+		*pf_speed = gps_dataset.ground_speed_mps;
+		*pf_dir  = gps_dataset.ground_course_rad;
 		return 0;
 	}
 	else

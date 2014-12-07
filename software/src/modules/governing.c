@@ -43,7 +43,7 @@ int32_t PID(pid_t* inst, int32_t actual, int32_t set, int32_t kP, int32_t kI, in
 
 	diff = set-actual;
 
-	der = inst->old - actual ;// fixme wrong !!!! not a good result, if setpoint changes fast.
+	der = inst->old - actual ;
 	inst->old = actual;
 
 	P = (kP * diff)/P_REDUCTION ;
@@ -67,7 +67,7 @@ float PIDf(pidf_t* inst, float actual, float set, float kP, float kI, float kD, 
 
 	diff = set-actual;
 
-	der = diff - inst->old_diff ; // fixme check direction !!!
+	der = diff - inst->old_diff ;
 	inst->old_diff = diff;
 
 	P = kP * diff;
