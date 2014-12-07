@@ -1,4 +1,4 @@
-# FCM Settings 2.1.272
+# FCM Settings 2.1.273
 \GYRO PID\Max Integr	4000
 \GYRO PID\Gov at Max	20
 \GYRO PID\Q Gain	5000
@@ -67,3 +67,16 @@
 \Test\alpha Madg	3
 \Test\prop Mah	50
 \Test\integr Mah	10
+\Test\test P	0
+\Test\test I	0
+\Test\test D	0
+\Test\wind\wind_freq	0
+\Test\wind\wind_ampl	0
+\Test\mag_mis\mag_mis_freq	0
+\Test\mag_mis\mag_mis_ampl	0
+\Test\gyro\gyro_freq	0
+\Test\gyro\gyro_ampl	0
+\Test\accel\accel_freq	0
+\Test\accel\accel_ampl	0
+\Test\magneto\magneto_freq	0
+\Test\magneto\magneto_ampl	0

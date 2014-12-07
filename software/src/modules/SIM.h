@@ -50,4 +50,10 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa); // input the rota
 void SimReset(void); //reset the simulation to 0
 float signf(float s);
 
+void SimDisturbStep(float* value, float* angle, float frequency_hz, float amplitude);
+void SimDisturbVector(vector3_t *value, vector3_t *angle, float frequency_hz, float amplitude);
+
+
+
+
 #endif /* SIM_H_ */
