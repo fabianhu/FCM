@@ -42,7 +42,7 @@ vector3_t sim_rate_radps_dist= {0,0,0}; // rotational speed in rad/s
 vector3_t sim_pos_m= {0,0,0}; // world position
 vector3_t sim_vel_world_mps= {0,0,0}; // world velocity
 float sim_accel_mpss = 0; // acceleration by thrust (filtered,therefore static)
-vector3_t sim_accel_frame_mpss = {0,0,-9.81f};
+vector3_t sim_accel_frame_mpss = {0,0,9.81f};
 vector3_t sim_magneto_frame_nT = {0,0,0};
 
 quaternion_t SimGetorientation(void)
@@ -111,9 +111,10 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	}	
 	
 	vector3_t vel_vehicle;
+	vel_vehicle = vector_copy(&sim_vel_world_mps);
 	// rotate into vehicle orientation
-	vel_vehicle = quaternion_rotateVector(sim_vel_world_mps,qi); // rotate into vehicle orientation
 	SimDisturbVector(&vel_vehicle,&DisturbAngleWind, (float)myPar.wind_freq.sValue*0.1, (float)myPar.wind_ampl.sValue*0.1); // add wind	
+	vel_vehicle = quaternion_rotateVector(vel_vehicle,qi); // rotate into vehicle orientation
 	
 	//create vehicle acceleration vector
 	vector3_t vAccel_mpss;
@@ -219,7 +220,7 @@ void SimReset(void) //reset the simulation to 0
 void SimDisturbStep(float* value, float* angle, float frequency_hz, float amplitude)
 {
 	if(frequency_hz <=0.001)
-		return amplitude;
+		return *value+amplitude;
 	
 	*angle += (frequency_hz*SIM_DT)*(2*M_PI);
 	while(*angle > 2*M_PI)
@@ -235,9 +236,9 @@ void SimDisturbVector(vector3_t *value, vector3_t *angle, float frequency_hz, fl
 {
 	if(frequency_hz <=0.001)
 	{
-		value->x = amplitude;
-		value->y = amplitude;
-		value->z = amplitude;
+		value->x += amplitude;
+		value->y += amplitude;
+		value->z += amplitude;
 	}
 	
 	angle->x += (frequency_hz*SIM_DT)*(2*M_PI);
