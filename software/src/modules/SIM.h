@@ -37,7 +37,7 @@
 #define SIM_MAGFIELD_nT 60000.0f
 #define SIM_MAGINC_DEG  60.0f
 #define SIM_MAGDEFAULT_X 0.0f
-#define SIM_MAGDEFAULT_Y -cos(SIM_MAGINC_DEG/radgra)*SIM_MAGFIELD_nT // fixme dont understand why negative, but this way it works.
+#define SIM_MAGDEFAULT_Y cos(SIM_MAGINC_DEG/radgra)*SIM_MAGFIELD_nT
 #define SIM_MAGDEFAULT_Z -sin(SIM_MAGINC_DEG/radgra)*SIM_MAGFIELD_nT
 
 quaternion_t SimGetorientation(void); // get simulated orientation out of simulation

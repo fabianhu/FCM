@@ -392,7 +392,7 @@ void TaskControl(void)
 			fSetHeading_rad += (float)cmd_yaw*0.00001; // magic number (try)
 		
 			// add rotation to target
-			#if SIMULATION != 1
+			#if SIMULATION != 1 // do not rotate in simulation
 				fSetHeading_rad += fHeadingDiff_rad*0.1; // fixme limit to a certain rate!
 			#endif
 		
@@ -524,6 +524,12 @@ void TaskControl(void)
 						
 						LED_SetFlightstate(FS_idle);
 					}
+					
+				if(g_CalibrationRequest == 1) // sensor calibration required maybe no extra state, just do it here.
+				{
+					LED_SetFlightstate(FS_init_sensor_zero);
+				}
+					
 				#if SKIPRCINIT == 1
 				LED_SetFlightstate(FS_idle);
 				#endif
@@ -622,7 +628,7 @@ void TaskControl(void)
 				mag_cal.z =0;
 					
 				g_CalibrationRequest = 0;
-				LED_SetFlightstate(FS_idle);
+				LED_SetFlightstate(FS_init);
 				break;				
 			case FS_error:
 				// we must NEVER come out of FS_fly ... otherwise we fall out of the sky.
@@ -786,10 +792,10 @@ void TaskControl(void)
 
 				quaternion_t q_simulated;
 				q_simulated = SimGetorientation();				
-				TXQuaternions.qSet[0]= q_simulated.w;// q_set_global.w;
-				TXQuaternions.qSet[1]= q_simulated.x;//q_set_global.x;
-				TXQuaternions.qSet[2]= q_simulated.y;//q_set_global.y;
-				TXQuaternions.qSet[3]= q_simulated.z;//q_set_global.z;
+				TXQuaternions.qSet[0]= q_simulated.w;
+				TXQuaternions.qSet[1]= q_simulated.x;
+				TXQuaternions.qSet[2]= q_simulated.y;
+				TXQuaternions.qSet[3]= q_simulated.z;
 				
 				TXQuaternions.qSim[0]= q_simulated.w;
 				TXQuaternions.qSim[1]= q_simulated.x;
