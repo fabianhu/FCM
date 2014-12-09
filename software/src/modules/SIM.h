@@ -31,7 +31,7 @@
 #define SIM_AIRDENSITY		1.1839	// in kg/m³
 #define SIM_CWVALUE			1.1		// cw value without unit (for a cube)
 #define SIM_COPTERAREA		0.05	// im m² 
-#define SIM_COPTERAREATOP	0.1		// im m² 
+#define SIM_COPTERAREATOP	0.2		// im m² 
 #define SIM_COPTERMASS		0.8		// in kg
 
 #define SIM_MAGFIELD_nT 60000.0f

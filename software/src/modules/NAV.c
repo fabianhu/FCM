@@ -164,7 +164,7 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act, vector3_t* v_act)
 #if SIMULATION == 1
 
 *pos_act = SimGetPos_m();
-*v_act = SimGetVel_m();
+*v_act = SimGetVel_m(); // this is a dirty workaround, ideally let the filter run !!!
 
 #else //SIMULATION == 0
 

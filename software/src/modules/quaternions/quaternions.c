@@ -252,6 +252,10 @@ vector3_t quaternion_rotateVector(vector3_t _V, quaternion_t _Q)
 	
 	// o[w]=i[z];o[x]=i[x];o[y]=i[y];o[z]=i[w];
 	
+	if(_Q.w <0)
+	{
+		quaternion_flip(&_Q);
+	}
 	
 	float i = _Q.x;
 	float j = _Q.y;
