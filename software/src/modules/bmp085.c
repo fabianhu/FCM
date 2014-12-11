@@ -166,7 +166,7 @@ static int bmp085_read_cal_param(vfpv_t delay1ms)
 	{
 	if(ptr[i] == 0 || ptr[i] == 0xffff)	 
 	{
-		emstop(1); // fixme handle error and continue
+		emstop(1); // this is during init. hang here, if Baro does not work.
 		comres++;
 	} 
 	}

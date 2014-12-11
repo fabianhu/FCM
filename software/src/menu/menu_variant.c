@@ -50,6 +50,8 @@ static volatile char* menuTargetPtr = NULL;  // todo access
 static volatile uint8_t PotiSetting = 0;
 volatile uint8_t g_CalibrationRequest;
 
+int16_t l_pot1,l_pot2,l_pot3; // for display the poti settings in idle
+
 //******** INSERT INTO C FILE *********
 // Text definitions
 MENUE_TEXT_VARDEF
@@ -63,7 +65,7 @@ MENUE_MENUE_VARDEF
 
 #if MAX_ITEM_NAME_CHARLENGTH > 19
 
-#error " fixme too short and not automated in Parinfo_t definition !"
+#error "a name will not fit into the display!"
 
 #endif
 
@@ -242,8 +244,6 @@ void actStartBootloader(void)
 	AVR32_PM.gplp[0] = 0xB00710AD; // magic word for BL "bootload"
 	wdt_reset_mcu(); // only works, if wd is enabled
 }
-
-int16_t l_pot1,l_pot2,l_pot3; // for display in idle fixme local
 
 void UpdatePotsFromTX(void) // update the parameters from the potis ; 
 {

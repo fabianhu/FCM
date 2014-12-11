@@ -66,7 +66,7 @@ bool MadgwickStart(void) // cyclic call every 10ms until returns true.
 	// let the Madgwick turn into direction
 	static uint32_t MadgwickStartTicks;
 	
-	if(OS_GetTicks() - MadgwickStartTicks > 3000) // fixme check for rotation speed instead of wait!
+	if(OS_GetTicks() - MadgwickStartTicks > 3000) // maybe check for rotation speed instead of wait?
 	{
 		MadgwickAHRSSetBetaNormal();
 		return true;
@@ -105,7 +105,7 @@ quaternion_t MadgwickAHRSupdate(float gy, float gx, float gz, float ay, float ax
 	magvec.z = mz;
 	
 	float magamp = vector_len(&magvec);
-	if(magamp< 25000 || magamp > 80000 )//(mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) // fixme check for validity! (vector leng "usually" is around 50000)
+	if(magamp< 25000 || magamp > 80000 )//(mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) // check for validity (vector length "usually" is around 50000)
 	{
 		MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az);
 		ret.w = q0;
@@ -128,7 +128,7 @@ quaternion_t MadgwickAHRSupdate(float gy, float gx, float gz, float ay, float ax
 	float accamp = vector_len(&accvec);
 
 	// Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
-	if(fabs(accamp-9.81)<1.5) // fixme check, if magneto can be used without accel?
+	if(fabs(accamp-9.81)<1.5)
 	{
 
 		// Normalise accelerometer measurement

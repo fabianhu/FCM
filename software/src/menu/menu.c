@@ -226,7 +226,7 @@ void menu_show(void)
 void menu_select(void)
 {
 	uint8_t SubMenuGroupSize=0, StartIndex=0;
-	OS_MutexGet(OSMTX_COMM);//OS_PREVENTSCHEDULING; // for MyMenue.MenuMode AND MyMenue.gucSelectedItem / Parameter // fixme counterpart missing!
+	OS_MutexGet(OSMTX_COMM);//OS_PREVENTSCHEDULING; // for MyMenue.MenuMode AND MyMenue.gucSelectedItem / Parameter // todo counterpart missing!
 	
 	if(m_items[MyMenue.gucSelectedItem].ucJumpTrg)//jump to target menu item
 	{

@@ -74,7 +74,13 @@ quaternion_t MahonyAHRSupdate(float gy, float gx, float gz, float ay, float ax, 
 
 
 	// Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
-	if((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) // fixme add plausibility over vector length !
+	vector3_t magvec;
+	magvec.x = mx;
+	magvec.y = my;
+	magvec.z = mz;
+	
+	float magamp = vector_len(&magvec);
+	if(magamp< 25000 || magamp > 80000 )//(mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) // check for validity (vector length "usually" is around 50000)
 	{
 		MahonyAHRSupdateIMU(gx, gy, gz, ax, ay, az);
 		ret.w = q0;
