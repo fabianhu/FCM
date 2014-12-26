@@ -28,6 +28,14 @@
 #include "modules/NAV.h"
 #include "TaskNavi.h"
 #include "modules/governing.h"
+#include "config.h"
+
+#if SIMULATION == 1
+#include "modules/quaternions/quaternions.h"
+#include "modules/SIM.h"
+
+
+#endif
 //#include "menu/menu.h"
 //#include "menu/menu_variant.h"
 
@@ -42,6 +50,25 @@ void TaskNavi(void)
 	
 	gps_init();
 	
+	
+	#if SIMULATION == 1
+	while(1)
+	{
+		OS_SetAlarm(OSALM_NAVIWAIT,100);
+		OS_WaitAlarm(OSALM_NAVIWAIT);
+		
+		gps_coordinates_t ActPos = {483829100 , 108527100}; // FCM "home"
+		vector3_t v = SimGetPos_m();
+		ActPos.lon += (int32_t) v.x*SIMFACTORLAT;
+		ActPos.lat += (int32_t) v.y*SIMFACTORLON;
+		// fixme maybe delay-filter ?
+		
+		NAV_UpdatePosition_xy(ActPos);
+		
+	}
+	#endif
+	
+	
 	while(1)
 	{
 		uint8_t evt = OS_WaitEventTimeout(OSEVT_GPSREADY,OSALM_NAVIWAIT,NAVGPSTIMEOUT_ms);
@@ -52,12 +79,15 @@ void TaskNavi(void)
 		}
 		else
 		{
-			// work GPS data
+			// work GPS data on incoming data
 			gps_coordinates_t ActPos;
-			GPSgetPos(&ActPos); // fixme error ?
+			GPSgetPos(&ActPos); // fixme errorhandling ?
 			NAV_UpdatePosition_xy(ActPos);
 
 		}
+		
+		
+		
 	}
 }
 

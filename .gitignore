@@ -2,3 +2,4 @@ software/Debug/*
 *.atsuo
 *.b#*
 *.s#*
+*.bak

@@ -40,6 +40,12 @@
 #define SIM_MAGDEFAULT_Y cos(SIM_MAGINC_DEG/radgra)*SIM_MAGFIELD_nT
 #define SIM_MAGDEFAULT_Z -sin(SIM_MAGINC_DEG/radgra)*SIM_MAGFIELD_nT
 
+#define SIMFACTORLAT1 111.3 // gives m from degrees, correct only around "home"
+#define SIMFACTORLON1 74.47 // gives m from degrees
+
+#define SIMFACTORLAT 89.84 // gives 10 millionth degrees from m, correct only around "home"
+#define SIMFACTORLON 134.27 // gives 10 millionth degrees from m
+
 quaternion_t SimGetorientation(void); // get simulated orientation out of simulation
 vector3_t SimGetRate(void); // get simulated rotation rate (equivalent to gyro output)
 vector3_t SimGetPos_m(void); // get the simulated position out of the simulation

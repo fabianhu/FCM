@@ -91,15 +91,16 @@ bool NAV_GPS_OK(void)
 	#endif
 }	
 	
-// fixme handle timeout!
-// update GPS measurement // async call after GPS message arrived.
+// update GPS measurement 
+// async call after GPS message arrived.
+// timeout is handled in caller (missing event)
 void NAV_UpdatePosition_xy(gps_coordinates_t coords)
 {
-//	static vector2_t old; 
-//	vector2_t diff;
+	static vector2_t old; 
+	vector2_t diff;
 
 	uint32_t time = OS_GetTicks();
-//	float dt_s =  (float)(time-lastGPSTime) * 0.001;  // in seconds
+	float dt_s =  (float)(time-lastGPSTime) * 0.001;  // in seconds
 	lastGPSTime = time; // remember the time
 
 	static vector2_t act_m;// fixme static debug
@@ -111,7 +112,7 @@ void NAV_UpdatePosition_xy(gps_coordinates_t coords)
 	slowPos_m.x = Filter_f(slowPos_m.x,act_m.x,alfa);
 	slowPos_m.y = Filter_f(slowPos_m.y,act_m.y,alfa);
 	
-/*
+
 	diff.x = slowPos_m.x - old.x;
 	diff.y = slowPos_m.y - old.y;
 	
@@ -119,14 +120,15 @@ void NAV_UpdatePosition_xy(gps_coordinates_t coords)
 	old.y = slowPos_m.y;
 
 	slowspeed_mps.x = diff.x / dt_s; // calculate speed // fixme or use speed from GPS
-	slowspeed_mps.y = diff.y / dt_s; */
+	slowspeed_mps.y = diff.y / dt_s; 
 	
-	float sp,dir;
+/*	float sp,dir;
 	GPSgetVelocity(&sp,&dir);
 
 	// direction = 0=N 90°=E
 	slowspeed_mps.x = sin(dir)*sp ; // calculate speed // fixme or use speed from GPS
 	slowspeed_mps.y = cos(dir)*sp ;
+*/
 }
 
 // Update barometer measurement / async call every baro measurement
@@ -161,14 +163,13 @@ pos: gps position and barometer height
 */
 void Superfilter(vector3_t acc_mpss, vector3_t* pos_act, vector3_t* v_act)
 {
+
+#if DISABLE_SENSOR_FUSION_GPS == 1
 #if SIMULATION == 1
 
 *pos_act = SimGetPos_m();
 *v_act = SimGetVel_m(); // this is a dirty workaround, ideally let the filter run !!!
-
-#else //SIMULATION == 0
-
-#if DISABLE_SENSOR_FUSION_GPS == 1
+#endif //SIMULATION == 0
 
 //fixme v_act berechnen
 
@@ -180,6 +181,8 @@ pos_act->y = slowPos_m.y;
 pos_act->z = slowPos_m.z;
 
 #else
+
+// Simulation done in GPS task
 
 //fixme use BrownLinearExpo()
 
@@ -197,7 +200,7 @@ float alfa_speed_gps = (float)myPar.nav_alpha_speed.sValue * 0.001;
 float alfa_speed_h = (float)myPar.nav_alpha_H.sValue * 0.001;
 float alfa_pos = (float)myPar.nav_alpha_Pos.sValue * 0.001;
 
-v_act->x = alfa_speed_gps*(v_act->x - acc_mpss.x * dt_s) + (1.0-alfa_speed_gps)*(slowspeed_mps.x); // ? do speed calculation without slowspeed (using interpolated pos-diff from last iteration) And there it is again, the snail biting its tail.
+v_act->x = alfa_speed_gps*(v_act->x - acc_mpss.x * dt_s) + (1.0-alfa_speed_gps)*(slowspeed_mps.x); // ? fixme do speed calculation without slowspeed (using interpolated pos-diff from last iteration) And there it is again, the snail biting its tail.
 v_act->y = alfa_speed_gps*(v_act->y - acc_mpss.y * dt_s) + (1.0-alfa_speed_gps)*(slowspeed_mps.y);
 v_act->z = alfa_speed_h  *(v_act->z - acc_mpss.z * dt_s) + (1.0-alfa_speed_h)  *(slowspeed_mps.z);
 
@@ -207,6 +210,13 @@ pos_act->x = alfa_pos*(pos_act->x + v_act->x * dt_s) + (1.0-alfa_pos)*(slowPos_m
 pos_act->y = alfa_pos*(pos_act->y + v_act->y * dt_s) + (1.0-alfa_pos)*(slowPos_m.y);
 pos_act->z = alfa_pos*(pos_act->z + v_act->z * dt_s) + (1.0-alfa_pos)*(slowPos_m.z);
 
+
+plan:
+// first calculate an interpolated position out of the GPS and the acceleration based stuff.
+// then calculate an accurate speed estimation out of it.
+// try to avoid slowspeed! fixme
+
+
 // for increased precision (depending on signal quality) one could use the intermediate of new calculated and last speed forpos calculation.
 #endif
 
@@ -215,7 +225,6 @@ pos_act->z = alfa_pos*(pos_act->z + v_act->z * dt_s) + (1.0-alfa_pos)*(slowPos_m
 // debug_mag = vector_copy(&acc_mpss);
 // debug_gov = vector_copy(&slowPos_m);
 
-#endif //SIMULATION == 0
 }
 
 
