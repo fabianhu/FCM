@@ -34,7 +34,7 @@
 #include "modules/quaternions/quaternions.h"
 #include "modules/SIM.h"
 
-
+extern GPS_interface_t   gps_dataset; // fixme schönes Interface basteln
 #endif
 //#include "menu/menu.h"
 //#include "menu/menu_variant.h"
@@ -58,10 +58,14 @@ void TaskNavi(void)
 	
 	while(1)
 	{
+		gps_dataset.status.gps3dfix = 1; // force sim
+		gps_dataset.status.gps2dfix = 1; // force sim
+		
 		OS_SetAlarm(OSALM_NAVIWAIT,100);
 		OS_WaitAlarm(OSALM_NAVIWAIT);
 		
 		gps_coordinates_t ActPosSim = {483829100 , 108527100}; // FCM "home"
+			
 		vector3_t v = SimGetPos_m();
 		
 		filtered.x = Filter_f(filtered.x,v.x,0.5);
@@ -71,6 +75,10 @@ void TaskNavi(void)
 		ActPosSim.lon += (int32_t)(filtered.x * SIMFACTORLON); 
 		ActPosSim.lat += (int32_t)(filtered.y * SIMFACTORLAT);
 		NAV_UpdatePosition_xy(ActPosSim);
+
+		gps_dataset.gps_loc.lat = ActPosSim.lat; // fixme BAAAD interface!
+		gps_dataset.gps_loc.lon = ActPosSim.lon;
+
 
 		//update baro
 		filtered.z = Filter_f(filtered.z,v.z,0.5);

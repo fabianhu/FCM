@@ -308,7 +308,7 @@ void TaskControl(void)
 		quaternion_to_euler(q_ActualOrientation, &ax, &ay, &fActHeading_rad); // remember the actual heading
 		
 		// for the other systems:
-		IMUdata.pitch_deg = ax*57.295779f; // todo is actually wrong, because global!!
+		IMUdata.pitch_deg = ax*57.295779f; // fixme is actually wrong, because global!!
 		IMUdata.roll_deg = ay*57.295779f;
 		IMUdata.mag_heading_deg = fActHeading_rad*57.295779f;
 		IMUdata.height_dm = v_pos_act_m.z *100; // info
@@ -808,6 +808,11 @@ void TaskControl(void)
 				TXQuaternions.vPos[1] = v_simulated.y;
 				TXQuaternions.vPos[2] = v_simulated.z;
 				
+				TXQuaternions.vDat[0] = v_pos_act_m.x;
+				TXQuaternions.vDat[1] = v_pos_act_m.y;
+				TXQuaternions.vDat[2] = v_pos_act_m.z;
+				
+				
 				#else
 				TXQuaternions.qSet[0]= q_set_global.w;
 				TXQuaternions.qSet[1]= q_set_global.x;
@@ -824,7 +829,7 @@ void TaskControl(void)
 				TXQuaternions.vPos[2] = v_pos_act_m.z;
 				#endif
 
-				TXQuaternions.temp[1] = temperature_degC;
+				// fixme TXQuaternions.temp[1] = temperature_degC;
 				
 				strncpy(TXQuaternions.footer,"~~~",3);
 

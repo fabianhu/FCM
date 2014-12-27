@@ -314,7 +314,7 @@ bool GPS_NMEA_newFrame(char c) {
 			case GPGSA_FRAME:
 			switch (param)
 			{
-				case 2: gps_dataset.status.gps3dfix = string[0] == '3';
+				case 2: gps_dataset.status.gps3dfix = string[0] == '3'; // fixme bitfield!!! one bit only!
 				break;
 			}
 			break;
