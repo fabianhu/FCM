@@ -792,15 +792,22 @@ void TaskControl(void)
 
 				quaternion_t q_simulated;
 				q_simulated = SimGetorientation();				
-				TXQuaternions.qSet[0]= q_simulated.w;
-				TXQuaternions.qSet[1]= q_simulated.x;
-				TXQuaternions.qSet[2]= q_simulated.y;
-				TXQuaternions.qSet[3]= q_simulated.z;
+				TXQuaternions.qSet[0]= q_set_global.w;
+				TXQuaternions.qSet[1]= q_set_global.x;
+				TXQuaternions.qSet[2]= q_set_global.y;
+				TXQuaternions.qSet[3]= q_set_global.z;
 				
 				TXQuaternions.qSim[0]= q_simulated.w;
 				TXQuaternions.qSim[1]= q_simulated.x;
 				TXQuaternions.qSim[2]= q_simulated.y;
 				TXQuaternions.qSim[3]= q_simulated.z;
+				
+				vector3_t v_simulated;
+				v_simulated = SimGetPos_m();
+				TXQuaternions.vPos[0] = v_simulated.x;
+				TXQuaternions.vPos[1] = v_simulated.y;
+				TXQuaternions.vPos[2] = v_simulated.z;
+				
 				#else
 				TXQuaternions.qSet[0]= q_set_global.w;
 				TXQuaternions.qSet[1]= q_set_global.x;
@@ -811,11 +818,12 @@ void TaskControl(void)
 				TXQuaternions.qSim[1]= q_ActualOrientation.x;
 				TXQuaternions.qSim[2]= q_ActualOrientation.y;
 				TXQuaternions.qSim[3]= q_ActualOrientation.z;
-				#endif
-			
+				
 				TXQuaternions.vPos[0] = v_pos_act_m.x;
 				TXQuaternions.vPos[1] = v_pos_act_m.y;
 				TXQuaternions.vPos[2] = v_pos_act_m.z;
+				#endif
+
 				TXQuaternions.temp[1] = temperature_degC;
 				
 				strncpy(TXQuaternions.footer,"~~~",3);

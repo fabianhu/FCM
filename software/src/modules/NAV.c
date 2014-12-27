@@ -171,8 +171,6 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act, vector3_t* v_act)
 *v_act = SimGetVel_m(); // this is a dirty workaround, ideally let the filter run !!!
 #endif //SIMULATION == 0
 
-//fixme v_act berechnen
-
 v_act->x = slowspeed_mps.x;
 v_act->y = slowspeed_mps.y;
 v_act->z = slowspeed_mps.z;
@@ -182,7 +180,7 @@ pos_act->z = slowPos_m.z;
 
 #else
 
-// Simulation done in GPS task
+// Simulation is done in GPS task TaskNavi
 
 //fixme use BrownLinearExpo()
 
@@ -211,7 +209,7 @@ pos_act->y = alfa_pos*(pos_act->y + v_act->y * dt_s) + (1.0-alfa_pos)*(slowPos_m
 pos_act->z = alfa_pos*(pos_act->z + v_act->z * dt_s) + (1.0-alfa_pos)*(slowPos_m.z);
 
 
-plan:
+// fixme plan:
 // first calculate an interpolated position out of the GPS and the acceleration based stuff.
 // then calculate an accurate speed estimation out of it.
 // try to avoid slowspeed! fixme
@@ -338,9 +336,8 @@ vector3_t NAV_Governor_vel( vector3_t* pos_act_m, vector3_t* target_m, vector3_t
 }
 
 // distance related governor
-vector3_t NAV_Governor( vector3_t* pos_act_m, vector3_t* target_m, vector3_t* speed_act_mps )
+vector3_t NAV_Governor( vector3_t* pos_act_m, vector3_t* target_m, vector3_t* speed_act_mps ) // fixme unused parameter 'speed_act_mps'	
 {
-	// PID setSpeed -> accel_command
 	volatile vector3_t accel_command;
 	volatile vector3_t accel_command_lim;
 	
@@ -354,8 +351,6 @@ vector3_t NAV_Governor( vector3_t* pos_act_m, vector3_t* target_m, vector3_t* sp
 	float nav_max_accelint = myPar.nav_max_accelint.sValue*0.1; // m/s^2
 	float nav_max_accel = myPar.nav_max_acc_lim.sValue*0.1; // m/s^2
 	
-//	accel_command.x = PIDfxD(&pid_nav_x,pos_act_m->x, target_m->x, nav_kp, nav_ki, nav_kd, -nav_max_accelint, nav_max_accelint, speed_act_mps->x);
-//	accel_command.y = PIDfxD(&pid_nav_y,pos_act_m->y, target_m->y, nav_kp, nav_ki, nav_kd, -nav_max_accelint, nav_max_accelint, speed_act_mps->y);
 	accel_command.x = -PIDf(&pid_nav_x,pos_act_m->x, target_m->x, nav_kp, nav_ki, nav_kd, -nav_max_accelint, nav_max_accelint); // tested
 	accel_command.y = -PIDf(&pid_nav_y,pos_act_m->y, target_m->y, nav_kp, nav_ki, nav_kd, -nav_max_accelint, nav_max_accelint);
 

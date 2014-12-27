@@ -42,7 +42,9 @@
 //local prototypes
 void TaskNavi(void);
 
-
+/*
+the only purpose of this task is to get notified about a successfully evaluated GPGGA frame.
+*/
 
 void TaskNavi(void)
 {
@@ -52,21 +54,30 @@ void TaskNavi(void)
 	
 	
 	#if SIMULATION == 1
+	static vector3_t filtered;
+	
 	while(1)
 	{
 		OS_SetAlarm(OSALM_NAVIWAIT,100);
 		OS_WaitAlarm(OSALM_NAVIWAIT);
 		
-		gps_coordinates_t ActPos = {483829100 , 108527100}; // FCM "home"
+		gps_coordinates_t ActPosSim = {483829100 , 108527100}; // FCM "home"
 		vector3_t v = SimGetPos_m();
-		ActPos.lon += (int32_t) v.x*SIMFACTORLAT;
-		ActPos.lat += (int32_t) v.y*SIMFACTORLON;
-		// fixme maybe delay-filter ?
 		
-		NAV_UpdatePosition_xy(ActPos);
+		filtered.x = Filter_f(filtered.x,v.x,0.5);
+		filtered.y = Filter_f(filtered.y,v.y,0.5);
+		
+			
+		ActPosSim.lon += (int32_t)(filtered.x * SIMFACTORLON); 
+		ActPosSim.lat += (int32_t)(filtered.y * SIMFACTORLAT);
+		NAV_UpdatePosition_xy(ActPosSim);
+
+		//update baro
+		filtered.z = Filter_f(filtered.z,v.z,0.5);
+		NAV_UpdatePosition_z_m(filtered.z);
 		
 	}
-	#endif
+	#else
 	
 	
 	while(1)
@@ -81,7 +92,7 @@ void TaskNavi(void)
 		{
 			// work GPS data on incoming data
 			gps_coordinates_t ActPos;
-			GPSgetPos(&ActPos); // fixme errorhandling ?
+			GPSgetPos(&ActPos); // errorhandling? this event is only released on a successful frame. (frame evaluated on character basis in ISR)
 			NAV_UpdatePosition_xy(ActPos);
 
 		}
@@ -89,5 +100,6 @@ void TaskNavi(void)
 		
 		
 	}
+	#endif
 }
 

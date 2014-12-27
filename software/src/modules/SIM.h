@@ -46,12 +46,16 @@
 #define SIMFACTORLAT 89.84 // gives 10 millionth degrees from m, correct only around "home"
 #define SIMFACTORLON 134.27 // gives 10 millionth degrees from m
 
+// visu only:
 quaternion_t SimGetorientation(void); // get simulated orientation out of simulation
-vector3_t SimGetRate(void); // get simulated rotation rate (equivalent to gyro output)
 vector3_t SimGetPos_m(void); // get the simulated position out of the simulation
+
+// simulated values:
+vector3_t SimGetRate(void); // get simulated rotation rate (equivalent to gyro output)
 vector3_t SimGetVel_m(void); // get the simulated velocity out of the simulation
 vector3_t SimGetMag(void);
 vector3_t SimGetAcc(void);
+
 void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa); // input the rotational command + thrust into simulation
 void SimReset(void); //reset the simulation to 0
 float signf(float s);

@@ -1,8 +1,9 @@
 /*
  * SIM.c
- Simple simulation of position hold etc...
- Enables virtual flying (kind of)
- The orientation governor (gyro) is skipped here, this is for simulating the GPS-related stuff only.
+ Simple simulation of vehicle dynamics.
+ Enables virtual flying.
+ The orientation governor (gyro) is included here.
+ 
  
  *
  * Created: 29.10.2014 22:39:56
@@ -38,18 +39,20 @@
 
 quaternion_t sim_orientation= {1,0,0,0};  
 vector3_t sim_rate_radps= {0,0,0}; // rotational speed in rad/s
-vector3_t sim_rate_radps_dist= {0,0,0}; // rotational speed in rad/s
+vector3_t sim_rate_radps_dist= {0,0,0}; // rotational speed in rad/s (disturbed)
 vector3_t sim_pos_m= {0,0,0}; // world position
 vector3_t sim_vel_world_mps= {0,0,0}; // world velocity
 float sim_accel_mpss = 0; // acceleration by thrust (filtered,therefore static)
 vector3_t sim_accel_frame_mpss = {0,0,9.81f};
 vector3_t sim_magneto_frame_nT = {0,0,0};
 
+// for display purposes only, the flight controller should not know about the simulated orientation.
 quaternion_t SimGetorientation(void)
 {
 	return sim_orientation;
 }
 
+// returns the rate as measured by a gyroscope
 vector3_t SimGetRate(void)
 {
 	//vector3_t gyro_drift = {0.03,0.03,0.03};
@@ -58,9 +61,10 @@ vector3_t SimGetRate(void)
 	return sim_rate_radps_dist;
 }
 
+// simulated position - for display purposes only, the flight controller should not know about the simulated position directly.
 vector3_t SimGetPos_m(void)
 {
-	return sim_pos_m;	// fixme make filtered to add some delay and make it more GPS like.
+	return sim_pos_m;
 }
 
 vector3_t SimGetVel_m(void)
@@ -68,15 +72,18 @@ vector3_t SimGetVel_m(void)
 	return sim_vel_world_mps;
 }
 
+// returns the flux as measured by a magnetometer
 vector3_t SimGetMag(void)
 {
 	return sim_magneto_frame_nT;
 }
 
+// returns the acceleration as measured by a accelerometer
 vector3_t SimGetAcc(void)
 {
 	return sim_accel_frame_mpss;
 }
+
 
 float signf(float s)
 {
