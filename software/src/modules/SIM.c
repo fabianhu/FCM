@@ -161,7 +161,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	qdiff = quaternion_from_euler(sim_rate_radps.x*SIM_DT,sim_rate_radps.y*SIM_DT,sim_rate_radps.z*SIM_DT);
 	sim_orientation = quaternion_multiply_flip_norm(sim_orientation,qdiff);
 	
-	if(sim_pos_m.z < 0.0)
+	if(sim_pos_m.z <= 0.0)
 	{
 		SimReset();
 	}

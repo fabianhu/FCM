@@ -37,7 +37,7 @@
 
 // slowly updated values from GPS and baro
 vector3_t slowPos_m;
-vector3_t slowspeed_mps;
+vector3_t slowspeed_mps; // fixme get rid of this.!
 gps_coordinates_t origin;
 float origin_h_m;
 
@@ -169,7 +169,8 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act, vector3_t* v_act)
 
 *pos_act = SimGetPos_m();
 *v_act = SimGetVel_m(); // this is a dirty workaround, ideally let the filter run !!!
-#endif //SIMULATION == 0
+
+#else
 
 v_act->x = slowspeed_mps.x;
 v_act->y = slowspeed_mps.y;
@@ -177,6 +178,7 @@ v_act->z = slowspeed_mps.z;
 pos_act->x = slowPos_m.x;
 pos_act->y = slowPos_m.y;
 pos_act->z = slowPos_m.z;
+#endif //SIMULATION == 0
 
 #else
 

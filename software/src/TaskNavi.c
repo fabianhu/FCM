@@ -68,8 +68,8 @@ void TaskNavi(void)
 			
 		vector3_t v = SimGetPos_m();
 		
-		filtered.x = Filter_f(filtered.x,v.x,0.5);
-		filtered.y = Filter_f(filtered.y,v.y,0.5);
+		filtered.x = Filter_f(filtered.x,v.x,0.99);
+		filtered.y = Filter_f(filtered.y,v.y,0.99);
 		
 			
 		ActPosSim.lon += (int32_t)(filtered.x * SIMFACTORLON); 
