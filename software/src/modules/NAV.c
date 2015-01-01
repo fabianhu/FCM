@@ -37,7 +37,6 @@
 
 // slowly updated values from GPS and baro
 vector3_t slowPos_m;
-vector3_t slowspeed_mps; // fixme get rid of this.!
 gps_coordinates_t origin;
 float origin_h_m;
 
@@ -79,16 +78,11 @@ static uint32_t lastGPSTime;
 
 bool NAV_GPS_OK(void)
 {
-	#if SIMULATION == 1
-	return 1;
-	#else //SIMULATION == 0
-	
 	uint32_t time = OS_GetTicks();
 	if(time- lastGPSTime > NAVGPSTIMEOUT_ms )
 	return false;
 	else
 	return true;
-	#endif
 }	
 	
 // update GPS measurement 
@@ -100,7 +94,7 @@ void NAV_UpdatePosition_xy(gps_coordinates_t coords)
 	vector2_t diff;
 
 	uint32_t time = OS_GetTicks();
-	float dt_s =  (float)(time-lastGPSTime) * 0.001;  // in seconds
+//	float dt_s =  (float)(time-lastGPSTime) * 0.001;  // in seconds
 	lastGPSTime = time; // remember the time
 
 	static vector2_t act_m;// fixme static debug
@@ -118,27 +112,16 @@ void NAV_UpdatePosition_xy(gps_coordinates_t coords)
 	
 	old.x = slowPos_m.x;
 	old.y = slowPos_m.y;
-
-	slowspeed_mps.x = diff.x / dt_s; // calculate speed // fixme or use speed from GPS
-	slowspeed_mps.y = diff.y / dt_s; 
-	
-/*	float sp,dir;
-	GPSgetVelocity(&sp,&dir);
-
-	// direction = 0=N 90°=E
-	slowspeed_mps.x = sin(dir)*sp ; // calculate speed // fixme or use speed from GPS
-	slowspeed_mps.y = cos(dir)*sp ;
-*/
 }
 
 // Update barometer measurement / async call every baro measurement
 void NAV_UpdatePosition_z_m(float h)
 {
-	static float lasth;
-	static uint32_t lastHeightTime;
-	uint32_t time = OS_GetTicks();
-	float dt_s =  (float)(time-lastHeightTime) * 0.001;  // in seconds
-	lastHeightTime = time; // remember the time
+//	static float lasth;
+//	static uint32_t lastHeightTime;
+//	uint32_t time = OS_GetTicks();
+//	float dt_s =  (float)(time-lastHeightTime) * 0.001;  // in seconds
+//	lastHeightTime = time; // remember the time
 
 	h = h - origin_h_m;
 
@@ -146,16 +129,12 @@ void NAV_UpdatePosition_z_m(float h)
 
 	slowPos_m.z = Filter_f(slowPos_m.z,h,alfa);
 
-	float dh_m = slowPos_m.z - lasth; // in meters
-	lasth = slowPos_m.z;
-	
-	slowspeed_mps.z = dh_m / dt_s; //calculate speed
+//	float dh_m = slowPos_m.z - lasth; // in meters
+//	lasth = slowPos_m.z;
 }
 
-//vector3_t debug_accel,debug_gyro, debug_mag,debug_gov;
-
 /*
-Filter (slow) position and (fast) accelometer into position and velocity.
+Filter (slow) position and (fast) accelometer into position.
 slow values are input asynchronously via above functions.
 All in global coordinates.
 acc_mpss: Accerleration world based without gravity in meters / s*s
@@ -168,7 +147,6 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 #if SIMULATION == 1
 
 *pos_act = SimGetPos_m();
-//*v_act = SimGetVel_m(); // this is a dirty workaround, ideally let the filter run !!!
 
 #else
 
@@ -181,7 +159,7 @@ pos_act->z = slowPos_m.z;
 
 // Simulation is done in GPS task TaskNavi
 
-//fixme use BrownLinearExpo()
+//fixme use BrownLinearExpo() for accel filtering, maybe outside.
 
 static uint32_t lastFilterTime;
 uint32_t time = OS_GetTicks();
@@ -190,28 +168,17 @@ lastFilterTime = time; // remember the time
 
 // acceleration to speed: speed = speed + accel * dt // fast but drifty
 // position to speed: speed = dPos / dt   // slow but accurate
+// speed to position: dPos = speed * dt
 
-// complementary filter for speed
 // speed = 0.98 * ( speed + accel * dt  ) + 0.02 * ( slowSpeed)
-float alfa_speed_gps = (float)myPar.nav_alpha_speed.sValue * 0.001;
-float alfa_speed_h = (float)myPar.nav_alpha_H.sValue * 0.001;
 float alfa_pos = (float)myPar.nav_alpha_Pos.sValue * 0.001;
 
-v_act->x = alfa_speed_gps*(v_act->x - acc_mpss.x * dt_s) + (1.0-alfa_speed_gps)*(slowspeed_mps.x); // ? fixme do speed calculation without slowspeed (using interpolated pos-diff from last iteration) And there it is again, the snail biting its tail.
-v_act->y = alfa_speed_gps*(v_act->y - acc_mpss.y * dt_s) + (1.0-alfa_speed_gps)*(slowspeed_mps.y);
-v_act->z = alfa_speed_h  *(v_act->z - acc_mpss.z * dt_s) + (1.0-alfa_speed_h)  *(slowspeed_mps.z);
 
 // complementary filter for position
-// new pos = old pos + speed * dt
-pos_act->x = alfa_pos*(pos_act->x + v_act->x * dt_s) + (1.0-alfa_pos)*(slowPos_m.x);
-pos_act->y = alfa_pos*(pos_act->y + v_act->y * dt_s) + (1.0-alfa_pos)*(slowPos_m.y);
-pos_act->z = alfa_pos*(pos_act->z + v_act->z * dt_s) + (1.0-alfa_pos)*(slowPos_m.z);
-
-
-// fixme plan:
-// first calculate an interpolated position out of the GPS and the acceleration based stuff.
-// then calculate an accurate speed estimation out of it.
-// try to avoid slowspeed! fixme
+// new pos = old pos + acc * dt *dt
+pos_act->x = alfa_pos*(pos_act->x + acc_mpss.x * dt_s * dt_s) + (1.0-alfa_pos)*(slowPos_m.x);
+pos_act->y = alfa_pos*(pos_act->y + acc_mpss.y * dt_s * dt_s) + (1.0-alfa_pos)*(slowPos_m.y);
+pos_act->z = alfa_pos*(pos_act->z + acc_mpss.z * dt_s * dt_s) + (1.0-alfa_pos)*(slowPos_m.z);
 
 
 // for increased precision (depending on signal quality) one could use the intermediate of new calculated and last speed forpos calculation.
@@ -225,69 +192,68 @@ pos_act->z = alfa_pos*(pos_act->z + v_act->z * dt_s) + (1.0-alfa_pos)*(slowPos_m
 }
 
 
-
 /*
 Get the desired speed setpoint out of the distance to trg.
 out: speed setpoint in m/s
 */
-vector3_t GetSetSpeed(vector3_t* actPos_m, vector3_t* setPos_m) // tested
-{
-	vector3_t ret;
-	volatile float direction_to_dest;
-	volatile float VMax;
-	volatile float dist_m;
-	volatile float speedfact;
-	volatile float setSpeed;
-	volatile float VMaxDist_m;	
-	volatile float H_VMaxDist_m;
-	volatile float H_VMax;
-	volatile float d_height_m;
-	volatile float h_dist;
-	volatile float h_speedfact;
-	volatile float h_setSpeed;
-
-	VMax = myPar.nav_set_speed.sValue;
-	VMaxDist_m = myPar.nav_decel_radius.sValue;
-	H_VMaxDist_m = myPar.nav_decel_radiush.sValue;
-	H_VMax = myPar.nav_set_speedh.sValue;
-	
-	dist_m = vector2len(setPos_m->x-actPos_m->x,setPos_m->y-actPos_m->y);
-	if(dist_m < 0.1)
-	{
-		// there will be no useful direction, so we just demand nothing.
-		ret.x = 0;
-		ret.y = 0;
-	}
-	else
-	{
-		direction_to_dest = GPS_calcHeading(setPos_m->x-actPos_m->x,setPos_m->y-actPos_m->y);
-	
-		dist_m = fabs(limitf(dist_m, 0, VMaxDist_m)); // distance for speed calculation
-		speedfact = dist_m / VMaxDist_m; // speed reduction factor by distance
-		
-		// calculate set speed
-		setSpeed = VMax * speedfact; // in m/s
-
-		// lon lat speed components:
-		ret.x = sinf(direction_to_dest) * setSpeed;
-		ret.y = cosf(direction_to_dest) * setSpeed;
-	}
-	
-	// height has no direction, so we are fine here.
-	H_VMaxDist_m = myPar.nav_decel_radiush.sValue;
-	H_VMax = myPar.nav_set_speedh.sValue;
-	
-	// h set speed calc
-	d_height_m = setPos_m->z - actPos_m->z;
-	h_dist = limitf(d_height_m,-H_VMaxDist_m,H_VMaxDist_m); // distance for speed calculation
-	h_speedfact = h_dist / H_VMaxDist_m; // speed reduction factor by distance
-	
-	// calculate set speed
-	h_setSpeed = H_VMax * h_speedfact; // in m/s
-	ret.z = h_setSpeed;
-	
-	return ret;
-}
+// vector3_t GetSetSpeed(vector3_t* actPos_m, vector3_t* setPos_m) // tested
+// {
+// 	vector3_t ret;
+// 	volatile float direction_to_dest;
+// 	volatile float VMax;
+// 	volatile float dist_m;
+// 	volatile float speedfact;
+// 	volatile float setSpeed;
+// 	volatile float VMaxDist_m;	
+// 	volatile float H_VMaxDist_m;
+// 	volatile float H_VMax;
+// 	volatile float d_height_m;
+// 	volatile float h_dist;
+// 	volatile float h_speedfact;
+// 	volatile float h_setSpeed;
+// 
+// 	VMax = myPar.nav_set_speed.sValue;
+// 	VMaxDist_m = myPar.nav_decel_radius.sValue;
+// 	H_VMaxDist_m = myPar.nav_decel_radiush.sValue;
+// 	H_VMax = myPar.nav_set_speedh.sValue;
+// 	
+// 	dist_m = vector2len(setPos_m->x-actPos_m->x,setPos_m->y-actPos_m->y);
+// 	if(dist_m < 0.1)
+// 	{
+// 		// there will be no useful direction, so we just demand nothing.
+// 		ret.x = 0;
+// 		ret.y = 0;
+// 	}
+// 	else
+// 	{
+// 		direction_to_dest = GPS_calcHeading(setPos_m->x-actPos_m->x,setPos_m->y-actPos_m->y);
+// 	
+// 		dist_m = fabs(limitf(dist_m, 0, VMaxDist_m)); // distance for speed calculation
+// 		speedfact = dist_m / VMaxDist_m; // speed reduction factor by distance
+// 		
+// 		// calculate set speed
+// 		setSpeed = VMax * speedfact; // in m/s
+// 
+// 		// lon lat speed components:
+// 		ret.x = sinf(direction_to_dest) * setSpeed;
+// 		ret.y = cosf(direction_to_dest) * setSpeed;
+// 	}
+// 	
+// 	// height has no direction, so we are fine here.
+// 	H_VMaxDist_m = myPar.nav_decel_radiush.sValue;
+// 	H_VMax = myPar.nav_set_speedh.sValue;
+// 	
+// 	// h set speed calc
+// 	d_height_m = setPos_m->z - actPos_m->z;
+// 	h_dist = limitf(d_height_m,-H_VMaxDist_m,H_VMaxDist_m); // distance for speed calculation
+// 	h_speedfact = h_dist / H_VMaxDist_m; // speed reduction factor by distance
+// 	
+// 	// calculate set speed
+// 	h_setSpeed = H_VMax * h_speedfact; // in m/s
+// 	ret.z = h_setSpeed;
+// 	
+// 	return ret;
+// }
 
 
 /*
@@ -304,35 +270,35 @@ static pidf_t pid_nav_y = {0,0};
 static pidf_t pid_nav_z = {0,0};
 
 // velocity related governor
-vector3_t NAV_Governor_vel( vector3_t* pos_act_m, vector3_t* target_m, vector3_t* speed_act_mps ); // unused	
-vector3_t NAV_Governor_vel( vector3_t* pos_act_m, vector3_t* target_m, vector3_t* speed_act_mps )
-{
-	volatile vector3_t setSpeed = GetSetSpeed(pos_act_m,target_m);
-	
-	// PID setSpeed -> accel_command
-	volatile vector3_t accel_command;
-	volatile vector3_t accel_command_lim;
-	
-	float nav_kp = myPar.pid_nav_p.sValue*0.1;
-	float nav_ki = myPar.pid_nav_i.sValue*0.0001;
-	float nav_kd = myPar.pid_nav_d.sValue*10.0; // there was almost no effect with 0.1 (and 1000 as parameter)
-	float h_kp = myPar.pid_h_p.sValue*0.01;
-	float h_ki = myPar.pid_h_i.sValue*0.0001;
-	float h_kd = myPar.pid_h_d.sValue*0.01;
-
-	float nav_max_accelint = myPar.nav_max_accelint.sValue*0.1; // m/s^2
-	float nav_max_accel = myPar.nav_max_acc_lim.sValue*0.1; // m/s^2
-	
-	accel_command.x = PIDf(&pid_nav_x,speed_act_mps->x,setSpeed.x, nav_kp, nav_ki, nav_kd, -nav_max_accelint, nav_max_accelint); // tested
-	accel_command.y = PIDf(&pid_nav_y,speed_act_mps->y,setSpeed.y, nav_kp, nav_ki, nav_kd, -nav_max_accelint, nav_max_accelint);
-	accel_command.z = PIDf(&pid_nav_z,speed_act_mps->z,setSpeed.z, h_kp,   h_ki,   h_kd,   -nav_max_accelint, nav_max_accelint);
-	
-	accel_command_lim.x = limitf(accel_command.x, -nav_max_accel, nav_max_accel); // tested , works only with volatile variables on AVR32
-	accel_command_lim.y = limitf(accel_command.y, -nav_max_accel, nav_max_accel);
-	accel_command_lim.z = limitf(accel_command.z, -nav_max_accel, nav_max_accel);
-	
-	return accel_command_lim;
-}
+// vector3_t NAV_Governor_vel( vector3_t* pos_act_m, vector3_t* target_m, vector3_t* speed_act_mps ); // unused	
+// vector3_t NAV_Governor_vel( vector3_t* pos_act_m, vector3_t* target_m, vector3_t* speed_act_mps )
+// {
+// 	volatile vector3_t setSpeed = GetSetSpeed(pos_act_m,target_m);
+// 	
+// 	// PID setSpeed -> accel_command
+// 	volatile vector3_t accel_command;
+// 	volatile vector3_t accel_command_lim;
+// 	
+// 	float nav_kp = myPar.pid_nav_p.sValue*0.1;
+// 	float nav_ki = myPar.pid_nav_i.sValue*0.0001;
+// 	float nav_kd = myPar.pid_nav_d.sValue*10.0; // there was almost no effect with 0.1 (and 1000 as parameter)
+// 	float h_kp = myPar.pid_h_p.sValue*0.01;
+// 	float h_ki = myPar.pid_h_i.sValue*0.0001;
+// 	float h_kd = myPar.pid_h_d.sValue*0.01;
+// 
+// 	float nav_max_accelint = myPar.nav_max_accelint.sValue*0.1; // m/s^2
+// 	float nav_max_accel = myPar.nav_max_acc_lim.sValue*0.1; // m/s^2
+// 	
+// 	accel_command.x = PIDf(&pid_nav_x,speed_act_mps->x,setSpeed.x, nav_kp, nav_ki, nav_kd, -nav_max_accelint, nav_max_accelint); // tested
+// 	accel_command.y = PIDf(&pid_nav_y,speed_act_mps->y,setSpeed.y, nav_kp, nav_ki, nav_kd, -nav_max_accelint, nav_max_accelint);
+// 	accel_command.z = PIDf(&pid_nav_z,speed_act_mps->z,setSpeed.z, h_kp,   h_ki,   h_kd,   -nav_max_accelint, nav_max_accelint);
+// 	
+// 	accel_command_lim.x = limitf(accel_command.x, -nav_max_accel, nav_max_accel); // tested , works only with volatile variables on AVR32
+// 	accel_command_lim.y = limitf(accel_command.y, -nav_max_accel, nav_max_accel);
+// 	accel_command_lim.z = limitf(accel_command.z, -nav_max_accel, nav_max_accel);
+// 	
+// 	return accel_command_lim;
+// }
 
 // distance related governor
 vector3_t NAV_Governor( vector3_t* pos_act_m, vector3_t* target_m ) 	

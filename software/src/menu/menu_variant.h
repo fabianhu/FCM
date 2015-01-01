@@ -79,9 +79,9 @@ void menue_sendpar(uint8_t item);
 //******** START OF AUTO-GENERATED HEADER DO NOT EDIT!!! *********
 //********          Generated with Treebuilder.exe       *********
 
- #define	MENUESIZE	121	// number of menu itmes (array size)
+ #define	MENUESIZE	117	// number of menu itmes (array size)
  #define	MAX_ITEM_NAME_CHARLENGTH	17	// max name length
- #define	MENUGENUID	41325	// Generation UID
+ #define	MENUGENUID	42576	// Generation UID
 // Enum definitions
 typedef enum
 {
@@ -108,13 +108,9 @@ typedef struct myPar_tag
       Parameter_t nav_max_angle;	// The max lean angle in degrees (30)
       Parameter_t nav_max_acc_lim;	// The max acceleration out of nav in 110 ms^2  (2)
       Parameter_t nav_max_accelint;	// The max acceleration integrator windup out of nav in 110  ms^2  (2)
-      Parameter_t nav_set_speed;	// the desired cruise speed ms (5)
       Parameter_t nav_decel_radius;	// The radius in meters, at which the cruise speed starts to decelerate (20)
-      Parameter_t nav_set_speedh;	// the desired height change speed ms (5)
       Parameter_t nav_decel_radiush;	// The radius in meters, at which the height change speed starts to decelerate (20)
       Parameter_t nav_acc_flt_glob;	// global acceleration filter value (1000) 1000 is unfiltered
-      Parameter_t nav_alpha_H;	// complementary filter for z speed (9990) 10000 is accel prio
-      Parameter_t nav_alpha_speed;	// complementary filter for xy speed (9990) 10000 is accel prio
       Parameter_t nav_alpha_Pos;	// complementary filter for position (9990) 10000 is accel prio
       Parameter_t pid_nav_mislead_on;	// Activate the compensation algorithm
       Parameter_t pid_nav_mislead_minspeed;	// Minimum speed, at which the vectoring calculation starts (1)
@@ -181,7 +177,7 @@ typedef struct myPar_tag
 
 extern myPar_t myPar;
 
- #define	MENUE_PARCOUNT	81	// number of parameters
+ #define	MENUE_PARCOUNT	77	// number of parameters
 
 // Action Prototypes
 void actSwashasPot (void);	// Use Potis as PID settings for Swash (x&y)
@@ -232,13 +228,9 @@ char	txtHD[] 	PROGMEM="H D  "; \
 char	txtMAXANGLE[] 	PROGMEM="Max Angle"; \
 char	txtMAXACCEL[] 	PROGMEM="Max Accel"; \
 char	txtMAXACCINT[] 	PROGMEM="Max Acc int"; \
-char	txtSPEEDNAV[] 	PROGMEM="Speed NAV"; \
 char	txtRADIUSNAV[] 	PROGMEM="Radius NAV"; \
-char	txtSPEEDH[] 	PROGMEM="Speed h"; \
 char	txtRADIUSH[] 	PROGMEM="Radius h"; \
 char	txtACCFLTGLOB[] 	PROGMEM="Acc Flt glob"; \
-char	txtALPHAHSPD[] 	PROGMEM="alpha H spd"; \
-char	txtALPHASPEED[] 	PROGMEM="alpha speed"; \
 char	txtALPHAPOS[] 	PROGMEM="alpha pos"; \
 char	txtCOMPON[] 	PROGMEM="Comp On"; \
 char	txtMINSPEED[] 	PROGMEM="Min Speed"; \
@@ -323,13 +315,9 @@ myPar_t myPar = { \
 /*nav_max_angle*/ {	0, 1, 60, 1, none}, \
 /*nav_max_acc_lim*/ {	0, 1, 100, 1, none}, \
 /*nav_max_accelint*/ {	0, 1, 100, 1, none}, \
-/*nav_set_speed*/ {	0, 0, 30, 1, mps}, \
 /*nav_decel_radius*/ {	0, 0, 50, 1, m}, \
-/*nav_set_speedh*/ {	0, 0, 30, 1, mps}, \
 /*nav_decel_radiush*/ {	0, 0, 50, 1, m}, \
 /*nav_acc_flt_glob*/ {	0, 0, 1000, 1, none}, \
-/*nav_alpha_H*/ {	0, 0, 10000, 10, none}, \
-/*nav_alpha_speed*/ {	0, 0, 10000, 10, none}, \
 /*nav_alpha_Pos*/ {	0, 0, 10000, 10, none}, \
 /*pid_nav_mislead_on*/ {	0, 0, 1, 1, none}, \
 /*pid_nav_mislead_minspeed*/ {	0, 0, 100, 1, mps}, \
@@ -402,12 +390,12 @@ MenuItem_t m_items[MENUESIZE] = { \
 	/* 0*/	{txtFCMSETTINGS,	 0,	 0,	1,	0,	FLASH}, \
 	/* 1*/	{txtGYROPID,	 0,	 0,	9,	0,	FLASH}, \
 	/* 2*/	{txtNAV,	 0,	 0,	21,	0,	FLASH}, \
-	/* 3*/	{txtSETTINGS,	 0,	 0,	52,	0,	FLASH}, \
-	/* 4*/	{txtCALIBRATION,	 0,	 0,	62,	0,	FLASH}, \
-	/* 5*/	{txtRCCHANNELS,	 0,	 0,	81,	0,	FLASH}, \
+	/* 3*/	{txtSETTINGS,	 0,	 0,	48,	0,	FLASH}, \
+	/* 4*/	{txtCALIBRATION,	 0,	 0,	58,	0,	FLASH}, \
+	/* 5*/	{txtRCCHANNELS,	 0,	 0,	77,	0,	FLASH}, \
 	/* 6*/	{txtSAVETOFLASH,	 actSaveToFlash,	 0,	0,	0,	FLASH}, \
 	/* 7*/	{txtDIAGMODE,	 act_diag,	 0,	0,	0,	FLASH}, \
-	/* 8*/	{txtTEST,	 0,	 0,	93,	0,	FLASH}, \
+	/* 8*/	{txtTEST,	 0,	 0,	89,	0,	FLASH}, \
 	/* 9*/	{txtBACK,	 0,	 0,	1,	1,	FLASH}, \
 	/* 10*/	{txtMAXINTEGR,	 0,	 &myPar.integrator_limit,	0,	1,	FLASH}, \
 	/* 11*/	{txtGOVATMAX,	 0,	 &myPar.govAtMax,	0,	1,	FLASH}, \
@@ -422,8 +410,8 @@ MenuItem_t m_items[MENUESIZE] = { \
 	/* 20*/	{txtYAWD,	 0,	 &myPar.pid_y_d,	0,	1,	FLASH}, \
 	/* 21*/	{txtBACK,	 0,	 0,	2,	2,	FLASH}, \
 	/* 22*/	{txtNAVLIMITS,	 0,	 0,	33,	2,	FLASH}, \
-	/* 23*/	{txtNAVFILTERS,	 0,	 0,	41,	2,	FLASH}, \
-	/* 24*/	{txtNAVCOMPENSATION,	 0,	 0,	46,	2,	FLASH}, \
+	/* 23*/	{txtNAVFILTERS,	 0,	 0,	39,	2,	FLASH}, \
+	/* 24*/	{txtNAVCOMPENSATION,	 0,	 0,	42,	2,	FLASH}, \
 	/* 25*/	{txtNAVASPOTI,	 actNAVasPot,	 0,	0,	2,	FLASH}, \
 	/* 26*/	{txtNAVP,	 0,	 &myPar.pid_nav_p,	0,	2,	FLASH}, \
 	/* 27*/	{txtNAVI,	 0,	 &myPar.pid_nav_i,	0,	2,	FLASH}, \
@@ -436,90 +424,86 @@ MenuItem_t m_items[MENUESIZE] = { \
 	/* 34*/	{txtMAXANGLE,	 0,	 &myPar.nav_max_angle,	0,	22,	FLASH}, \
 	/* 35*/	{txtMAXACCEL,	 0,	 &myPar.nav_max_acc_lim,	0,	22,	FLASH}, \
 	/* 36*/	{txtMAXACCINT,	 0,	 &myPar.nav_max_accelint,	0,	22,	FLASH}, \
-	/* 37*/	{txtSPEEDNAV,	 0,	 &myPar.nav_set_speed,	0,	22,	FLASH}, \
-	/* 38*/	{txtRADIUSNAV,	 0,	 &myPar.nav_decel_radius,	0,	22,	FLASH}, \
-	/* 39*/	{txtSPEEDH,	 0,	 &myPar.nav_set_speedh,	0,	22,	FLASH}, \
-	/* 40*/	{txtRADIUSH,	 0,	 &myPar.nav_decel_radiush,	0,	22,	FLASH}, \
-	/* 41*/	{txtBACK,	 0,	 0,	23,	23,	FLASH}, \
-	/* 42*/	{txtACCFLTGLOB,	 0,	 &myPar.nav_acc_flt_glob,	0,	23,	FLASH}, \
-	/* 43*/	{txtALPHAHSPD,	 0,	 &myPar.nav_alpha_H,	0,	23,	FLASH}, \
-	/* 44*/	{txtALPHASPEED,	 0,	 &myPar.nav_alpha_speed,	0,	23,	FLASH}, \
-	/* 45*/	{txtALPHAPOS,	 0,	 &myPar.nav_alpha_Pos,	0,	23,	FLASH}, \
-	/* 46*/	{txtBACK,	 0,	 0,	24,	24,	FLASH}, \
-	/* 47*/	{txtCOMPON,	 0,	 &myPar.pid_nav_mislead_on,	0,	24,	FLASH}, \
-	/* 48*/	{txtMINSPEED,	 0,	 &myPar.pid_nav_mislead_minspeed,	0,	24,	FLASH}, \
-	/* 49*/	{txtMINTIME,	 0,	 &myPar.pid_nav_mislead_mintime,	0,	24,	FLASH}, \
-	/* 50*/	{txtFILTER,	 0,	 &myPar.pid_nav_mislead_filter,	0,	24,	FLASH}, \
-	/* 51*/	{txtMINDISTANCE,	 0,	 &myPar.pid_nav_mislead_mindist,	0,	24,	FLASH}, \
-	/* 52*/	{txtBACK,	 0,	 0,	3,	3,	FLASH}, \
-	/* 53*/	{txtMAXPOWER,	 0,	 &myPar.max_power,	0,	3,	FLASH}, \
-	/* 54*/	{txtIDLEPOWER,	 0,	 &myPar.idle_power,	0,	3,	FLASH}, \
-	/* 55*/	{txtAGILITYFACT,	 0,	 &myPar.Agilityfactor,	0,	3,	FLASH}, \
-	/* 56*/	{txtWAITGPSFIX,	 0,	 &myPar.waitGPSFix,	0,	3,	FLASH}, \
-	/* 57*/	{txtNOBTCFG,	 0,	 &myPar.NoConfigBTM222atStart,	0,	3,	FLASH}, \
-	/* 58*/	{txtDIRECTMODE,	 0,	 &myPar.DirectMode,	0,	3,	FLASH}, \
-	/* 59*/	{txtSPEKTRUMDSMX,	 0,	 &myPar.dsmx_on,	0,	3,	FLASH}, \
-	/* 60*/	{txtBNDSPEKTRUM,	 actBindSPEKTRUM,	 0,	0,	3,	FLASH}, \
-	/* 61*/	{txtSTARTBOOTLOADER,	 actStartBootloader,	 0,	0,	3,	FLASH}, \
-	/* 62*/	{txtBACK,	 0,	 0,	4,	4,	FLASH}, \
-	/* 63*/	{txtFILTERS,	 0,	 0,	75,	4,	FLASH}, \
-	/* 64*/	{txtCALIBRATERA,	 actCalibrate,	 0,	0,	4,	FLASH}, \
-	/* 65*/	{txtGYROX,	 0,	 &myPar.cal_gyro_x,	0,	4,	FLASH}, \
-	/* 66*/	{txtGYROY,	 0,	 &myPar.cal_gyro_y,	0,	4,	FLASH}, \
-	/* 67*/	{txtGYROZ,	 0,	 &myPar.cal_gyro_z,	0,	4,	FLASH}, \
-	/* 68*/	{txtACCX,	 0,	 &myPar.cal_acc_x,	0,	4,	FLASH}, \
-	/* 69*/	{txtACCY,	 0,	 &myPar.cal_acc_y,	0,	4,	FLASH}, \
-	/* 70*/	{txtACCZ,	 0,	 &myPar.cal_acc_z,	0,	4,	FLASH}, \
-	/* 71*/	{txtMAGCALFLGHT,	 0,	 &myPar.cal_mag_auto_inflight,	0,	4,	FLASH}, \
-	/* 72*/	{txtMAGX,	 0,	 &myPar.cal_mag_x,	0,	4,	FLASH}, \
-	/* 73*/	{txtMAGY,	 0,	 &myPar.cal_mag_y,	0,	4,	FLASH}, \
-	/* 74*/	{txtMAGZ,	 0,	 &myPar.cal_mag_z,	0,	4,	FLASH}, \
-	/* 75*/	{txtBACK,	 0,	 0,	63,	63,	FLASH}, \
-	/* 76*/	{txtGYROFILTER,	 0,	 &myPar.cal_gyro_filter,	0,	63,	FLASH}, \
-	/* 77*/	{txtACCELFILTER,	 0,	 &myPar.cal_acc_filter,	0,	63,	FLASH}, \
-	/* 78*/	{txtMAGNETOFLT,	 0,	 &myPar.cal_mag_filter,	0,	63,	FLASH}, \
-	/* 79*/	{txtBAROFILTER,	 0,	 &myPar.cal_baro_filter,	0,	63,	FLASH}, \
-	/* 80*/	{txtGPSFILTER,	 0,	 &myPar.cal_gps_filter,	0,	63,	FLASH}, \
-	/* 81*/	{txtBACK,	 0,	 0,	5,	5,	FLASH}, \
-	/* 82*/	{txtSWPOSHOLD,	 0,	 &myPar.SwitchPosHold,	0,	5,	FLASH}, \
-	/* 83*/	{txtSWPPOSHOLD,	 0,	 &myPar.SwPPosHold,	0,	5,	FLASH}, \
-	/* 84*/	{txtSWHGOV,	 0,	 &myPar.SwitchHGov,	0,	5,	FLASH}, \
-	/* 85*/	{txtSWPHGOV,	 0,	 &myPar.SwPHGov,	0,	5,	FLASH}, \
-	/* 86*/	{txtSWRTH,	 0,	 &myPar.SwitchReturnToHome,	0,	5,	FLASH}, \
-	/* 87*/	{txtSWPRTH,	 0,	 &myPar.SwPReturnToHome,	0,	5,	FLASH}, \
-	/* 88*/	{txtSWAUX,	 0,	 &myPar.SwitchAux,	0,	5,	FLASH}, \
-	/* 89*/	{txtSWPAUX,	 0,	 &myPar.SwPAux,	0,	5,	FLASH}, \
-	/* 90*/	{txtPOTIP,	 0,	 &myPar.PotiP,	0,	5,	FLASH}, \
-	/* 91*/	{txtPOTII,	 0,	 &myPar.PotiI,	0,	5,	FLASH}, \
-	/* 92*/	{txtPOTID,	 0,	 &myPar.PotiD,	0,	5,	FLASH}, \
-	/* 93*/	{txtBACK,	 0,	 0,	8,	8,	FLASH}, \
-	/* 94*/	{txtMADGWICK,	 0,	 &myPar.madgwick,	0,	8,	FLASH}, \
-	/* 95*/	{txtALPHAMADG,	 0,	 &myPar.a_madg,	0,	8,	FLASH}, \
-	/* 96*/	{txtPROPMAH,	 0,	 &myPar.P_mahony,	0,	8,	FLASH}, \
-	/* 97*/	{txtINTEGRMAH,	 0,	 &myPar.I_mahony,	0,	8,	FLASH}, \
-	/* 98*/	{txtTESTP,	 0,	 &myPar.test_P,	0,	8,	FLASH}, \
-	/* 99*/	{txtTESTI,	 0,	 &myPar.test_I,	0,	8,	FLASH}, \
-	/* 100*/	{txtTESTD,	 0,	 &myPar.test_D,	0,	8,	FLASH}, \
-	/* 101*/	{txtWIND,	 0,	 0,	106,	8,	FLASH}, \
-	/* 102*/	{txtMAGMIS,	 0,	 0,	109,	8,	FLASH}, \
-	/* 103*/	{txtGYRO,	 0,	 0,	112,	8,	FLASH}, \
-	/* 104*/	{txtACCEL,	 0,	 0,	115,	8,	FLASH}, \
-	/* 105*/	{txtMAGNETO,	 0,	 0,	118,	8,	FLASH}, \
-	/* 106*/	{txtWINDFREQ,	 0,	 &myPar.wind_freq,	0,	101,	FLASH}, \
-	/* 107*/	{txtWINDAMPL,	 0,	 &myPar.wind_ampl,	0,	101,	FLASH}, \
-	/* 108*/	{txtBACK,	 0,	 0,	101,	101,	FLASH}, \
-	/* 109*/	{txtMAGMISFREQ,	 0,	 &myPar.mag_mis_freq,	0,	102,	FLASH}, \
-	/* 110*/	{txtMAGMISAMPL,	 0,	 &myPar.mag_mis_ampl,	0,	102,	FLASH}, \
-	/* 111*/	{txtBACK,	 0,	 0,	102,	102,	FLASH}, \
-	/* 112*/	{txtGYROFREQ,	 0,	 &myPar.gyro_freq,	0,	103,	FLASH}, \
-	/* 113*/	{txtGYROAMPL,	 0,	 &myPar.gyro_ampl,	0,	103,	FLASH}, \
-	/* 114*/	{txtBACK,	 0,	 0,	103,	103,	FLASH}, \
-	/* 115*/	{txtACCELFREQ,	 0,	 &myPar.accel_freq,	0,	104,	FLASH}, \
-	/* 116*/	{txtACCELAMPL,	 0,	 &myPar.accel_ampl,	0,	104,	FLASH}, \
-	/* 117*/	{txtBACK,	 0,	 0,	104,	104,	FLASH}, \
-	/* 118*/	{txtMAGNETOFREQ,	 0,	 &myPar.magneto_freq,	0,	105,	FLASH}, \
-	/* 119*/	{txtMAGNETOAMPL,	 0,	 &myPar.magneto_ampl,	0,	105,	FLASH}, \
-	/* 120*/	{txtBACK,	 0,	 0,	105,	105,	FLASH}, \
+	/* 37*/	{txtRADIUSNAV,	 0,	 &myPar.nav_decel_radius,	0,	22,	FLASH}, \
+	/* 38*/	{txtRADIUSH,	 0,	 &myPar.nav_decel_radiush,	0,	22,	FLASH}, \
+	/* 39*/	{txtBACK,	 0,	 0,	23,	23,	FLASH}, \
+	/* 40*/	{txtACCFLTGLOB,	 0,	 &myPar.nav_acc_flt_glob,	0,	23,	FLASH}, \
+	/* 41*/	{txtALPHAPOS,	 0,	 &myPar.nav_alpha_Pos,	0,	23,	FLASH}, \
+	/* 42*/	{txtBACK,	 0,	 0,	24,	24,	FLASH}, \
+	/* 43*/	{txtCOMPON,	 0,	 &myPar.pid_nav_mislead_on,	0,	24,	FLASH}, \
+	/* 44*/	{txtMINSPEED,	 0,	 &myPar.pid_nav_mislead_minspeed,	0,	24,	FLASH}, \
+	/* 45*/	{txtMINTIME,	 0,	 &myPar.pid_nav_mislead_mintime,	0,	24,	FLASH}, \
+	/* 46*/	{txtFILTER,	 0,	 &myPar.pid_nav_mislead_filter,	0,	24,	FLASH}, \
+	/* 47*/	{txtMINDISTANCE,	 0,	 &myPar.pid_nav_mislead_mindist,	0,	24,	FLASH}, \
+	/* 48*/	{txtBACK,	 0,	 0,	3,	3,	FLASH}, \
+	/* 49*/	{txtMAXPOWER,	 0,	 &myPar.max_power,	0,	3,	FLASH}, \
+	/* 50*/	{txtIDLEPOWER,	 0,	 &myPar.idle_power,	0,	3,	FLASH}, \
+	/* 51*/	{txtAGILITYFACT,	 0,	 &myPar.Agilityfactor,	0,	3,	FLASH}, \
+	/* 52*/	{txtWAITGPSFIX,	 0,	 &myPar.waitGPSFix,	0,	3,	FLASH}, \
+	/* 53*/	{txtNOBTCFG,	 0,	 &myPar.NoConfigBTM222atStart,	0,	3,	FLASH}, \
+	/* 54*/	{txtDIRECTMODE,	 0,	 &myPar.DirectMode,	0,	3,	FLASH}, \
+	/* 55*/	{txtSPEKTRUMDSMX,	 0,	 &myPar.dsmx_on,	0,	3,	FLASH}, \
+	/* 56*/	{txtBNDSPEKTRUM,	 actBindSPEKTRUM,	 0,	0,	3,	FLASH}, \
+	/* 57*/	{txtSTARTBOOTLOADER,	 actStartBootloader,	 0,	0,	3,	FLASH}, \
+	/* 58*/	{txtBACK,	 0,	 0,	4,	4,	FLASH}, \
+	/* 59*/	{txtFILTERS,	 0,	 0,	71,	4,	FLASH}, \
+	/* 60*/	{txtCALIBRATERA,	 actCalibrate,	 0,	0,	4,	FLASH}, \
+	/* 61*/	{txtGYROX,	 0,	 &myPar.cal_gyro_x,	0,	4,	FLASH}, \
+	/* 62*/	{txtGYROY,	 0,	 &myPar.cal_gyro_y,	0,	4,	FLASH}, \
+	/* 63*/	{txtGYROZ,	 0,	 &myPar.cal_gyro_z,	0,	4,	FLASH}, \
+	/* 64*/	{txtACCX,	 0,	 &myPar.cal_acc_x,	0,	4,	FLASH}, \
+	/* 65*/	{txtACCY,	 0,	 &myPar.cal_acc_y,	0,	4,	FLASH}, \
+	/* 66*/	{txtACCZ,	 0,	 &myPar.cal_acc_z,	0,	4,	FLASH}, \
+	/* 67*/	{txtMAGCALFLGHT,	 0,	 &myPar.cal_mag_auto_inflight,	0,	4,	FLASH}, \
+	/* 68*/	{txtMAGX,	 0,	 &myPar.cal_mag_x,	0,	4,	FLASH}, \
+	/* 69*/	{txtMAGY,	 0,	 &myPar.cal_mag_y,	0,	4,	FLASH}, \
+	/* 70*/	{txtMAGZ,	 0,	 &myPar.cal_mag_z,	0,	4,	FLASH}, \
+	/* 71*/	{txtBACK,	 0,	 0,	59,	59,	FLASH}, \
+	/* 72*/	{txtGYROFILTER,	 0,	 &myPar.cal_gyro_filter,	0,	59,	FLASH}, \
+	/* 73*/	{txtACCELFILTER,	 0,	 &myPar.cal_acc_filter,	0,	59,	FLASH}, \
+	/* 74*/	{txtMAGNETOFLT,	 0,	 &myPar.cal_mag_filter,	0,	59,	FLASH}, \
+	/* 75*/	{txtBAROFILTER,	 0,	 &myPar.cal_baro_filter,	0,	59,	FLASH}, \
+	/* 76*/	{txtGPSFILTER,	 0,	 &myPar.cal_gps_filter,	0,	59,	FLASH}, \
+	/* 77*/	{txtBACK,	 0,	 0,	5,	5,	FLASH}, \
+	/* 78*/	{txtSWPOSHOLD,	 0,	 &myPar.SwitchPosHold,	0,	5,	FLASH}, \
+	/* 79*/	{txtSWPPOSHOLD,	 0,	 &myPar.SwPPosHold,	0,	5,	FLASH}, \
+	/* 80*/	{txtSWHGOV,	 0,	 &myPar.SwitchHGov,	0,	5,	FLASH}, \
+	/* 81*/	{txtSWPHGOV,	 0,	 &myPar.SwPHGov,	0,	5,	FLASH}, \
+	/* 82*/	{txtSWRTH,	 0,	 &myPar.SwitchReturnToHome,	0,	5,	FLASH}, \
+	/* 83*/	{txtSWPRTH,	 0,	 &myPar.SwPReturnToHome,	0,	5,	FLASH}, \
+	/* 84*/	{txtSWAUX,	 0,	 &myPar.SwitchAux,	0,	5,	FLASH}, \
+	/* 85*/	{txtSWPAUX,	 0,	 &myPar.SwPAux,	0,	5,	FLASH}, \
+	/* 86*/	{txtPOTIP,	 0,	 &myPar.PotiP,	0,	5,	FLASH}, \
+	/* 87*/	{txtPOTII,	 0,	 &myPar.PotiI,	0,	5,	FLASH}, \
+	/* 88*/	{txtPOTID,	 0,	 &myPar.PotiD,	0,	5,	FLASH}, \
+	/* 89*/	{txtBACK,	 0,	 0,	8,	8,	FLASH}, \
+	/* 90*/	{txtMADGWICK,	 0,	 &myPar.madgwick,	0,	8,	FLASH}, \
+	/* 91*/	{txtALPHAMADG,	 0,	 &myPar.a_madg,	0,	8,	FLASH}, \
+	/* 92*/	{txtPROPMAH,	 0,	 &myPar.P_mahony,	0,	8,	FLASH}, \
+	/* 93*/	{txtINTEGRMAH,	 0,	 &myPar.I_mahony,	0,	8,	FLASH}, \
+	/* 94*/	{txtTESTP,	 0,	 &myPar.test_P,	0,	8,	FLASH}, \
+	/* 95*/	{txtTESTI,	 0,	 &myPar.test_I,	0,	8,	FLASH}, \
+	/* 96*/	{txtTESTD,	 0,	 &myPar.test_D,	0,	8,	FLASH}, \
+	/* 97*/	{txtWIND,	 0,	 0,	102,	8,	FLASH}, \
+	/* 98*/	{txtMAGMIS,	 0,	 0,	105,	8,	FLASH}, \
+	/* 99*/	{txtGYRO,	 0,	 0,	108,	8,	FLASH}, \
+	/* 100*/	{txtACCEL,	 0,	 0,	111,	8,	FLASH}, \
+	/* 101*/	{txtMAGNETO,	 0,	 0,	114,	8,	FLASH}, \
+	/* 102*/	{txtWINDFREQ,	 0,	 &myPar.wind_freq,	0,	97,	FLASH}, \
+	/* 103*/	{txtWINDAMPL,	 0,	 &myPar.wind_ampl,	0,	97,	FLASH}, \
+	/* 104*/	{txtBACK,	 0,	 0,	97,	97,	FLASH}, \
+	/* 105*/	{txtMAGMISFREQ,	 0,	 &myPar.mag_mis_freq,	0,	98,	FLASH}, \
+	/* 106*/	{txtMAGMISAMPL,	 0,	 &myPar.mag_mis_ampl,	0,	98,	FLASH}, \
+	/* 107*/	{txtBACK,	 0,	 0,	98,	98,	FLASH}, \
+	/* 108*/	{txtGYROFREQ,	 0,	 &myPar.gyro_freq,	0,	99,	FLASH}, \
+	/* 109*/	{txtGYROAMPL,	 0,	 &myPar.gyro_ampl,	0,	99,	FLASH}, \
+	/* 110*/	{txtBACK,	 0,	 0,	99,	99,	FLASH}, \
+	/* 111*/	{txtACCELFREQ,	 0,	 &myPar.accel_freq,	0,	100,	FLASH}, \
+	/* 112*/	{txtACCELAMPL,	 0,	 &myPar.accel_ampl,	0,	100,	FLASH}, \
+	/* 113*/	{txtBACK,	 0,	 0,	100,	100,	FLASH}, \
+	/* 114*/	{txtMAGNETOFREQ,	 0,	 &myPar.magneto_freq,	0,	101,	FLASH}, \
+	/* 115*/	{txtMAGNETOAMPL,	 0,	 &myPar.magneto_ampl,	0,	101,	FLASH}, \
+	/* 116*/	{txtBACK,	 0,	 0,	101,	101,	FLASH}, \
 };
 #endif
 

@@ -292,7 +292,7 @@ void TaskControl(void)
 		
 		// calculate normalized acceleration	
 		v_acc_global_mpss = quaternion_rotateVector(v_acc_frame_mpss,quaternion_inverse(q_ActualOrientation));
-		v_acc_global_mpss.z -= 9.81; // subtract the z acceleration here.
+		// fixme back in !! v_acc_global_mpss.z -= 9.81; // subtract the z acceleration here.
 		
 		float filterAcc = myPar.nav_acc_flt_glob.sValue*0.001;
 		
@@ -302,8 +302,8 @@ void TaskControl(void)
 		v_accel_glob_flt_mpss.z = Filter_f(v_accel_glob_flt_mpss.z,v_acc_global_mpss.z,filterAcc);
 		
 		// always calculate the interpolation 			// The best of all algorithms - ever:
-		Superfilter(v_accel_glob_flt_mpss, &v_pos_act_m);  // internally disabled for now!
-
+		Superfilter(v_accel_glob_flt_mpss, &v_pos_act_m);  
+		
 		quaternion_to_euler(q_ActualOrientation, &ax, &ay, &fActHeading_rad); // remember the actual heading
 		
 		// for the other systems:
@@ -732,17 +732,17 @@ void TaskControl(void)
 					TXData.gx =  debug_der_x*1000;//bank.x * radgra;//v_gyro_raw.x;
 					TXData.gy = debug_der_y*1000;// bank.y * radgra;//v_gyro_raw.y;
 					TXData.gz = fActHeading_rad*radgra;//thrust * 1000;//v_gyro_raw.z;
-					TXData.ax = v_accel_command_mpss.x*1000;//fTrgNavDistance_m;
-					TXData.ay = v_accel_command_mpss.y*1000;//fTrgNavHeading_rad* radgra;
-					TXData.az = v_accel_command_mpss.z*1000;//fHeadingDiff_rad* radgra;
+					TXData.ax = v_accel_command_mpss.x*1019;//fTrgNavDistance_m;
+					TXData.ay = v_accel_command_mpss.y*1019;//fTrgNavHeading_rad* radgra;
+					TXData.az = v_accel_command_mpss.z*1019;//fHeadingDiff_rad* radgra;
 					TXData.mx = v_mag.x;
 					TXData.my = v_mag.y;
 					TXData.mz = v_mag.z;
-					TXData.gov_x = v_pos_act_m.x*1000;//debug_gov.x*1000;// v_accel_glob_flt_mpss.x*1019;//; //ox; // mag_cal.x;
-					TXData.gov_y = v_pos_act_m.y*1000;//debug_gov.y*1000;// v_accel_glob_flt_mpss.y*1019;//0;// oy; // mag_cal.y;
-					TXData.gov_z = v_pos_act_m.z*1000;//debug_gov.z*1000;// v_accel_glob_flt_mpss.z*1019;//0;// oz; // mag_cal.z;
-					TXData.RC_a = cmd_thr;
-					TXData.RC_x = cmd_elev;
+					TXData.gov_x = ox; // mag_cal.x;	 v_pos_act_m.x*1000;//debug_gov.x*1000;//
+					TXData.gov_y = oy; // mag_cal.y;	 v_pos_act_m.y*1000;//debug_gov.y*1000;//
+					TXData.gov_z = oz; // mag_cal.z;  	 v_pos_act_m.z*1000;//debug_gov.z*1000;//
+					TXData.RC_a = cmd_thr;												   
+					TXData.RC_x = cmd_elev;												   
 					TXData.RC_y = cmd_roll;
 					TXData.RC_z = cmd_yaw;
 				}
@@ -752,12 +752,12 @@ void TaskControl(void)
 					TXData.gx = v_gyro_radps.x*radgra;
 					TXData.gy = v_gyro_radps.y*radgra;
 					TXData.gz = v_gyro_radps.z*radgra;
-					TXData.ax = v_acc_frame_mpss.x*1000;
-					TXData.ay = v_acc_frame_mpss.y*1000;
-					TXData.az = v_acc_frame_mpss.z*1000;
-					TXData.mx = v_mag.x;
-					TXData.my = v_mag.y;
-					TXData.mz = v_mag.z;
+					TXData.ax = v_acc_frame_mpss.x*1019;
+					TXData.ay = v_acc_frame_mpss.y*1019;
+					TXData.az = v_acc_frame_mpss.z*1019;
+					TXData.mx =  v_accel_glob_flt_mpss.x*1019;//v_mag.x;
+					TXData.my =  v_accel_glob_flt_mpss.y*1019;//v_mag.y;
+					TXData.mz =  v_accel_glob_flt_mpss.z*1019;//v_mag.z;
 					TXData.gov_x = res_cmd.x;
 					TXData.gov_y = res_cmd.y;
 					TXData.gov_z = res_cmd.z;

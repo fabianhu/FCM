@@ -1028,9 +1028,9 @@
     <Compile Include="src\modules\quaternions\AHRS2.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="src\modules\quaternions\AHRS3.c">
+    <None Include="src\modules\quaternions\AHRS3.c">
       <SubType>compile</SubType>
-    </Compile>
+    </None>
     <Compile Include="src\modules\quaternions\AHRS3.h">
       <SubType>compile</SubType>
     </Compile>

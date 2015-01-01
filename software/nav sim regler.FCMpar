@@ -17,13 +17,9 @@
 \NAV\NAV Limits\Max Angle	15
 \NAV\NAV Limits\Max Accel	100
 \NAV\NAV Limits\Max Acc int	30
-\NAV\NAV Limits\Speed NAV	10
 \NAV\NAV Limits\Radius NAV	1
-\NAV\NAV Limits\Speed h	30
 \NAV\NAV Limits\Radius h	1
 \NAV\NAV Filters\Acc Flt glob	1000
-\NAV\NAV Filters\alpha H spd	0
-\NAV\NAV Filters\alpha speed	9990
 \NAV\NAV Filters\alpha pos	9990
 \NAV\NAV Compensation\Comp On	0
 \NAV\NAV Compensation\Min Speed	3

@@ -154,6 +154,10 @@ float limitf(float val, float low, float upp)
 
 
 /*
+Browns linear exponent filter
+taken from http://www.camelsoftware.com/firetail/blog/uncategorized/scalar-low-pass-filters-a-comparison-of-algorithms/
+the code was c-ified from the c++ example
+
 The simple expo filter works well over time to find the average of the readings, but what if the average is trending? 
 What if the average is climbing?? In this situation the output from a simple expo filter will begin to lag behind the true value. This is the biggest weakness of the simple expo filter.
 
