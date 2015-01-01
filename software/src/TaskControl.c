@@ -170,7 +170,6 @@ void TaskControl(void)
 	
 	// globals from the best algo - ever
 	vector3_t v_pos_act_m; // actual position offset from origin (global)
-	vector3_t v_speed_act_mps; // actual speed in m/s (global)
 	
 	vector3_t v_pos_target_m;
 	static vector3_t v_pos_last_m;
@@ -303,7 +302,7 @@ void TaskControl(void)
 		v_accel_glob_flt_mpss.z = Filter_f(v_accel_glob_flt_mpss.z,v_acc_global_mpss.z,filterAcc);
 		
 		// always calculate the interpolation 			// The best of all algorithms - ever:
-		Superfilter(v_accel_glob_flt_mpss, &v_pos_act_m, &v_speed_act_mps);  // internally disabled for now!
+		Superfilter(v_accel_glob_flt_mpss, &v_pos_act_m);  // internally disabled for now!
 
 		quaternion_to_euler(q_ActualOrientation, &ax, &ay, &fActHeading_rad); // remember the actual heading
 		
@@ -373,7 +372,7 @@ void TaskControl(void)
 				fHeadingDiff_rad = 0;
 			}
 				
-			v_accel_command_mpss = NAV_Governor(&v_pos_act_m, &v_pos_target_m, &v_speed_act_mps); // inner parts tested, not completely!
+			v_accel_command_mpss = NAV_Governor(&v_pos_act_m, &v_pos_target_m); // inner parts tested, not completely!
 
 			if(!swHGov && !RCtimeout)
 			{
@@ -736,9 +735,9 @@ void TaskControl(void)
 					TXData.ax = v_accel_command_mpss.x*1000;//fTrgNavDistance_m;
 					TXData.ay = v_accel_command_mpss.y*1000;//fTrgNavHeading_rad* radgra;
 					TXData.az = v_accel_command_mpss.z*1000;//fHeadingDiff_rad* radgra;
-					TXData.mx = v_speed_act_mps.x*1000; //v_mag.x;
-					TXData.my = v_speed_act_mps.y*1000; //v_mag.y;
-					TXData.mz = v_speed_act_mps.z*1000; //v_mag.z;
+					TXData.mx = v_mag.x;
+					TXData.my = v_mag.y;
+					TXData.mz = v_mag.z;
 					TXData.gov_x = v_pos_act_m.x*1000;//debug_gov.x*1000;// v_accel_glob_flt_mpss.x*1019;//; //ox; // mag_cal.x;
 					TXData.gov_y = v_pos_act_m.y*1000;//debug_gov.y*1000;// v_accel_glob_flt_mpss.y*1019;//0;// oy; // mag_cal.y;
 					TXData.gov_z = v_pos_act_m.z*1000;//debug_gov.z*1000;// v_accel_glob_flt_mpss.z*1019;//0;// oz; // mag_cal.z;
@@ -844,9 +843,9 @@ void TaskControl(void)
 				TXGPSdata.lon = txpos.lon;
 				TXGPSdata.lat = txpos.lat;
 				TXGPSdata.hGPS = v_pos_act_m.z; // naaah duplicated.
-				TXGPSdata.speedx = v_speed_act_mps.x;
-				TXGPSdata.speedy = v_speed_act_mps.y;
-				TXGPSdata.speedz = v_speed_act_mps.z;
+				TXGPSdata.speedx = 0;//;.x;
+				TXGPSdata.speedy = 0;//;.y;
+				TXGPSdata.speedz = 0;//;.z;
 				TXGPSdata.posx = v_pos_act_m.x;
 				TXGPSdata.posy = v_pos_act_m.y;
 				TXGPSdata.posz = v_pos_act_m.z;

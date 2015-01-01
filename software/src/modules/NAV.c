@@ -161,20 +161,17 @@ All in global coordinates.
 acc_mpss: Accerleration world based without gravity in meters / s*s
 pos: gps position and barometer height
 */
-void Superfilter(vector3_t acc_mpss, vector3_t* pos_act, vector3_t* v_act)
+void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 {
 
 #if DISABLE_SENSOR_FUSION_GPS == 1
 #if SIMULATION == 1
 
 *pos_act = SimGetPos_m();
-*v_act = SimGetVel_m(); // this is a dirty workaround, ideally let the filter run !!!
+//*v_act = SimGetVel_m(); // this is a dirty workaround, ideally let the filter run !!!
 
 #else
 
-v_act->x = slowspeed_mps.x;
-v_act->y = slowspeed_mps.y;
-v_act->z = slowspeed_mps.z;
 pos_act->x = slowPos_m.x;
 pos_act->y = slowPos_m.y;
 pos_act->z = slowPos_m.z;
@@ -338,7 +335,7 @@ vector3_t NAV_Governor_vel( vector3_t* pos_act_m, vector3_t* target_m, vector3_t
 }
 
 // distance related governor
-vector3_t NAV_Governor( vector3_t* pos_act_m, vector3_t* target_m, vector3_t* speed_act_mps ) // fixme unused parameter 'speed_act_mps'	
+vector3_t NAV_Governor( vector3_t* pos_act_m, vector3_t* target_m ) 	
 {
 	volatile vector3_t accel_command;
 	volatile vector3_t accel_command_lim;

@@ -48,7 +48,7 @@ All in global coordinates.
 acc_mpss: Accerleration world based without gravity in meters / s*s
 pos: gps position and barometer height
 */
-void Superfilter(vector3_t acc_mpss, /* vector3_t pos*/ vector3_t* pos_act, vector3_t* v_act);
+void Superfilter(vector3_t acc_mpss, vector3_t* pos_act);
 
 /*
 Get the desired speed setpoint out of the distance to trg.
@@ -61,7 +61,7 @@ void test_GetSetSpeed(void);
 The Governor
 return the desired acceleration vector
 */
-vector3_t NAV_Governor( vector3_t* pos_act_m, vector3_t* target_m, vector3_t* speed_act_mps );
+vector3_t NAV_Governor( vector3_t* pos_act_m, vector3_t* target_m );
 void test_NAV_Governor(void);
 
 /*
