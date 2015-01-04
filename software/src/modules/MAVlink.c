@@ -4,7 +4,7 @@
  * 
  * Created: 07.02.2014 20:32:24
  *
- * (c) 2014 by Fabian Huslik (with portions of a mavlink example, of course!)
+ * (c) 2014-2015 by Fabian Huslik (with portions of a mavlink example, of course!)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

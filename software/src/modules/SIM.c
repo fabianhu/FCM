@@ -8,7 +8,7 @@
  *
  * Created: 29.10.2014 22:39:56
  *
- * (c) 2014 by Fabian Huslik
+ * (c) 2014-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,7 +138,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	vAccel_mpss.z -=9.81; // subtract earths acceleration.
 	// in steady state, the earths acceleration and the "o_thrust" acceleration neutralize to 0.
 	
-	vector3_t vDv = vector_scale(&vAccel_mpss,SIM_DT);
+	vector3_t vDv = vector_scale(&vAccel_mpss,SIM_DT); // multiply by time -> delta v for this step
 	
 	sim_vel_world_mps = vector_add(&sim_vel_world_mps,&vDv);
 	

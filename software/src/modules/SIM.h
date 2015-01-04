@@ -3,7 +3,7 @@
  *
  * Created: 29.10.2014 22:53:37
  *
- * (c) 2014 by Fabian Huslik
+ * (c) 2014-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,9 @@
 
 #define SIMFACTORLAT 89.84 // gives 10 millionth degrees from m, correct only around "home"
 #define SIMFACTORLON 134.27 // gives 10 millionth degrees from m
+
+#define SIMGPSFILTER 0.99 // GPS delaying filter
+#define SIMHFILTER   0.90 // height acquisition delaying filter 
 
 // visu only:
 quaternion_t SimGetorientation(void); // get simulated orientation out of simulation

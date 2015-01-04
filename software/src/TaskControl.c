@@ -4,7 +4,7 @@
  *
  * Created: 06.09.2012 09:40:25
  *
- * (c) 2012-2014 by Fabian Huslik
+ * (c) 2012-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -791,10 +791,10 @@ void TaskControl(void)
 
 				quaternion_t q_simulated;
 				q_simulated = SimGetorientation();				
-				TXQuaternions.qSet[0]= q_set_global.w;
-				TXQuaternions.qSet[1]= q_set_global.x;
-				TXQuaternions.qSet[2]= q_set_global.y;
-				TXQuaternions.qSet[3]= q_set_global.z;
+				TXQuaternions.qSet[0]= q_ActualOrientation.w;
+				TXQuaternions.qSet[1]= q_ActualOrientation.x;
+				TXQuaternions.qSet[2]= q_ActualOrientation.y;
+				TXQuaternions.qSet[3]= q_ActualOrientation.z;
 				
 				TXQuaternions.qSim[0]= q_simulated.w;
 				TXQuaternions.qSim[1]= q_simulated.x;

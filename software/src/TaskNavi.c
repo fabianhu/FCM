@@ -3,7 +3,7 @@
  *
  * Created: 14.10.2013 20:23:55
  *
- * (c) 2013-2014 by Fabian Huslik
+ * (c) 2013-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,25 @@ extern GPS_interface_t   gps_dataset; // fixme schönes Interface basteln
 //local prototypes
 void TaskNavi(void);
 
+gps_coordinates_t SIM_GPS_getpos()
+{
+	static vector3_t filtered;
+		
+
+	gps_coordinates_t ActPosSim = {483829100 , 108527100}; // FCM "home"
+			
+	vector3_t v_simul = SimGetPos_m();
+		
+	filtered.x = Filter_f(filtered.x,v_simul.x,SIMGPSFILTER);
+	filtered.y = Filter_f(filtered.y,v_simul.y,SIMGPSFILTER);
+		
+			
+	ActPosSim.lon += (int32_t)(filtered.x * SIMFACTORLON); 
+	ActPosSim.lat += (int32_t)(filtered.y * SIMFACTORLAT);
+	
+	return ActPosSim;
+}
+
 /*
 the only purpose of this task is to get notified about a successfully evaluated GPGGA frame.
 */
@@ -54,34 +73,27 @@ void TaskNavi(void)
 	
 	
 	#if SIMULATION == 1
-	static vector3_t filtered;
 	
 	while(1)
 	{
-		gps_dataset.status.gps3dfix = 1; // force sim
-		gps_dataset.status.gps2dfix = 1; // force sim
 		
 		OS_SetAlarm(OSALM_NAVIWAIT,100);
 		OS_WaitAlarm(OSALM_NAVIWAIT);
 		
-		gps_coordinates_t ActPosSim = {483829100 , 108527100}; // FCM "home"
-			
-		vector3_t v = SimGetPos_m();
-		
-		filtered.x = Filter_f(filtered.x,v.x,0.99);
-		filtered.y = Filter_f(filtered.y,v.y,0.99);
-		
-			
-		ActPosSim.lon += (int32_t)(filtered.x * SIMFACTORLON); 
-		ActPosSim.lat += (int32_t)(filtered.y * SIMFACTORLAT);
-		NAV_UpdatePosition_xy(ActPosSim);
+		gps_coordinates_t ActPosSim = SIM_GPS_getpos();
 
+		
+		gps_dataset.status.gps3dfix = 1; // force sim
+		gps_dataset.status.gps2dfix = 1; // force sim
 		gps_dataset.gps_loc.lat = ActPosSim.lat; // fixme BAAAD interface!
 		gps_dataset.gps_loc.lon = ActPosSim.lon;
 
 
 		//update baro
-		filtered.z = Filter_f(filtered.z,v.z,0.5);
+		filtered.z = Filter_f(filtered.z,v_simul.z,SIMHFILTER);
+		
+		
+		NAV_UpdatePosition_xy(ActPosSim);
 		NAV_UpdatePosition_z_m(filtered.z);
 		
 	}

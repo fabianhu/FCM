@@ -1,7 +1,7 @@
 /*
 	FabOS for ATMEL AVR32
 	
-	(c) 2008-2014 Fabian Huslik
+	(c) 2008-2015 Fabian Huslik
     
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

@@ -1,7 +1,7 @@
 /*
  * This is the Menu interface for FCM
  *
- * (c) 2012-2014 Fabian Huslik
+ * (c) 2012-2015 Fabian Huslik
  *    
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -462,7 +462,7 @@ void GetDiagTxt( char* ptxt )
 	
 	//1:1234 2:1234 3:1234
 	//					 123456789012345678901
-	sprintf(&ptxt[7*21],"(c) 2014 huslik.net");
+	sprintf(&ptxt[7*21],"(c) 2015 huslik.net");
 }
 
 
