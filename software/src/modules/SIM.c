@@ -35,6 +35,7 @@
 #include "../menu/menu_variant.h"
 #include "../FabOS_config.h"
 #include "../FabOS/FabOS.h"
+#include "GPS.h"
 #include "SIM.h"
 
 quaternion_t sim_orientation= {1,0,0,0};  
@@ -89,6 +90,39 @@ float signf(float s)
 {
 	return (s<0.0f?-1.0f:1.0f);
 }
+
+gps_coordinates_t SIM_GPS_getpos(void)
+{
+	static vector2_t filtered;
+	
+
+	gps_coordinates_t ActPosSim = {483829100 , 108527100}; // FCM "home"
+	
+	vector3_t v_simul = SimGetPos_m();
+	
+	filtered.x = Filter_f(filtered.x,v_simul.x,SIMGPSFILTER);
+	filtered.y = Filter_f(filtered.y,v_simul.y,SIMGPSFILTER);
+	
+	
+	ActPosSim.lon += (int32_t)(filtered.x * SIMFACTORLON);
+	ActPosSim.lat += (int32_t)(filtered.y * SIMFACTORLAT);
+	
+	return ActPosSim;
+}
+
+
+float SIM_geth(void)
+{
+	static float filtered;
+		
+	vector3_t v_simul = SimGetPos_m();
+	
+	filtered = Filter_f(filtered,v_simul.z,SIMHFILTER);
+	
+	return filtered;
+}
+
+
 
 
 // one simulation step

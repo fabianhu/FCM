@@ -812,7 +812,7 @@ void TaskControl(void)
 				TXQuaternions.vDat[2] = v_pos_act_m.z;
 				
 				
-				#else
+				#else // SIMULATION == 0
 				TXQuaternions.qSet[0]= q_set_global.w;
 				TXQuaternions.qSet[1]= q_set_global.x;
 				TXQuaternions.qSet[2]= q_set_global.y;

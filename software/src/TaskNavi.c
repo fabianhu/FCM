@@ -42,24 +42,6 @@ extern GPS_interface_t   gps_dataset; // fixme schönes Interface basteln
 //local prototypes
 void TaskNavi(void);
 
-gps_coordinates_t SIM_GPS_getpos()
-{
-	static vector3_t filtered;
-		
-
-	gps_coordinates_t ActPosSim = {483829100 , 108527100}; // FCM "home"
-			
-	vector3_t v_simul = SimGetPos_m();
-		
-	filtered.x = Filter_f(filtered.x,v_simul.x,SIMGPSFILTER);
-	filtered.y = Filter_f(filtered.y,v_simul.y,SIMGPSFILTER);
-		
-			
-	ActPosSim.lon += (int32_t)(filtered.x * SIMFACTORLON); 
-	ActPosSim.lat += (int32_t)(filtered.y * SIMFACTORLAT);
-	
-	return ActPosSim;
-}
 
 /*
 the only purpose of this task is to get notified about a successfully evaluated GPGGA frame.
@@ -88,13 +70,10 @@ void TaskNavi(void)
 		gps_dataset.gps_loc.lat = ActPosSim.lat; // fixme BAAAD interface!
 		gps_dataset.gps_loc.lon = ActPosSim.lon;
 
-
-		//update baro
-		filtered.z = Filter_f(filtered.z,v_simul.z,SIMHFILTER);
-		
-		
 		NAV_UpdatePosition_xy(ActPosSim);
-		NAV_UpdatePosition_z_m(filtered.z);
+		
+		//update baro here
+		NAV_UpdatePosition_z_m(SIM_geth());
 		
 	}
 	#else

@@ -66,7 +66,8 @@ float signf(float s);
 void SimDisturbStep(float* value, float* angle, float frequency_hz, float amplitude);
 void SimDisturbVector(vector3_t *value, vector3_t *angle, float frequency_hz, float amplitude);
 
-
+gps_coordinates_t SIM_GPS_getpos(void);
+float SIM_geth(void);
 
 
 #endif /* SIM_H_ */

@@ -143,51 +143,51 @@ pos: gps position and barometer height
 void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 {
 
-#if DISABLE_SENSOR_FUSION_GPS == 1
-#if SIMULATION == 1
+	#if DISABLE_SENSOR_FUSION_GPS == 1
+	#if SIMULATION == 1
 
-*pos_act = SimGetPos_m();
+	*pos_act = SimGetPos_m(); // thats a very short shortcut
 
-#else
+	#else //SIMULATION == 0
 
-pos_act->x = slowPos_m.x;
-pos_act->y = slowPos_m.y;
-pos_act->z = slowPos_m.z;
-#endif //SIMULATION == 0
+	pos_act->x = slowPos_m.x;
+	pos_act->y = slowPos_m.y;
+	pos_act->z = slowPos_m.z;
+	#endif //SIMULATION
 
-#else
+	#else
 
-// Simulation is done in GPS task TaskNavi
+	// Simulation is done in GPS task TaskNavi
 
-//fixme use BrownLinearExpo() for accel filtering, maybe outside.
+	//fixme use BrownLinearExpo() for accel filtering, maybe outside.
 
-static uint32_t lastFilterTime;
-uint32_t time = OS_GetTicks();
-float dt_s =  (float)(time-lastFilterTime) * 0.001;  // in seconds
-lastFilterTime = time; // remember the time
+	static uint32_t lastFilterTime;
+	uint32_t time = OS_GetTicks();
+	float dt_s =  (float)(time-lastFilterTime) * 0.001;  // in seconds
+	lastFilterTime = time; // remember the time
 
-// acceleration to speed: speed = speed + accel * dt // fast but drifty
-// position to speed: speed = dPos / dt   // slow but accurate
-// speed to position: dPos = speed * dt
+	// acceleration to speed: speed = speed + accel * dt // fast but drifty
+	// position to speed: speed = dPos / dt   // slow but accurate
+	// speed to position: dPos = speed * dt
 
-// speed = 0.98 * ( speed + accel * dt  ) + 0.02 * ( slowSpeed)
-float alfa_pos = (float)myPar.nav_alpha_Pos.sValue * 0.001;
-
-
-// complementary filter for position
-// new pos = old pos + acc * dt *dt
-pos_act->x = alfa_pos*(pos_act->x + acc_mpss.x * dt_s * dt_s) + (1.0-alfa_pos)*(slowPos_m.x);
-pos_act->y = alfa_pos*(pos_act->y + acc_mpss.y * dt_s * dt_s) + (1.0-alfa_pos)*(slowPos_m.y);
-pos_act->z = alfa_pos*(pos_act->z + acc_mpss.z * dt_s * dt_s) + (1.0-alfa_pos)*(slowPos_m.z);
+	// speed = 0.98 * ( speed + accel * dt  ) + 0.02 * ( slowSpeed)
+	float alfa_pos = (float)myPar.nav_alpha_Pos.sValue * 0.001;
 
 
-// for increased precision (depending on signal quality) one could use the intermediate of new calculated and last speed forpos calculation.
-#endif
+	// complementary filter for position
+	// new pos = old pos + acc * dt *dt
+	pos_act->x = alfa_pos*(pos_act->x + acc_mpss.x * dt_s * dt_s) + (1.0-alfa_pos)*(slowPos_m.x);
+	pos_act->y = alfa_pos*(pos_act->y + acc_mpss.y * dt_s * dt_s) + (1.0-alfa_pos)*(slowPos_m.y);
+	pos_act->z = alfa_pos*(pos_act->z + acc_mpss.z * dt_s * dt_s) + (1.0-alfa_pos)*(slowPos_m.z);
 
-// debug_accel = vector_copy(v_act);
-// debug_gyro = vector_copy(pos_act);
-// debug_mag = vector_copy(&acc_mpss);
-// debug_gov = vector_copy(&slowPos_m);
+
+	// for increased precision (depending on signal quality) one could use the intermediate of new calculated and last speed forpos calculation.
+	#endif
+
+	// debug_accel = vector_copy(v_act);
+	// debug_gyro = vector_copy(pos_act);
+	// debug_mag = vector_copy(&acc_mpss);
+	// debug_gov = vector_copy(&slowPos_m);
 
 }
 
