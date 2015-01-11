@@ -1,4 +1,4 @@
-# FCM Settings 2.1.273
+# FCM Settings 2.1.274
 \GYRO PID\Max Integr	4000
 \GYRO PID\Gov at Max	20
 \GYRO PID\Q Gain	5000
@@ -20,7 +20,8 @@
 \NAV\NAV Limits\Radius NAV	1
 \NAV\NAV Limits\Radius h	1
 \NAV\NAV Filters\Acc Flt glob	1000
-\NAV\NAV Filters\alpha pos	9990
+\NAV\NAV Filters\alpha pos	100
+\NAV\NAV Filters\alpha spd	500
 \NAV\NAV Compensation\Comp On	0
 \NAV\NAV Compensation\Min Speed	3
 \NAV\NAV Compensation\Min Time	5

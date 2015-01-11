@@ -25,7 +25,7 @@
 
 #define VERSION_MAJOR 2 // 0..255 | 100+ = Bootloader
 #define VERSION_MINOR 1 // 0..255
-#define VERSION_BUILD 273
+#define VERSION_BUILD 274
 
 #define VERSION_BUILDL (VERSION_BUILD & 0xff)
 #define VERSION_BUILDH ((VERSION_BUILD & 0xff00) >> 8)

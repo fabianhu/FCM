@@ -68,7 +68,7 @@ int ParFlash_load(uint8_t* data, uint32_t len, uint16_t version) // return 0 on 
 	}
 	
 	if(ret != 0)
-		flashc_erase_user_page(true);
+		flashc_erase_user_page(true); // this software can not do anything with this parameter set.
 	
 	return ret;
 }

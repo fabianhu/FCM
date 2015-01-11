@@ -1,0 +1,92 @@
+﻿Die Anleitung:
+
+- noch neu machen
++ noch testen
+* fertig und läuft
+# Konzept nötig
+
+____________________________________________________________________________________________________
+Hardware 2.2:
++ Pitch 2,75 für die Stecker statt 2,54mm !!
+- Eine SMD-3x-LED, statt 3 einzelne
+- Pads für + und - zum Jtag-anlöten - braucht's eher nicht, da an den seriellen Ports gut erreichbar.
+- Belegung der seriellen Ports so wählen, daß eine Verpolung nicht toastet.
+- Dickes C (nur fürs gute Gefühl)
++ USB-Supply über Diode
+
+Hardware 3.0:
+- Umstieg auf ARM STM32F4 !
+Schnittstellen hinzu: 
+	- SPI für Daughter-board
+	- TWI für externen Magneto
+MS5611 oder LPS25HB oder LPS22HB (Nachfolger) als baro
+LSM9DS1 oder LSM9DS0 als IMU
+
+____________________________________________________________________________________________________
+SW machen
+
+
+http://www.camelsoftware.com/firetail/blog/uavs/quaternion-ahrs-and-centrifugal-force/
+
+- FabOS komplett 32-bitten
+- MAVlink Nachrichten für OSD machen
+- GPS return to home
+- Magnetometer per Parameter abschaltbar
+* Lageregler (Quaternion-basiert)
++ Höhenregler
++ Externe Interrupts (RC-in) wieder gängig machen
+- Windows-Teil "gescheit" machen, Mutlithreading, Bootloader: Binary Rücklesen und vergleichen.
+- Brown out im BL aktivieren (Flash canceln?)
+- Missweisungs-Korrektur hinzu (Fehlwinkel zw. gewünschter und aktueller Bewegungsrichtung)
+
+____________________________________________________________________________________________________
+FCM-Manager
+
+- safe to flash command 
+
+____________________________________________________________________________________________________
+irgendwann: 
+
+- Ultraschall-Eingang: TC -> Höhenmessung
+* HoTT GPS emulation an den Start bringen
+# Parameterbeschreibung über Tool
+
+____________________________________________________________________________________________________
+erledigt:
+
+* Beim Flashen geht die Kalibrierung flöten oder der ACCEL stürzt ab. (Watchdog?)
+* parameter refresh
+* disconnect button
+* remember com port
+* Reset nach Download bzw. für Einstieg in BL
+* Watchdog anstarten
+* Bootloader testen
+* Serial Ports alle über ein interface
+* HoTT senden in extra Task; Menu - generierung über zentralen Menü-Task machen.
+* Startup-Prozedur / Status / Ausrichten Istwert und Übernahme Sollwert
+* BOM 0402-Teile als 0402 bestellen, nicht 0603.
+* Kalibrierung Magneto
+* Luftdruck in Höhe umrechnen (in Bodennähe)
+* Treiber für ACC schreiben
+* Treiber für Magneto
+* Sensor Fusion zw. ACC und Gyro
+* BT Treiber
+* Treiber für Luftdruck
+* FCM2.1 austesten (ACC)
+* Control Tasks und Erfassungs-Tasks machen, synchronisieren und die Daten �bertragen
+* Timer f�r Servo-Zeitmessung aktivieren und verwenden
+* Wiederholte Konfiguration des CMA3000(Acc) wieder raus, schauen, warum's dann nicht geht.
+* re-init der Chips bei Ausfall, oder verd�chtigen 0-0-0-Werten
+* ctl_main() Kommentare ausprogrammieren (ctl.c)
+* Gyro und Acc filtern, da� wir bei ca. 20Hz GF landen
+* Regelungszeugs an den Start bringen
+* PWM-Interrupt f�r die Datensammlung von den beiden Chips aktivieren& schneller samplen
+  (kommt dann mit ca. 2kHz vom Gyro und max 400Hz vom Acc.) 
+* ST Gyro Treiber schreiben (L3G4200D / L3GD20)
+* kP, Ki und Kd "irgendwie" verstellbar machen Infrarot ???? ;-)
+* 1ms-Tick ISR f�r FabOS anmachen *** fertig, aber ungetestet. Fab
+* FabOS portieren
+* Verhindern, dass nach dem Anstecken ohne Sender alles anl�uft. (Timeout / plaus RC in)
+- ADC anwerfen f. Messung Akkuspannung 
+* Warning "input is not relaxable" bek�mpfen.
+

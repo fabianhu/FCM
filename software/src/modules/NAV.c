@@ -142,6 +142,11 @@ pos: gps position and barometer height
 */
 void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 {
+	vector3_t fltSpeed;
+	vector3_t oldPos;
+	vector3_t slowSpeed;
+	
+	//fixme use BrownLinearExpo() for accel filtering, maybe outside.
 
 	#if DISABLE_SENSOR_FUSION_GPS == 1
 	#if SIMULATION == 1
@@ -157,28 +162,54 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 
 	#else
 
-	// Simulation is done in GPS task TaskNavi
-
-	//fixme use BrownLinearExpo() for accel filtering, maybe outside.
+	// SIMULATION is done in GPS task TaskNavi for GPS inputs; acc_mps comes in simulated as well.
 
 	static uint32_t lastFilterTime;
 	uint32_t time = OS_GetTicks();
 	float dt_s =  (float)(time-lastFilterTime) * 0.001;  // in seconds
 	lastFilterTime = time; // remember the time
 
-	// acceleration to speed: speed = speed + accel * dt // fast but drifty
+	// acceleration to speed: dSpeed = accel * dt // fast but drifty
+	// speed to position: dPos = Speed * dt
 	// position to speed: speed = dPos / dt   // slow but accurate
-	// speed to position: dPos = speed * dt
+
+// "other" solution:
+// "fly" solely after position calculated out of the acceleration based values
+// correct the acceleration and position values by the GPS
+// this is done by storing old estimates and comparing them to the last position, as it comes in (delayed)
+
+
+// or we do the following: each one is one integration/differentiation step away:
+// calculate the actual speed out of accel.
+// calculate the actual speed out of filtered (with GPS) positions.
+// filter these two together using complementary filter (making it responsive, even it GPS is delayed)
+// calculate a position(1) with the filtered speed.
+// do another complementary filter between the position(1) and the GPS position(2) (making it responsive, even it GPS is delayed)
+
 
 	// speed = 0.98 * ( speed + accel * dt  ) + 0.02 * ( slowSpeed)
 	float alfa_pos = (float)myPar.nav_alpha_Pos.sValue * 0.001;
+	float alfa_spd = (float)myPar.nav_alpha_Spd.sValue * 0.001;
+
+	fltSpeed.x = alfa_spd*(fltSpeed.x + acc_mpss.x * dt_s) + (1.0-alfa_spd)*slowSpeed.x; // xxxx fork x!##@ we need slowspeed again.
+	fltSpeed.y = alfa_spd*(fltSpeed.y + acc_mpss.y * dt_s) + (1.0-alfa_spd)*slowSpeed.y; 
+	fltSpeed.z = alfa_spd*(fltSpeed.z + acc_mpss.z * dt_s) + (1.0-alfa_spd)*slowSpeed.z; 
 
 
 	// complementary filter for position
-	// new pos = old pos + acc * dt *dt
-	pos_act->x = alfa_pos*(pos_act->x + acc_mpss.x * dt_s * dt_s) + (1.0-alfa_pos)*(slowPos_m.x);
-	pos_act->y = alfa_pos*(pos_act->y + acc_mpss.y * dt_s * dt_s) + (1.0-alfa_pos)*(slowPos_m.y);
-	pos_act->z = alfa_pos*(pos_act->z + acc_mpss.z * dt_s * dt_s) + (1.0-alfa_pos)*(slowPos_m.z);
+	// new pos = old pos + spd * dt
+	pos_act->x = alfa_pos*(pos_act->x + fltSpeed.x * dt_s) + (1.0-alfa_pos)*(slowPos_m.x);
+	pos_act->y = alfa_pos*(pos_act->y + fltSpeed.y * dt_s) + (1.0-alfa_pos)*(slowPos_m.y);
+	pos_act->z = alfa_pos*(pos_act->z + fltSpeed.z * dt_s) + (1.0-alfa_pos)*(slowPos_m.z);
+
+
+	slowSpeed.x = (pos_act->x-oldPos.x)/dt_s; // calculate at: new pos known, and old pos not yet overwritten.
+	slowSpeed.y = (pos_act->y-oldPos.y)/dt_s; 
+	slowSpeed.z = (pos_act->z-oldPos.z)/dt_s; 
+	
+	oldPos.x = pos_act->x;
+	oldPos.y = pos_act->y;
+	oldPos.z = pos_act->z;
 
 
 	// for increased precision (depending on signal quality) one could use the intermediate of new calculated and last speed forpos calculation.
@@ -191,6 +222,12 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 
 }
 
+// alfa = 1 means only the fast value.
+// alfa = 0 means only the slow value.
+float compfilt(float fast, float slow, float alfa)
+{
+	return alfa*(fast)+(1.0-alfa)*slow;
+}
 
 /*
 Get the desired speed setpoint out of the distance to trg.
