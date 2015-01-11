@@ -30,7 +30,7 @@
 // ULICOPTER_QUAD
 #define QUADX
 
-#define DISABLE_SENSOR_FUSION_GPS 1  // leave set to 1 until the sensor fusion is tested.
+#define DISABLE_SENSOR_FUSION_GPS 0  // leave set to 1 until the sensor fusion is tested.
 
 // run the test suite (DOES NOT FLY)
 #define TEST_RUN 0

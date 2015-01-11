@@ -76,7 +76,7 @@ void HoTTFlushBuffer( void )
 void HoTTEnableReceiverMode( void )
 {
 	// disable tx line driver
-	AVR32_USART0.CR.txdis = 1; // fixme fixed to usart 0
+	AVR32_USART0.CR.txdis = 1; // fixed to usart 0
 	AVR32_USART0.CR.rsttx = 1;
 	asm("nop");
 	gpio_enable_gpio_pin (AVR32_USART0_TXD_0_0_PIN); // output driver is disabled there!!

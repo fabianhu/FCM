@@ -260,7 +260,7 @@ void MAV_CopyPacket(uint8_t* ptr, uint32_t len)
 
 void MAV_SendAndWait(const uint8_t* buf, uint32_t len)
 {
-	USART_Send(0,(uint8_t*)buf, len); // fixme modularize !
+	USART_Send(0,(uint8_t*)buf, len);
 	uint32_t n= (len / 10)+1; // special calculation for 115200 baud -> 11520 byte / s -> 11 byte / ms -> wait at least (len * 11 +1) ms
 	OS_WaitTicks(OSALM_COMM0WAIT,n);
 }

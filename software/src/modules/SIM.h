@@ -25,8 +25,8 @@
 
 #define SIM_DT 0.01 // fixed 10ms in our case
 #define SIM_POWERFILTER 0.98 // for delaying the power application
-#define SIM_RATEFLT 0.50 // delaying the application of the rate (simulated motor lag) fixme experiment with it !
-#define SIM_RATEFACT 0.0002 // factor by which the input rotation command is multiplied to get the rotation response from simulated copter fixme experiment with it !
+#define SIM_RATEFLT 0.50 // delaying the application of the rate (simulated motor lag) todo experiment with it !
+#define SIM_RATEFACT 0.0002 // factor by which the input rotation command is multiplied to get the rotation response from simulated copter todo experiment with it !
 
 #define SIM_AIRDENSITY		1.1839	// in kg/m³
 #define SIM_CWVALUE			1.1		// cw value without unit (for a cube)
@@ -46,8 +46,8 @@
 #define SIMFACTORLAT 89.84 // gives 10 millionth degrees from m, correct only around "home"
 #define SIMFACTORLON 134.27 // gives 10 millionth degrees from m
 
-#define SIMGPSFILTER 0.99 // GPS delaying filter
-#define SIMHFILTER   0.90 // height acquisition delaying filter 
+#define SIMGPSFILTER 0.15 // GPS delaying filter
+#define SIMHFILTER   0.25 // height acquisition delaying filter 
 
 // visu only:
 quaternion_t SimGetorientation(void); // get simulated orientation out of simulation

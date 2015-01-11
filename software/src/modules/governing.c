@@ -125,6 +125,7 @@ int32_t Filter_mem(int32_t* _memVal, int32_t _newVal, int32_t _base)
 	return *_memVal / _base;
 }
 
+// 1= take new value
 float Filter_f(float _oldVal, float _newVal, float _factor)
 {
 	return _oldVal * (1.0 - _factor) + _newVal * _factor ;

@@ -56,7 +56,7 @@ GPS_interface_t   gps_dataset;
 	}
 	
 	*pdist_cm = GPS_distance_cm(src->lat,src->lon,dest->lat,dest->lon);
-	*pbearing_rad = GPS_heading(*src,*dest); // invert to match FCM rotation scheme fixme check
+	*pbearing_rad = GPS_heading(*src,*dest); // invert to match FCM rotation scheme
 }
 */
 
@@ -106,7 +106,7 @@ GPS_interface_t   gps_dataset;
 // 	fdlat = (lat2 - lat1);
 // 	fdlon = (lon2 - lon1);
 // 		
-// 	*dLat = fdlat * 1.113195;           // fixme        1,5707963267948966192313216916398e-7 from earths circumference 40kkm                 // difference of latitude in 1/1 000 000 degrees
+// 	*dLat = fdlat * 1.113195;           //  1,5707963267948966192313216916398e-7 from earths circumference 40kkm                 // difference of latitude in 1/1 000 000 degrees
 // 	*dLon = fdlon * GPS_scaleLonDown * 1.113195;
 // }
 

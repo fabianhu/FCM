@@ -443,7 +443,7 @@ static void _hott_check_serial_data( uint32_t tnow )
 	} // > 1
 }
 
-static void _hott_send_msg(volatile uint8_t *buffer ,volatile uint8_t len ) // fixme "buffer" unused???
+static void _hott_send_msg(volatile uint8_t *buffer ,volatile uint8_t len )
 {
 	if(_hott_telemetry_is_sending == true) return;
 	_hott_msg_ptr = buffer;

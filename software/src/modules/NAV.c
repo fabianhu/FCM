@@ -97,7 +97,7 @@ void NAV_UpdatePosition_xy(gps_coordinates_t coords)
 //	float dt_s =  (float)(time-lastGPSTime) * 0.001;  // in seconds
 	lastGPSTime = time; // remember the time
 
-	static vector2_t act_m;// fixme static debug
+	vector2_t act_m;
 	
 	act_m = NAV_ConvertGPS_to_m(coords); 
 	
@@ -432,9 +432,11 @@ void GetBankAndThrustFromAccel(vector3_t acc_cmd, vector2_t* bank, float* thrust
 		len = vector_len(&acc);
 	}
 	
-	if(acc.z <= 0) // fixme taugt nix, vollgas und umdrehen!
+	if(acc.z <= 0) 
 	{
-		*thrust = 0.0;
+		*thrust = 0.3; // todo taugt nix, vollgas und umdrehen?
+		bank->x = 0;
+		bank->y = 0;
 	}
 	else
 	{
