@@ -188,6 +188,7 @@
     <RamSnippetAddress>0x20000000</RamSnippetAddress>
     <UncachedRange />
     <BootSegment>0</BootSegment>
+    <UseGdb>False</UseGdb>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputFileName>FabOS32</OutputFileName>

@@ -23,8 +23,13 @@
 #include <fastmath.h>
 #include "../vector.h"
 #include "quaternions.h"
+#include "../../config.h"
+#include "../../FabOS_config.h"
+#include "../../FabOS/FabOS.h"
 
-int debug_perlmutti=0;
+#include "../testsuite.h"
+
+//int debug_perlmutti=0;
  
 // all angles are in radians.
 
@@ -239,35 +244,72 @@ void quaternion_copy(quaternion_t* qtrg, quaternion_t* qsrc)
 }
 
 
-vector3_t quaternion_rotateVector(vector3_t _V, quaternion_t _Q)
+// http://www.j3d.org/matrix_faq/matrfaq_latest.html
+// v' = qr * v * qr^-1
+vector3_t quaternion_rotateVector(vector3_t _V, quaternion_t _Qi)
 {
-
-//  	if(_Q.w <0)
-//  	{
-// 	 	quaternion_flip(&_Q);
-//  	}
-
-// 	quaternion_t _Q;
-// 	_Q = perlmutt(_Qi,debug_perlmutti);
+	quaternion_t qv;
+	vector3_t v;
 	
-	// o[w]=i[z];o[x]=i[x];o[y]=i[y];o[z]=i[w];
+	qv.w =0;
+	qv.x=_V.x;
+	qv.y=_V.y;
+	qv.z=_V.z;
 	
-	if(_Q.w <0)
-	{
-		quaternion_flip(&_Q);
-	}
+	qv=quaternion_multiply(_Qi,qv);
+	qv=quaternion_multiply(qv,quaternion_inverse(_Qi));
 	
-	float i = _Q.x;
-	float j = _Q.y;
-	float k = _Q.w;
-	float r = _Q.z;	
-	
-	vector3_t vec; 
-	vec.x = 2*(r*_V.z*j + i*_V.z*k - r*_V.y*k + i*_V.y*j) + _V.x*(r*r + i*i - j*j - k*k);
-	vec.y = 2*(r*_V.x*k + i*_V.x*j - r*_V.z*i + j*_V.z*k) + _V.y*(r*r - i*i + j*j - k*k);
-	vec.z = 2*(r*_V.y*i - r*_V.x*j + i*_V.x*k + j*_V.y*k) + _V.z*(r*r - i*i - j*j + k*k);
-	return vec;
+	v.x = qv.x;
+	v.y = qv.y;
+	v.z = qv.z;
 }
+
+
+
+#define w2h 0.707106781186f  // wurzel 2 halbe
+
+void quaternion_test(void)
+{
+	// test quaternion rotation
+	
+	int t=0;
+	debug_perlmutti = 0;
+	do 
+	{	
+		t+=tqr(1,0,0,0,1,2,3);
+		t+=tqr(0,0,0,1,-1,-2,3);	
+		t+=tqr(w2h,0,0,w2h,-2,1,3);
+		t+=tqr(w2h,w2h,0,0,3,2,-1);
+		debug_perlmutti++;
+	} while (t>0 && debug_perlmutti<24);
+	
+	assert(0);
+}
+
+// quaternion and expected value as single parameters
+bool tqr(float qw,float qx,float qy,float qz,float vx,float vy,float vz)
+{
+	quaternion_t q;
+	q.w = qw;
+	q.x = qx;
+	q.y = qy;
+	q.z = qz;
+	
+	vector3_t t= {1,2,3};
+	vector3_t r;
+	r = quaternion_rotateVector(t,q);
+	if(!fequal(r.x,vx)) return false;
+	if(!fequal(r.y,vy)) return false;
+	if(!fequal(r.z,vz)) return false;
+	
+	return true;
+}
+
+
+
+
+
+
 
 quaternion_t RC_Get_Offset(int32_t cmd_elev,int32_t cmd_roll,float yaw_rad)
 {

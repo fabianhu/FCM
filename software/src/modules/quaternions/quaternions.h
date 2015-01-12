@@ -64,4 +64,7 @@ quaternion_t RC_Get_Offset(int32_t cmd_elev,int32_t cmd_roll,float yaw_rad);
 
 quaternion_t perlmutt(quaternion_t qi, int n);
 
+void quaternion_test(void);
+bool tqr(float qw,float qx,float qy,float qz,float vx,float vy,float vz);
+
 #endif /* QUATERNIONS_H_ */

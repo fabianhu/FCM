@@ -182,7 +182,7 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 // or we do the following: each one is one integration/differentiation step away:
 // calculate the actual speed out of accel.
 // calculate the actual speed out of filtered (with GPS) positions.
-// filter these two together using complementary filter (making it responsive, even it GPS is delayed)
+// filter these two together using complementary filter (making it responsive, even if GPS is delayed)
 // calculate a position(1) with the filtered speed.
 // do another complementary filter between the position(1) and the GPS position(2) (making it responsive, even it GPS is delayed)
 
@@ -450,300 +450,300 @@ void GetBankAndThrustFromAccel(vector3_t acc_cmd, vector2_t* bank, float* thrust
 
 #if TEST_RUN == 1
 
-void test_NAV_Governor(void)
-{
-	vector3_t gov_actSpeed_m = {0,0,0}; // x,y,z = E N U
-	vector3_t gov_actpos_m = {0,0,0}; // x,y,z = E N U
-	vector3_t gov_setpos_m = {0,0,0}; // x,y,z = E N U
-	vector3_t gov_testres_m = {0,0,0}; // x,y,z = E N U
-	myPar.nav_set_speed.sValue = 5;
-	myPar.nav_decel_radius.sValue = 5;
-	myPar.nav_decel_radiush.sValue = 3;
-	myPar.nav_set_speedh.sValue = 3;
-	
-	myPar.pid_nav_p.sValue = 100; // P of 1
-	myPar.pid_nav_i.sValue = 0;
-	myPar.pid_nav_d.sValue = 0;
-	myPar.nav_max_accel.sValue = 4;
-	
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
-	assertfequal(gov_testres_m.x,0);
-	assertfequal(gov_testres_m.y,0);
-	assertfequal(gov_testres_m.z,0);
-	
-	//x
-	gov_setpos_m.x = 100;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
-	assertfequal(gov_testres_m.x,4);
-	assertfequal(gov_testres_m.y,0);
-	assertfequal(gov_testres_m.z,0);
-	gov_setpos_m.x = -100;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
-	assertfequal(gov_testres_m.x,-4);
-	assertfequal(gov_testres_m.y,0);
-	assertfequal(gov_testres_m.z,0);
-	
-	//y
-	gov_setpos_m.x = 0;
-	gov_setpos_m.y = 100;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
-	assertfequal(gov_testres_m.x,0);
-	assertfequal(gov_testres_m.y,4);
-	assertfequal(gov_testres_m.z,0);
-	gov_setpos_m.y = -100;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
-	assertfequal(gov_testres_m.x,0);
-	assertfequal(gov_testres_m.y,-4);
-	assertfequal(gov_testres_m.z,0);
-	
-	//z
-	gov_setpos_m.y = 0;
-	gov_setpos_m.z = 100;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
-	assertfequal(gov_testres_m.x,0);
-	assertfequal(gov_testres_m.y,0);
-	assertfequal(gov_testres_m.z,3);
-	gov_setpos_m.z = -100;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
-	assertfequal(gov_testres_m.x,0);
-	assertfequal(gov_testres_m.y,0);
-	assertfequal(gov_testres_m.z,-3);
-	gov_setpos_m.z = 0;
-	
-	// now with velocity...
-	//x
-	gov_actSpeed_m.x=10;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
-	assertfequal(gov_testres_m.x,-4);
-	assertfequal(gov_testres_m.y,0);
-	assertfequal(gov_testres_m.z,0);
-	gov_actSpeed_m.x=-10;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
-	assertfequal(gov_testres_m.x,4);
-	assertfequal(gov_testres_m.y,0);
-	assertfequal(gov_testres_m.z,0);
-	gov_actSpeed_m.x=0;
-	
-	//y
-	gov_actSpeed_m.y=10;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
-	assertfequal(gov_testres_m.x,0);
-	assertfequal(gov_testres_m.y,-4);
-	assertfequal(gov_testres_m.z,0);
-	gov_actSpeed_m.y=-10;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
-	assertfequal(gov_testres_m.x,0);
-	assertfequal(gov_testres_m.y,4);
-	assertfequal(gov_testres_m.z,0);
-	gov_actSpeed_m.y=0;
-	
-	//z
-	gov_actSpeed_m.z=10;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
-	assertfequal(gov_testres_m.y,0);
-	assertfequal(gov_testres_m.x,0);
-	assertfequal(gov_testres_m.z,-4);
-	gov_actSpeed_m.z=-10;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
-	assertfequal(gov_testres_m.x,0);
-	assertfequal(gov_testres_m.y,0);
-	assertfequal(gov_testres_m.z,4);
-}
-
-void test_GetSetSpeed(void)
-{
-	/// GetSetSpeed
-	
-	myPar.nav_set_speed.sValue = 5;	// the desired cruise speed ms (5)
-	myPar.nav_decel_radius.sValue = 10;	// The radius in meters, at which the cruise spee
-	myPar.nav_set_speedh.sValue = 5;	// the desired height change speed ms (5)
-	myPar.nav_decel_radiush.sValue = 5;	// The radius in meters, at which the height
-	vector3_t actpos_m = {0,0,0}; // x,y,z = E N U
-	vector3_t setpos_m = {20,0,10}; // x,y,z = E N U
-	vector3_t desiredspeed_mps;
-
-	// set pos variation
-
-	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
-	assert(fabs(desiredspeed_mps.x - 5.0) < epsilon);
-	assert(fabs(desiredspeed_mps.y ) < epsilon);
-	assert(fabs(desiredspeed_mps.z - 5.0) < epsilon);
-	
-	setpos_m.x = 5;
-	setpos_m.y = 0;
-	setpos_m.z = 2.5;
-	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
-	assert(fabs(desiredspeed_mps.x - 2.5) < epsilon);
-	assert(fabs(desiredspeed_mps.y ) < epsilon);
-	assert(fabs(desiredspeed_mps.z - 2.5) < epsilon);
-	
-	setpos_m.x = -5;
-	setpos_m.y = 0;
-	setpos_m.z = 2.5;
-	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
-	assert(fabs(desiredspeed_mps.x + 2.5) < epsilon);
-	assert(fabs(desiredspeed_mps.y ) < epsilon);
-	assert(fabs(desiredspeed_mps.z - 2.5) < epsilon);
-	
-	setpos_m.x = 0;
-	setpos_m.y = 5;
-	setpos_m.z = 2.5;
-	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
-	assert(fabs(desiredspeed_mps.x ) < epsilon);
-	assert(fabs(desiredspeed_mps.y - 2.5) < epsilon);
-	assert(fabs(desiredspeed_mps.z - 2.5) < epsilon);
-	
-	setpos_m.x = 0;
-	setpos_m.y = -5;
-	setpos_m.z = 2.5;
-	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
-	assert(fabs(desiredspeed_mps.x ) < epsilon);
-	assert(fabs(desiredspeed_mps.y + 2.5) < epsilon);
-	assert(fabs(desiredspeed_mps.z - 2.5) < epsilon);
-	
-	// act pos variation
-	
-	setpos_m.x = 0;
-	setpos_m.y = 0;
-	setpos_m.z = 0;
-	
-	actpos_m.x = 5;
-	actpos_m.y = 0;
-	actpos_m.z = 2.5;
-	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
-	assert(fabs(desiredspeed_mps.x + 2.5) < epsilon);
-	assert(fabs(desiredspeed_mps.y ) < epsilon);
-	assert(fabs(desiredspeed_mps.z + 2.5) < epsilon);
-	
-	actpos_m.x = -5;
-	actpos_m.y = 0;
-	actpos_m.z = 2.5;
-	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
-	assert(fabs(desiredspeed_mps.x - 2.5) < epsilon);
-	assert(fabs(desiredspeed_mps.y ) < epsilon);
-	assert(fabs(desiredspeed_mps.z + 2.5) < epsilon);
-	
-	actpos_m.x = 0;
-	actpos_m.y = 5;
-	actpos_m.z = 2.5;
-	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
-	assert(fabs(desiredspeed_mps.x ) < epsilon);
-	assert(fabs(desiredspeed_mps.y + 2.5) < epsilon);
-	assert(fabs(desiredspeed_mps.z + 2.5) < epsilon);
-	
-	actpos_m.x = 0;
-	actpos_m.y = -5;
-	actpos_m.z = 2.5;
-	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
-	assert(fabs(desiredspeed_mps.x ) < epsilon);
-	assert(fabs(desiredspeed_mps.y - 2.5) < epsilon);
-	assert(fabs(desiredspeed_mps.z + 2.5) < epsilon);
-	
-	
-	
-	actpos_m.x = -1.2;
-	actpos_m.y = 3.4;
-	actpos_m.z = 5.6;
-	setpos_m.x = -1.2;
-	setpos_m.y = 3.4;
-	setpos_m.z = 5.6;
-
-	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
-	assertfequal(desiredspeed_mps.x,0);
-	assertfequal(desiredspeed_mps.y,0);
-	assertfequal(desiredspeed_mps.z,0);
-	
-	actpos_m.x = 0.01;  // if close to the target, the direction gets meaningless, which produces NaNs
-	actpos_m.y = 0;
-	actpos_m.z = 0;
-	setpos_m.x = 0;
-	setpos_m.y = 0;
-	setpos_m.z = 0;
-
-	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
-	assertfequal(desiredspeed_mps.x,0);
-	assertfequal(desiredspeed_mps.y,0);
-	assertfequal(desiredspeed_mps.z,0);
-}
-
-void test_GetBankAndThrustFromAccel(void)
-{
-	/// GetBankAndThrustFromAccel
-	
-	vector2_t bank = {0,0};
-	float thrust;
-	vector3_t acc_cmd = {0,0,0};
-
-	// x
-	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
-	assert(fabs(bank.y - 0.0) < epsilon);
-	assert(fabs(bank.x - 0.0) < epsilon);
-	assert(fabs(thrust - 1.0) < epsilon);
-	
-	myPar.nav_max_angle.sValue = 90;	// The max lean angle in degrees (30)
-	acc_cmd.x = 9.81;
-	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
-	assert(fabs(bank.y - 0.78539816339744) < epsilon); // 45° expected  // rotation AROUND y !!
-	assert(fabs(bank.x + 0.0) < epsilon);
-	assert(fabs(thrust - sqrt(2.0)) < epsilon);
-	
-	acc_cmd.x = -9.81;
-	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
-	assert(fabs(bank.y + 0.78539816339744) < epsilon); // 45° expected  // rotation AROUND y !!
-	assert(fabs(bank.x + 0.0) < epsilon);
-	assert(fabs(thrust - sqrt(2.0)) < epsilon);
-	
-	myPar.nav_max_angle.sValue = 30;	// The max lean angle in degrees (30)
-	acc_cmd.x = 9.81;
-	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
-	assert(fabs(bank.y - 0.523598775598298) < epsilon); // 30° expected
-	assert(fabs(bank.x + 0.0) < epsilon);
-	assert(fabs(thrust - 1.20177) < epsilon);
-	
-	acc_cmd.x = -9.81;
-	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
-	assert(fabs(bank.y + 0.523598775598298) < epsilon); // 30° expected
-	assert(fabs(bank.x + 0.0) < epsilon);
-	assert(fabs(thrust - 1.20177) < epsilon);
-	
-	// y
-	acc_cmd.x = 0;
-	acc_cmd.y = 0;
-	acc_cmd.z = 0;
-	
-	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
-	assert(fabs(bank.y - 0.0) < epsilon);
-	assert(fabs(bank.x + 0.0) < epsilon);
-	assert(fabs(thrust - 1.0) < epsilon);
-	
-	myPar.nav_max_angle.sValue = 90;	// The max lean angle in degrees (30)
-	acc_cmd.y = 9.81;
-	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
-	assert(fabs(bank.y - 0.0) < epsilon);
-	assert(fabs(bank.x + 0.78539816339744) < epsilon); // 45° expected
-	assert(fabs(thrust - sqrt(2.0)) < epsilon);
-
-	acc_cmd.y = -9.81;
-	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
-	assert(fabs(bank.y - 0.0) < epsilon);
-	assert(fabs(bank.x - 0.78539816339744) < epsilon); // 45° expected
-	assert(fabs(thrust - sqrt(2.0)) < epsilon);
-	
-	myPar.nav_max_angle.sValue = 30;	// The max lean angle in degrees (30)
-	acc_cmd.y = 9.81;
-	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
-	assert(fabs(bank.y - 0.0) < epsilon);
-	assert(fabs(bank.x + 0.523598775598298) < epsilon); // 30° expected
-	assert(fabs(thrust - 1.20177) < epsilon);
-	
-	acc_cmd.y = -9.81;
-	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
-	assert(fabs(bank.y - 0.0) < epsilon);
-	assert(fabs(bank.x - 0.523598775598298) < epsilon); // 30° expected
-	assert(fabs(thrust - 1.20177) < epsilon);
-}
-
-
+// void test_NAV_Governor(void)
+// {
+// 	vector3_t gov_actSpeed_m = {0,0,0}; // x,y,z = E N U
+// 	vector3_t gov_actpos_m = {0,0,0}; // x,y,z = E N U
+// 	vector3_t gov_setpos_m = {0,0,0}; // x,y,z = E N U
+// 	vector3_t gov_testres_m = {0,0,0}; // x,y,z = E N U
+// 	myPar.nav_set_speed.sValue = 5;
+// 	myPar.nav_decel_radius.sValue = 5;
+// 	myPar.nav_decel_radiush.sValue = 3;
+// 	myPar.nav_set_speedh.sValue = 3;
+// 	
+// 	myPar.pid_nav_p.sValue = 100; // P of 1
+// 	myPar.pid_nav_i.sValue = 0;
+// 	myPar.pid_nav_d.sValue = 0;
+// 	myPar.nav_max_accel.sValue = 4;
+// 	
+// 	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+// 	assertfequal(gov_testres_m.x,0);
+// 	assertfequal(gov_testres_m.y,0);
+// 	assertfequal(gov_testres_m.z,0);
+// 	
+// 	//x
+// 	gov_setpos_m.x = 100;
+// 	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+// 	assertfequal(gov_testres_m.x,4);
+// 	assertfequal(gov_testres_m.y,0);
+// 	assertfequal(gov_testres_m.z,0);
+// 	gov_setpos_m.x = -100;
+// 	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+// 	assertfequal(gov_testres_m.x,-4);
+// 	assertfequal(gov_testres_m.y,0);
+// 	assertfequal(gov_testres_m.z,0);
+// 	
+// 	//y
+// 	gov_setpos_m.x = 0;
+// 	gov_setpos_m.y = 100;
+// 	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+// 	assertfequal(gov_testres_m.x,0);
+// 	assertfequal(gov_testres_m.y,4);
+// 	assertfequal(gov_testres_m.z,0);
+// 	gov_setpos_m.y = -100;
+// 	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+// 	assertfequal(gov_testres_m.x,0);
+// 	assertfequal(gov_testres_m.y,-4);
+// 	assertfequal(gov_testres_m.z,0);
+// 	
+// 	//z
+// 	gov_setpos_m.y = 0;
+// 	gov_setpos_m.z = 100;
+// 	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+// 	assertfequal(gov_testres_m.x,0);
+// 	assertfequal(gov_testres_m.y,0);
+// 	assertfequal(gov_testres_m.z,3);
+// 	gov_setpos_m.z = -100;
+// 	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+// 	assertfequal(gov_testres_m.x,0);
+// 	assertfequal(gov_testres_m.y,0);
+// 	assertfequal(gov_testres_m.z,-3);
+// 	gov_setpos_m.z = 0;
+// 	
+// 	// now with velocity...
+// 	//x
+// 	gov_actSpeed_m.x=10;
+// 	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+// 	assertfequal(gov_testres_m.x,-4);
+// 	assertfequal(gov_testres_m.y,0);
+// 	assertfequal(gov_testres_m.z,0);
+// 	gov_actSpeed_m.x=-10;
+// 	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+// 	assertfequal(gov_testres_m.x,4);
+// 	assertfequal(gov_testres_m.y,0);
+// 	assertfequal(gov_testres_m.z,0);
+// 	gov_actSpeed_m.x=0;
+// 	
+// 	//y
+// 	gov_actSpeed_m.y=10;
+// 	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+// 	assertfequal(gov_testres_m.x,0);
+// 	assertfequal(gov_testres_m.y,-4);
+// 	assertfequal(gov_testres_m.z,0);
+// 	gov_actSpeed_m.y=-10;
+// 	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+// 	assertfequal(gov_testres_m.x,0);
+// 	assertfequal(gov_testres_m.y,4);
+// 	assertfequal(gov_testres_m.z,0);
+// 	gov_actSpeed_m.y=0;
+// 	
+// 	//z
+// 	gov_actSpeed_m.z=10;
+// 	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+// 	assertfequal(gov_testres_m.y,0);
+// 	assertfequal(gov_testres_m.x,0);
+// 	assertfequal(gov_testres_m.z,-4);
+// 	gov_actSpeed_m.z=-10;
+// 	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+// 	assertfequal(gov_testres_m.x,0);
+// 	assertfequal(gov_testres_m.y,0);
+// 	assertfequal(gov_testres_m.z,4);
+// }
+// 
+// void test_GetSetSpeed(void)
+// {
+// 	/// GetSetSpeed
+// 	
+// 	myPar.nav_set_speed.sValue = 5;	// the desired cruise speed ms (5)
+// 	myPar.nav_decel_radius.sValue = 10;	// The radius in meters, at which the cruise spee
+// 	myPar.nav_set_speedh.sValue = 5;	// the desired height change speed ms (5)
+// 	myPar.nav_decel_radiush.sValue = 5;	// The radius in meters, at which the height
+// 	vector3_t actpos_m = {0,0,0}; // x,y,z = E N U
+// 	vector3_t setpos_m = {20,0,10}; // x,y,z = E N U
+// 	vector3_t desiredspeed_mps;
+// 
+// 	// set pos variation
+// 
+// 	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
+// 	assert(fabs(desiredspeed_mps.x - 5.0) < epsilon);
+// 	assert(fabs(desiredspeed_mps.y ) < epsilon);
+// 	assert(fabs(desiredspeed_mps.z - 5.0) < epsilon);
+// 	
+// 	setpos_m.x = 5;
+// 	setpos_m.y = 0;
+// 	setpos_m.z = 2.5;
+// 	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
+// 	assert(fabs(desiredspeed_mps.x - 2.5) < epsilon);
+// 	assert(fabs(desiredspeed_mps.y ) < epsilon);
+// 	assert(fabs(desiredspeed_mps.z - 2.5) < epsilon);
+// 	
+// 	setpos_m.x = -5;
+// 	setpos_m.y = 0;
+// 	setpos_m.z = 2.5;
+// 	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
+// 	assert(fabs(desiredspeed_mps.x + 2.5) < epsilon);
+// 	assert(fabs(desiredspeed_mps.y ) < epsilon);
+// 	assert(fabs(desiredspeed_mps.z - 2.5) < epsilon);
+// 	
+// 	setpos_m.x = 0;
+// 	setpos_m.y = 5;
+// 	setpos_m.z = 2.5;
+// 	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
+// 	assert(fabs(desiredspeed_mps.x ) < epsilon);
+// 	assert(fabs(desiredspeed_mps.y - 2.5) < epsilon);
+// 	assert(fabs(desiredspeed_mps.z - 2.5) < epsilon);
+// 	
+// 	setpos_m.x = 0;
+// 	setpos_m.y = -5;
+// 	setpos_m.z = 2.5;
+// 	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
+// 	assert(fabs(desiredspeed_mps.x ) < epsilon);
+// 	assert(fabs(desiredspeed_mps.y + 2.5) < epsilon);
+// 	assert(fabs(desiredspeed_mps.z - 2.5) < epsilon);
+// 	
+// 	// act pos variation
+// 	
+// 	setpos_m.x = 0;
+// 	setpos_m.y = 0;
+// 	setpos_m.z = 0;
+// 	
+// 	actpos_m.x = 5;
+// 	actpos_m.y = 0;
+// 	actpos_m.z = 2.5;
+// 	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
+// 	assert(fabs(desiredspeed_mps.x + 2.5) < epsilon);
+// 	assert(fabs(desiredspeed_mps.y ) < epsilon);
+// 	assert(fabs(desiredspeed_mps.z + 2.5) < epsilon);
+// 	
+// 	actpos_m.x = -5;
+// 	actpos_m.y = 0;
+// 	actpos_m.z = 2.5;
+// 	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
+// 	assert(fabs(desiredspeed_mps.x - 2.5) < epsilon);
+// 	assert(fabs(desiredspeed_mps.y ) < epsilon);
+// 	assert(fabs(desiredspeed_mps.z + 2.5) < epsilon);
+// 	
+// 	actpos_m.x = 0;
+// 	actpos_m.y = 5;
+// 	actpos_m.z = 2.5;
+// 	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
+// 	assert(fabs(desiredspeed_mps.x ) < epsilon);
+// 	assert(fabs(desiredspeed_mps.y + 2.5) < epsilon);
+// 	assert(fabs(desiredspeed_mps.z + 2.5) < epsilon);
+// 	
+// 	actpos_m.x = 0;
+// 	actpos_m.y = -5;
+// 	actpos_m.z = 2.5;
+// 	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
+// 	assert(fabs(desiredspeed_mps.x ) < epsilon);
+// 	assert(fabs(desiredspeed_mps.y - 2.5) < epsilon);
+// 	assert(fabs(desiredspeed_mps.z + 2.5) < epsilon);
+// 	
+// 	
+// 	
+// 	actpos_m.x = -1.2;
+// 	actpos_m.y = 3.4;
+// 	actpos_m.z = 5.6;
+// 	setpos_m.x = -1.2;
+// 	setpos_m.y = 3.4;
+// 	setpos_m.z = 5.6;
+// 
+// 	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
+// 	assertfequal(desiredspeed_mps.x,0);
+// 	assertfequal(desiredspeed_mps.y,0);
+// 	assertfequal(desiredspeed_mps.z,0);
+// 	
+// 	actpos_m.x = 0.01;  // if close to the target, the direction gets meaningless, which produces NaNs
+// 	actpos_m.y = 0;
+// 	actpos_m.z = 0;
+// 	setpos_m.x = 0;
+// 	setpos_m.y = 0;
+// 	setpos_m.z = 0;
+// 
+// 	desiredspeed_mps = GetSetSpeed(&actpos_m,&setpos_m);
+// 	assertfequal(desiredspeed_mps.x,0);
+// 	assertfequal(desiredspeed_mps.y,0);
+// 	assertfequal(desiredspeed_mps.z,0);
+// }
+// 
+// void test_GetBankAndThrustFromAccel(void)
+// {
+// 	/// GetBankAndThrustFromAccel
+// 	
+// 	vector2_t bank = {0,0};
+// 	float thrust;
+// 	vector3_t acc_cmd = {0,0,0};
+// 
+// 	// x
+// 	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
+// 	assert(fabs(bank.y - 0.0) < epsilon);
+// 	assert(fabs(bank.x - 0.0) < epsilon);
+// 	assert(fabs(thrust - 1.0) < epsilon);
+// 	
+// 	myPar.nav_max_angle.sValue = 90;	// The max lean angle in degrees (30)
+// 	acc_cmd.x = 9.81;
+// 	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
+// 	assert(fabs(bank.y - 0.78539816339744) < epsilon); // 45° expected  // rotation AROUND y !!
+// 	assert(fabs(bank.x + 0.0) < epsilon);
+// 	assert(fabs(thrust - sqrt(2.0)) < epsilon);
+// 	
+// 	acc_cmd.x = -9.81;
+// 	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
+// 	assert(fabs(bank.y + 0.78539816339744) < epsilon); // 45° expected  // rotation AROUND y !!
+// 	assert(fabs(bank.x + 0.0) < epsilon);
+// 	assert(fabs(thrust - sqrt(2.0)) < epsilon);
+// 	
+// 	myPar.nav_max_angle.sValue = 30;	// The max lean angle in degrees (30)
+// 	acc_cmd.x = 9.81;
+// 	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
+// 	assert(fabs(bank.y - 0.523598775598298) < epsilon); // 30° expected
+// 	assert(fabs(bank.x + 0.0) < epsilon);
+// 	assert(fabs(thrust - 1.20177) < epsilon);
+// 	
+// 	acc_cmd.x = -9.81;
+// 	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
+// 	assert(fabs(bank.y + 0.523598775598298) < epsilon); // 30° expected
+// 	assert(fabs(bank.x + 0.0) < epsilon);
+// 	assert(fabs(thrust - 1.20177) < epsilon);
+// 	
+// 	// y
+// 	acc_cmd.x = 0;
+// 	acc_cmd.y = 0;
+// 	acc_cmd.z = 0;
+// 	
+// 	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
+// 	assert(fabs(bank.y - 0.0) < epsilon);
+// 	assert(fabs(bank.x + 0.0) < epsilon);
+// 	assert(fabs(thrust - 1.0) < epsilon);
+// 	
+// 	myPar.nav_max_angle.sValue = 90;	// The max lean angle in degrees (30)
+// 	acc_cmd.y = 9.81;
+// 	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
+// 	assert(fabs(bank.y - 0.0) < epsilon);
+// 	assert(fabs(bank.x + 0.78539816339744) < epsilon); // 45° expected
+// 	assert(fabs(thrust - sqrt(2.0)) < epsilon);
+// 
+// 	acc_cmd.y = -9.81;
+// 	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
+// 	assert(fabs(bank.y - 0.0) < epsilon);
+// 	assert(fabs(bank.x - 0.78539816339744) < epsilon); // 45° expected
+// 	assert(fabs(thrust - sqrt(2.0)) < epsilon);
+// 	
+// 	myPar.nav_max_angle.sValue = 30;	// The max lean angle in degrees (30)
+// 	acc_cmd.y = 9.81;
+// 	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
+// 	assert(fabs(bank.y - 0.0) < epsilon);
+// 	assert(fabs(bank.x + 0.523598775598298) < epsilon); // 30° expected
+// 	assert(fabs(thrust - 1.20177) < epsilon);
+// 	
+// 	acc_cmd.y = -9.81;
+// 	GetBankAndThrustFromAccel(acc_cmd, &bank, &thrust);
+// 	assert(fabs(bank.y - 0.0) < epsilon);
+// 	assert(fabs(bank.x - 0.523598775598298) < epsilon); // 30° expected
+// 	assert(fabs(thrust - 1.20177) < epsilon);
+// }
+// 
+// 
 
 
 
