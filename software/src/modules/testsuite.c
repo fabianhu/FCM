@@ -55,7 +55,7 @@ void test_run(void)
 	
 	//////////////////////////////////////////////////////////////////////////
 	testcase = 1;
-	quaternion_test();
+	TheBigTest();//quaternion_test();
 	
 	//test_GPS_calcHeading();
 

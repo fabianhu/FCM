@@ -62,9 +62,13 @@ void quaternion_copy(quaternion_t* qtrg, quaternion_t* qsrc);
 vector3_t quaternion_rotateVector(vector3_t _V, quaternion_t _Q);
 quaternion_t RC_Get_Offset(int32_t cmd_elev,int32_t cmd_roll,float yaw_rad);
 
-quaternion_t perlmutt(quaternion_t qi, int n);
+quaternion_t perlsign16(quaternion_t qi, int n);
+vector3_t perlmuttv6(vector3_t qi, int n);
+vector3_t perlsignv8(vector3_t vi, int n);
+quaternion_t perlmutt24(quaternion_t qi, int n);
 
-void quaternion_test(void);
-bool tqr(float qw,float qx,float qy,float qz,float vx,float vy,float vz);
+int quaternion_test(void);
+int32_t tqr(float qw,float qx,float qy,float qz,float vx,float vy,float vz);
+void TheBigTest(void);
 
 #endif /* QUATERNIONS_H_ */
