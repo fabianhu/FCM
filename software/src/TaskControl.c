@@ -277,7 +277,7 @@ void TaskControl(void)
 		switch(myPar.madgwick.sValue)
 		{
 			case 0:
-				q_ActualOrientation = MahonyAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,v_acc_frame_mpss.x,v_acc_frame_mpss.y,v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
+				// does not work atm q_ActualOrientation = MahonyAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,v_acc_frame_mpss.x,v_acc_frame_mpss.y,v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
 				break;
 			case 1:
 				q_ActualOrientation = MadgwickAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,v_acc_frame_mpss.x,v_acc_frame_mpss.y,v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
@@ -755,9 +755,9 @@ void TaskControl(void)
 					TXData.ax = v_acc_frame_mpss.x*1019;
 					TXData.ay = v_acc_frame_mpss.y*1019;
 					TXData.az = v_acc_frame_mpss.z*1019;
-					TXData.mx =  v_accel_glob_flt_mpss.x*1019;//v_mag.x;
-					TXData.my =  v_accel_glob_flt_mpss.y*1019;//v_mag.y;
-					TXData.mz =  v_accel_glob_flt_mpss.z*1019;//v_mag.z;
+					TXData.mx =  v_mag.x;
+					TXData.my =  v_mag.y;
+					TXData.mz =  v_mag.z;
 					TXData.gov_x = res_cmd.x;
 					TXData.gov_y = res_cmd.y;
 					TXData.gov_z = res_cmd.z;
