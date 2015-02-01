@@ -102,9 +102,10 @@ int32_t lsm303_get_acc_results(vector3_t* res) // results in mg
 	
 	if((acc_twi_buf.STATUS_REG_A & 0x0f) == 0x0f)
 	{
-		res->x = -xr;
-		res->y = yr;
-		res->z = -zr;
+		// hardware de-rotation: correct for axes in FCM manual.
+		res->x = xr;
+		res->y = -yr;
+		res->z = zr;
 		state = 0;
 	}
 	else
@@ -154,9 +155,10 @@ int32_t lsm303_get_mag_results_raw(vector3_t* res) // return in nT
 	
 	if(1/*mag_twi_buf.IRA_REG_M == 0b01001000*/) // fixme check --> not possible to read the SR before the data, because aligned backwards.
 	{
-		res->x = -xr*9091/100; // 1100 LSB/GaussXY   -> 0,90909 mGauss / LSB -> 90,91 nT / LSB
-		res->y = yr*9091/100;
-		res->z = -zr*10204/100; // 980 LSB/GaussZ  ->  1,0204 mGauss / LSB -> 102,04 nT / LSB
+		// hardware de-rotation:
+		res->x = xr*9091/100; // 1100 LSB/GaussXY   -> 0,90909 mGauss / LSB -> 90,91 nT / LSB
+		res->y = -yr*9091/100;
+		res->z = zr*10204/100; // 980 LSB/GaussZ  ->  1,0204 mGauss / LSB -> 102,04 nT / LSB
 		state = 0;
 	}
 	else

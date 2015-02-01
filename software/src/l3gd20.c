@@ -113,7 +113,7 @@ int l3gd20_getValues_fromSPIQ(volatile int32_t* x, volatile int32_t* y, volatile
 	
 	if((*state & 0b00000111) == 0b00000111) // all axes received.
 	{
-		// obfuscation of signals due to reverse mounting.
+		// obfuscation of signals due to reverse mounting. correct for axes in FCM manual.
 		*x = l3gd20_ConvertResult(SPI_resQ[ResultQueueStartIdx+3],SPI_resQ[ResultQueueStartIdx+2]); // sensors x
 		*y = -l3gd20_ConvertResult(SPI_resQ[ResultQueueStartIdx+5],SPI_resQ[ResultQueueStartIdx+4]); // sensors y
 		*z = -l3gd20_ConvertResult(SPI_resQ[ResultQueueStartIdx+7],SPI_resQ[ResultQueueStartIdx+6]); // sensors z
