@@ -43,9 +43,10 @@ extern uint8_t TestProcessed[MAXTESTCASES]; // test passed array (number of proc
 	OS_ENABLEALLINTERRUPTS;		\
 }while(0)
 
-#define epsilon 10.0E-5
+#define epsilon 10.0E-3
 
-#define fequal(x,y) fabs((x) - (y)) < epsilon
+
+#define fequal(x,y) (fabs((x) - (y)) < epsilon)
 #define assertfequal(x,y) assert(fequal(x,y))
 #define radgra 57.295779513f
 
