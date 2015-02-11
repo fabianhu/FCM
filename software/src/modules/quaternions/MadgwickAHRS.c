@@ -83,7 +83,7 @@ bool MadgwickStart(void) // cyclic call every 10ms until returns true.
 //---------------------------------------------------------------------------------------------------
 // AHRS algorithm update
 // accepts acceleration only in the range of 9.81 +-1.5 mpss !!
-quaternion_t MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz) {
+quaternion_t MadgwickAHRSupdate(float gy, float gx, float gz, float ay, float ax, float az, float my, float mx, float mz) {
 	quaternion_t ret;
 	float recipNorm;
 	float s0, s1, s2, s3;
@@ -92,6 +92,11 @@ quaternion_t MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay
 	float _2q0mx, _2q0my, _2q0mz, _2q1mx, _2bx, _2bz, _4bx, _4bz, _2q0, _2q1, _2q2, _2q3, _2q0q2, _2q2q3, q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3;
 
 	MadgwickUpdateBeta();
+
+
+	gy = -gy; // signal inversion for correctly orientated quaternion
+	ay = -ay;
+	my = -my;
 
 	// Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
 	vector3_t magvec;

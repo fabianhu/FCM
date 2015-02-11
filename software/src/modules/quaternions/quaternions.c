@@ -111,7 +111,7 @@ void quaternion_normalize(quaternion_t* q)
 }
 
 // result is the rotation, which is needed to perform at first q1 and then q2. (the other order yields another result!)
-quaternion_t quaternion_multiply(quaternion_t q1, quaternion_t q2)
+quaternion_t quaternion_multiply(quaternion_t q1, quaternion_t q2) // todo rebuild to pointers
 {
 	quaternion_t ret;
 
@@ -119,21 +119,20 @@ quaternion_t quaternion_multiply(quaternion_t q1, quaternion_t q2)
 	ret.x =  q1.x * q2.w + q1.y * q2.z - q1.z * q2.y + q1.w * q2.x;
 	ret.y = -q1.x * q2.z + q1.y * q2.w + q1.z * q2.x + q1.w * q2.y;
 	ret.z =  q1.x * q2.y - q1.y * q2.x + q1.z * q2.w + q1.w * q2.z;
-	
+*/	
 	ret.w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z;
 	ret.x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y;
 	ret.y = q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x;
 	ret.z = q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w;
-*/	
-
-// directly from euclideanspace.com
-	ret.x =  q1.x * q2.w + q1.y * q2.z - q1.z * q2.y + q1.w * q2.x;
-    ret.y = -q1.x * q2.z + q1.y * q2.w + q1.z * q2.x + q1.w * q2.y;
-    ret.z =  q1.x * q2.y - q1.y * q2.x + q1.z * q2.w + q1.w * q2.z;
-    ret.w = -q1.x * q2.x - q1.y * q2.y - q1.z * q2.z + q1.w * q2.w;
 
 	return ret; 
 }
+
+
+
+
+
+
 
 
 
@@ -266,8 +265,6 @@ volatile int  debug_persign8a, debug_persign8b;
 //debug_permtest6
 
 
-volatile int32_t vecdec[3];
-
 // http://www.j3d.org/matrix_faq/matrfaq_latest.html
 // v' = qr * v * qr^-1
 vector3_t quaternion_rotateVector(vector3_t _V, quaternion_t _Qi)
@@ -301,11 +298,6 @@ vector3_t quaternion_rotateVector(vector3_t _V, quaternion_t _Qi)
 	v.x = qv.x;
 	v.y = qv.y;
 	v.z = qv.z;
-	
-	vecdec[0] = v.x*1000;
-	vecdec[1] = v.y*1000;
-	vecdec[2] = v.z*1000;
-	
 	
 	v = perlsignv8(v,debug_persign8b);
 	
@@ -387,16 +379,9 @@ vector3_t quaternion_rotateVector4(vector3_t vec, quaternion_t quat)
 
 #define w2h 0.707106781186f  // wurzel 2 halbe
 
-int quaternion_test_mad(void)
+int quaternion_test(void)
 {
-	// test quaternion rotation (original madgwick cfg)
-	
-	/*
-	permtestAtSmallest = debug_permtest24a; //3 <-- final result!!
-	signtestAtSmallest = debug_persign8b; //4,5
-	perm2testAtSmallest = debug_permtest24b; //3
-	perm3testAtSmallest = debug_persign8b; //4,5
-	*/
+	// test quaternion rotation
 	
 	int t=0;
 	
@@ -434,142 +419,8 @@ int quaternion_test_mad(void)
 	return t;
 }
 
-int quaternion_test(void)
-{
-	// test quaternion rotation (0010) as from madgwick
-	/*
-	permtestAtSmallest = debug_permtest24a; //1 <-- final result!!
-	signtestAtSmallest = debug_persign8b; //6
-	perm2testAtSmallest = debug_permtest24b; //1
-	perm3testAtSmallest = debug_persign8b; //6
-	*/
-	
-	
-	int t=0;
-	
-	// normal
-	t+=tqr(0.0,	0.0,	1.0,	0.0,	1.0,	2.0,	3.0); // back
-	t+=tqr(0.0,	-w2h,	w2h,	0.0,	2.0,	-1.0,	3.0); // right
-	t+=tqr(0.0,	w2h,	w2h,	0.0,	-2.0,	1.0,	3.0); // left
-	t+=tqr(0.0,	1.0,	0.0,	0.0,	-1.0,	-2.0,	3.0); // nose
-	// nose up
-	t+=tqr(0.5,	-0.5,	0.5,	-0.5,	-3.0,	-1.0,	2.0); // right
-	t+=tqr(0.0,	0.0,	w2h,	-w2h,	1.0,	-3.0,	2.0); // top
-	t+=tqr(-0.5,	0.5,	0.5,	-0.5,	3.0,	1.0,	2.0); // left
-	t+=tqr(w2h,	-w2h,	0.0,	0.0,	-1.0,	3.0,	2.0); // belly
-	// nose down
-	t+=tqr(-0.5,	-0.5,	0.5,	0.5,	3.0,	-1.0,	-2.0); // right
-	t+=tqr(0.0,	0.0,	w2h,	w2h,	1.0,	3.0,	-2.0); // belly
-	t+=tqr(0.5,	0.5,	0.5,	0.5,	-3.0,	1.0,	-2.0); // left
-	t+=tqr(w2h,	w2h,	0.0,	0.0,	-1.0,	-3.0,	-2.0); // top
-	// left up
-	t+=tqr(-0.5,	-0.5,	0.5,	-0.5,	2.0,	-3.0,	-1.0); // top
-	t+=tqr(-w2h,	0.0,	w2h,	0.0,	3.0,	2.0,	-1.0); // back
-	t+=tqr(-0.5,	0.5,	0.5,	0.5,	-2.0,	3.0,	-1.0); // belly
-	t+=tqr(0.0,	w2h,	0.0,	w2h,	-3.0,	-2.0,	-1.0); // nose
-	// belly up
-	t+=tqr(1.0,	0.0,	0.0,	0.0,	-1.0,	2.0,	-3.0); // back
-	t+=tqr(w2h,	0.0,	0.0,	w2h,	2.0,	1.0,	-3.0); // left
-	t+=tqr(w2h,	0.0,	0.0,	-w2h,	-2.0,	-1.0,	-3.0); // right
-	t+=tqr(0.0,	0.0,	0.0,	1.0,	1.0,	-2.0,	-3.0); // nose
-	// right up
-	t+=tqr(0.5,	0.5,	0.5,	-0.5,	-2.0,	-3.0,	1.0); // top
-	t+=tqr(w2h,	0.0,	w2h,	0.0,	-3.0,	2.0,	1.0); // back
-	t+=tqr(0.5,	0.5,	0.5,	-0.5,	2.0,	3.0,	1.0); // belly
-	t+=tqr(0.0,	-w2h,	0.0,	w2h,	3.0,	-2.0,	1.0); // nose
-	
-	return t;
-}
-
-int tres[24];
-
-int quaternion_testx(void)
-{
-	// test quaternion rotation (euclideanspace.com config rotated to FCM coordinates.)
-	
-	int t=0;
-	
-	int i=0;
-	
-	// normal
-	t+= tres[i++] = tqr(	1.0,	0.0,	0.0,	0.0,	1.0,	2.0,	3.0); // back	0	1	2
-	t+= tres[i++] = tqr(	w2h,	0.0,	-w2h,	0.0,	2.0,	-1.0,	3.0); // right	1	
-	t+= tres[i++] = tqr(	w2h,	0.0,	w2h,	0.0,	-2.0,	1.0,	3.0); // left	2	
-	t+= tres[i++] = tqr(	0.0,	0.0,	1.0,	0.0,	-1.0,	-2.0,	3.0); // nose	3	1	2
-	// nose up
-	t+= tres[i++] = tqr(	0.5,	0.5,	-0.5,	0.5,	-3.0,	-1.0,	2.0); // right	4	1	2
-	t+= tres[i++] = tqr(	w2h,	w2h,	0.0,	0.0,	1.0,	-3.0,	2.0); // top	5	
-	t+= tres[i++] = tqr(	0.5,	0.5,	0.5,	-0.5,	3.0,	1.0,	2.0); // left	6	1	2
-	t+= tres[i++] = tqr(	0.0,	0.0,	w2h,	-w2h,	-1.0,	3.0,	2.0); // belly	7	
-	// nose down
-	t+= tres[i++] = tqr(	0.5,	-0.5,	-0.5,	-0.5,	3.0,	-1.0,	-2.0); // right	8	1	2
-	t+= tres[i++] = tqr(	w2h,	-w2h,	0.0,	0.0,	1.0,	3.0,	-2.0); // belly	9	
-	t+= tres[i++] = tqr(	0.5,	-0.5,	0.5,	0.5,	-3.0,	1.0,	-2.0); // left	10	1	2
-	t+= tres[i++] = tqr(	0.0,	0.0,	w2h,	w2h,	-1.0,	-3.0,	-2.0); // top	11	
-	// left up
-	t+= tres[i++] = tqr(	0.5,	0.5,	-0.5,	-0.5,	2.0,	-3.0,	-1.0); // top	12	1	2
-	t+= tres[i++] = tqr(	w2h,	0.0,	0.0,	-w2h,	3.0,	2.0,	-1.0); // back	13	
-	t+= tres[i++] = tqr(	0.5,	-0.5,	0.5,	-0.5,	-2.0,	3.0,	-1.0); // belly	14	1	2
-	t+= tres[i++] = tqr(	w2h,	-w2h,	0.0,	0.0,	-3.0,	-2.0,	-1.0); // nose	15	
-	// belly up
-	t+= tres[i++] = tqr(	0.0,	0.0,	0.0,	1.0,	-1.0,	2.0,	-3.0); // back	16	1	2
-	t+= tres[i++] = tqr(	0.0,	w2h,	0.0,	-w2h,	2.0,	1.0,	-3.0); // left	17	
-	t+= tres[i++] = tqr(	0.0,	w2h,	0.0,	w2h,	-2.0,	-1.0,	-3.0); // right	18	
-	t+= tres[i++] = tqr(	0.0,	1.0,	0.0,	0.0,	1.0,	-2.0,	-3.0); // nose	19	1	2
-	// right up
-	t+= tres[i++] = tqr(	0.5,	0.5,	0.5,	0.5,	-2.0,	-3.0,	1.0); // top	20	1	2
-	t+= tres[i++] = tqr(	w2h,	0.0,	0.0,	w2h,	-3.0,	2.0,	1.0); // back	21	
-	t+= tres[i++] = tqr(	0.5,	-0.5,	-0.5,	0.5,	2.0,	3.0,	1.0); // belly	22	1	2
-	t+= tres[i++] = tqr(	w2h,	0.0,	w2h,	0.0,	3.0,	-2.0,	1.0); // nose	23	1	2
-	
-	return t;
-}
-
-int quaternion_test_reference(void)
-{
-	// test quaternion rotation (quadview) 312 order with vector 123
-	
-	int t=0;
-	
-	int i=0;
-	
-	// normal
-	t+= tres[i++] = tqr(	1.0,	0.0,	0.0,	0.0,	1.0,	2.0,	3.0); // back	0	
-	t+= tres[i++] = tqr(	w2h,	0.0,	0.0,	-w2h,	2.0,	-1.0,	3.0); // right	1	
-	t+= tres[i++] = tqr(	w2h,	0.0,	0.0,	w2h,	-2.0,	1.0,	3.0); // left	2	
-	t+= tres[i++] = tqr(	0.0,	0.0,	0.0,	1.0,	-1.0,	-2.0,	3.0); // nose	3	
-	// nose up
-	t+= tres[i++] = tqr(	0.5,	0.5,	-0.5,	-0.5,	-3.0,	-1.0,	2.0); // right	4	
-	t+= tres[i++] = tqr(	w2h,	w2h,	0.0,	0.0,	1.0,	-3.0,	2.0); // top	5	
-	t+= tres[i++] = tqr(	0.5,	0.5,	0.5,	0.5,	3.0,	1.0,	2.0); // left	6	
-	t+= tres[i++] = tqr(	0.0,	0.0,	w2h,	w2h,	-1.0,	3.0,	2.0); // belly	7	
-	// nose down
-	t+= tres[i++] = tqr(	0.5,	-0.5,	0.5,	-0.5,	3.0,	-1.0,	-2.0); // right	8	
-	t+= tres[i++] = tqr(	w2h,	-w2h,	0.0,	0.0,	1.0,	3.0,	-2.0); // belly	9	
-	t+= tres[i++] = tqr(	0.5,	-0.5,	-0.5,	0.5,	-3.0,	1.0,	-2.0); // left	10	
-	t+= tres[i++] = tqr(	0.0,	0.0,	-w2h,	w2h,	-1.0,	-3.0,	-2.0); // top	11	
-	// left up
-	t+= tres[i++] = tqr(	0.5,	0.5,	0.5,	-0.5,	2.0,	-3.0,	-1.0); // top	12	
-	t+= tres[i++] = tqr(	w2h,	0.0,	w2h,	0.0,	3.0,	2.0,	-1.0); // back	13	
-	t+= tres[i++] = tqr(	0.5,	-0.5,	0.5,	0.5,	-2.0,	3.0,	-1.0); // belly	14	
-	t+= tres[i++] = tqr(	0.0,	-w2h,	0.0,	w2h,	-3.0,	-2.0,	-1.0); // nose	15	
-	// belly up
-	t+= tres[i++] = tqr(	0.0,	0.0,	1.0,	0.0,	-1.0,	2.0,	-3.0); // back	16	
-	t+= tres[i++] = tqr(	0.0,	w2h,	w2h,	0.0,	2.0,	1.0,	-3.0); // left	17	
-	t+= tres[i++] = tqr(	0.0,	-w2h,	w2h,	0.0,	-2.0,	-1.0,	-3.0); // right	18	
-	t+= tres[i++] = tqr(	0.0,	-1.0,	0.0,	0.0,	1.0,	-2.0,	-3.0); // nose	19	
-	// right up
-	t+= tres[i++] = tqr(	0.5,	0.5,	-0.5,	0.5,	-2.0,	-3.0,	1.0); // top	20	
-	t+= tres[i++] = tqr(	w2h,	0.0,	-w2h,	0.0,	-3.0,	2.0,	1.0); // back	21	
-	t+= tres[i++] = tqr(	0.5,	-0.5,	-0.5,	-0.5,	2.0,	3.0,	1.0); // belly	22	
-	t+= tres[i++] = tqr(	0.0,	w2h,	0.0,	w2h,	3.0,	-2.0,	1.0); // nose	23	
-	
-	return t;
-}
-
-
 // quaternion and expected value as single parameters
-int32_t tqr(float qw, float qx, float qy, float qz, float vx, float vy, float vz)
+int32_t tqr(float qw,float qx,float qy,float qz,float vx,float vy,float vz)
 {
 	quaternion_t q;
 	int32_t ret = 0;
@@ -602,8 +453,6 @@ int perm2testAtSmallest = 0;
 int perm3testAtSmallest = 0;
 int equalresults = 0;
 
-int fres[24];
-
 void TheBigTest(void)
 {
 	
@@ -623,16 +472,11 @@ void TheBigTest(void)
 					int res = quaternion_test();
 					if(res < smallestResult)
 					{
-						for(int i=0;i<23;i++)
-						{
-							fres[i] = tres[i];
-						}
-						
 						smallestResult = res;
-						permtestAtSmallest = debug_permtest24a; //3 <-- final result!!
-						signtestAtSmallest = debug_persign8b; //4,5
-						perm2testAtSmallest = debug_permtest24b; //3
-						perm3testAtSmallest = debug_persign8b; //4,5
+						permtestAtSmallest = debug_permtest24a;
+						signtestAtSmallest = debug_persign8b;
+						perm2testAtSmallest = debug_permtest24b;
+						perm3testAtSmallest = debug_persign8b;
 						equalresults=0;
 					}
 					else if(res == smallestResult)
@@ -811,7 +655,7 @@ vector3_t perlsignv8(vector3_t vi, int n)
 		case  8: o[0]=-i[0];o[1]=-i[1];o[2]=-i[2]; break;
 		
 	
-		default: o[0]= 1;o[1]= 0;o[2]= 0; break;
+		default: o[0]= 1;o[1]= 0;o[2]= 0;o[3]= 0; break;
 
 	}
 	
