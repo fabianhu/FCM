@@ -803,7 +803,7 @@ void TaskControl(void)
 				
 				vector3_t v_simulated;
 				v_simulated = SimGetPos_m();
-				TXQuaternions.vPos[0] = v_simulated.y;
+				TXQuaternions.vPos[0] = v_simulated.x;
 				TXQuaternions.vPos[1] = v_simulated.y;
 				TXQuaternions.vPos[2] = v_simulated.z;
 				
