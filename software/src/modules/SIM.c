@@ -144,17 +144,14 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	SimDisturbStep(&vel_vehicle.y,&DisturbAngleWind.y,(float)myPar.wind_freq.sValue*0.1, (float)myPar.wind_ampl.sValue*0.1);
 	
 	vel_vehicle = quaternion_rotateVector(vel_vehicle,sim_orientation); // rotate into vehicle orientation
-	vel_vehicle.x = 0;
-	vel_vehicle.y = 0;
-	vel_vehicle.z = 0;
-	
+
 	//create vehicle acceleration vector
 	vector3_t vAccel_mpss;
-	vAccel_mpss.x = 1;
-	vAccel_mpss.y = 2;
-	vAccel_mpss.z = 3;//  thrust_mpss;  TEST
+	vAccel_mpss.x = 0;
+	vAccel_mpss.y = 0;
+	vAccel_mpss.z = thrust_mpss;
 	
-	vAccel_mpss = quaternion_rotateVector(vAccel_mpss,sim_orientation); // rotate into vehicle or. TEST 
+	//vAccel_mpss = quaternion_rotateVector(vAccel_mpss,sim_orientation); // rotate into vehicle or. TEST 
 	
 	//reduce the velocity by air resistance
 	// F = r * cw * A * v^2 /2
@@ -162,9 +159,9 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	// A = area in m²	
 	// F = m*a
 	// a = F / m
-// 	vAccel_mpss.x -= signf(vel_vehicle.x) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (vel_vehicle.x*vel_vehicle.x)* 0.5) / SIM_COPTERMASS; 
-// 	vAccel_mpss.y -= signf(vel_vehicle.y) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (vel_vehicle.y*vel_vehicle.y)* 0.5) / SIM_COPTERMASS;
-// 	vAccel_mpss.z -= signf(vel_vehicle.z) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREATOP* (vel_vehicle.z*vel_vehicle.z)* 0.5) / SIM_COPTERMASS; 
+	vAccel_mpss.x -= signf(vel_vehicle.x) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (vel_vehicle.x*vel_vehicle.x)* 0.5) / SIM_COPTERMASS; 
+	vAccel_mpss.y -= signf(vel_vehicle.y) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (vel_vehicle.y*vel_vehicle.y)* 0.5) / SIM_COPTERMASS;
+	vAccel_mpss.z -= signf(vel_vehicle.z) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREATOP* (vel_vehicle.z*vel_vehicle.z)* 0.5) / SIM_COPTERMASS; 
 	OS_DISABLEALLINTERRUPTS
 	sim_accel_frame_mpss = vector_copy(&vAccel_mpss);// simulation output
 	SimDisturbVector(&sim_accel_frame_mpss,&DisturbAngleAcc,(float)myPar.accel_freq.sValue,(float) myPar.accel_ampl.sValue*0.1); // add noise only for simulated measurement
@@ -181,11 +178,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	
 	//add distance caused by v to actual pos
 	vector3_t vTemp2 = vector_scale(&sim_vel_world_mps,SIM_DT);
-	//sim_pos_m = vector_add(&sim_pos_m, &vTemp2);
-	
-	sim_pos_m.x= 0;
-	sim_pos_m.y= 0;
-	sim_pos_m.z= 2;
+	sim_pos_m = vector_add(&sim_pos_m, &vTemp2);
 	
 	// add influence of governor
 	sim_rate_radps.x = Filter_f(sim_rate_radps.x,(float)ox*SIM_RATEFACT,SIM_RATEFLT);

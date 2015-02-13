@@ -277,7 +277,7 @@ void TaskControl(void)
 		switch(myPar.madgwick.sValue)
 		{
 			case 0:
-				// does not work atm q_ActualOrientation = MahonyAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,v_acc_frame_mpss.x,v_acc_frame_mpss.y,v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
+				q_ActualOrientation = MahonyAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,v_acc_frame_mpss.x,v_acc_frame_mpss.y,v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
 				break;
 			case 1:
 				q_ActualOrientation = MadgwickAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,v_acc_frame_mpss.x,v_acc_frame_mpss.y,v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
@@ -292,7 +292,7 @@ void TaskControl(void)
 		
 		// calculate normalized acceleration	
 		v_acc_global_mpss = quaternion_rotateVector(v_acc_frame_mpss,quaternion_inverse(q_ActualOrientation));
-		// fixme back in !! v_acc_global_mpss.z -= 9.81; // subtract the z acceleration here.
+		v_acc_global_mpss.z -= 9.81; // subtract the z acceleration here.
 		
 		float filterAcc = myPar.nav_acc_flt_glob.sValue*0.001;
 		
@@ -803,13 +803,13 @@ void TaskControl(void)
 				
 				vector3_t v_simulated;
 				v_simulated = SimGetPos_m();
-				TXQuaternions.vPos[0] = 0;//v_simulated.y;
-				TXQuaternions.vPos[1] = 0;//v_simulated.y;
-				TXQuaternions.vPos[2] = (q_ActualOrientation.w*2)+2.0;//v_simulated.z;
+				TXQuaternions.vPos[0] = v_simulated.y;
+				TXQuaternions.vPos[1] = v_simulated.y;
+				TXQuaternions.vPos[2] = v_simulated.z;
 				
-				TXQuaternions.vDat[0] = q_ActualOrientation.x;//v_simulated.x;//v_pos_act_m
-				TXQuaternions.vDat[1] = q_ActualOrientation.y;//v_simulated.y;
-				TXQuaternions.vDat[2] = q_ActualOrientation.z;//v_simulated.z;
+				TXQuaternions.vDat[0] = v_pos_act_m.x;
+				TXQuaternions.vDat[1] = v_pos_act_m.y;
+				TXQuaternions.vDat[2] = v_pos_act_m.z;
 				
 				
 				#else // SIMULATION == 0
@@ -827,13 +827,9 @@ void TaskControl(void)
 				TXQuaternions.vPos[1] = v_pos_act_m.y;
 				TXQuaternions.vPos[2] = v_pos_act_m.z;
 				
-								TXQuaternions.vPos[0] = 0;//v_simulated.y;
-								TXQuaternions.vPos[1] = 0;//v_simulated.y;
-								TXQuaternions.vPos[2] = (q_ActualOrientation.w*2)+2.0;//v_simulated.z;
-								
-								TXQuaternions.vDat[0] = q_ActualOrientation.x;//v_simulated.x;//v_pos_act_m
-								TXQuaternions.vDat[1] = q_ActualOrientation.y;//v_simulated.y;
-								TXQuaternions.vDat[2] = q_ActualOrientation.z;//v_simulated.z;
+				TXQuaternions.vDat[0] = v_pos_act_m.x;
+				TXQuaternions.vDat[1] = v_pos_act_m.y;
+				TXQuaternions.vDat[2] = v_pos_act_m.z;
 				
 				#endif
 

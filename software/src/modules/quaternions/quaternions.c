@@ -272,7 +272,29 @@ vector3_t quaternion_rotateVector(vector3_t _V, quaternion_t _Qi)
 	quaternion_t qv,qi,qq;
 	vector3_t v;
 	
- 	_V = perlsignv8(_V,debug_persign8a);
+	qv.w =0;
+	qv.x=-_V.y;
+	qv.y=_V.x;
+	qv.z=-_V.z;
+	
+	qi=quaternion_multiply(_Qi,qv);
+	qv=quaternion_multiply(qi,quaternion_inverse(_Qi));
+	
+	v.x = qv.y;
+	v.y = -qv.x;
+	v.z = -qv.z;
+	
+	return v;
+}
+
+// http://www.j3d.org/matrix_faq/matrfaq_latest.html
+// v' = qr * v * qr^-1
+vector3_t quaternion_rotateVectortest(vector3_t _V, quaternion_t _Qi)
+{
+	quaternion_t qv,qi,qq;
+	vector3_t v;
+	
+ 	_V = perlsignv8(_V,debug_persign8a); //4 case  4: o[0]= i[0];o[1]=-i[1];o[2]=-i[2]; break;
 //   	_Qi = perlmutt24(_Qi, debug_permtest24a);
 // 	_Qi = perlsign16(_Qi, debug_signtest16);
 	
@@ -281,7 +303,7 @@ vector3_t quaternion_rotateVector(vector3_t _V, quaternion_t _Qi)
 	qv.y=_V.y;
 	qv.z=_V.z;
 	
-	qv = perlmutt24(qv, debug_permtest24a);
+	qv = perlmutt24(qv, debug_permtest24a); // 3 case 3: o[0]=i[0];o[1]=i[2];o[2]=i[1];o[3]=i[3]; break;
 
 	
 // 	if(_Qi.w < 0)
@@ -292,14 +314,14 @@ vector3_t quaternion_rotateVector(vector3_t _V, quaternion_t _Qi)
 	qi=quaternion_multiply(_Qi,qv);
 	qv=quaternion_multiply(qi,quaternion_inverse(_Qi));
 	
-	qv = perlmutt24(qv, debug_permtest24b);
+	qv = perlmutt24(qv, debug_permtest24b); // 3 case 3: o[0]=i[0];o[1]=i[2];o[2]=i[1];o[3]=i[3]; break;
 	
 	
 	v.x = qv.x;
 	v.y = qv.y;
 	v.z = qv.z;
 	
-	v = perlsignv8(v,debug_persign8b);
+	v = perlsignv8(v,debug_persign8b); // 4 case  4: o[0]= i[0];o[1]=-i[1];o[2]=-i[2]; break;
 	
 	return v;
 	
@@ -655,7 +677,7 @@ vector3_t perlsignv8(vector3_t vi, int n)
 		case  8: o[0]=-i[0];o[1]=-i[1];o[2]=-i[2]; break;
 		
 	
-		default: o[0]= 1;o[1]= 0;o[2]= 0;o[3]= 0; break;
+		default: o[0]= 1;o[1]= 0;o[2]= 0; break;
 
 	}
 	

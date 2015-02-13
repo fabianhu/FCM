@@ -33,7 +33,7 @@
 #define DISABLE_SENSOR_FUSION_GPS 1  // leave set to 1 until the sensor fusion is tested.
 
 // run the test suite (DOES NOT FLY)
-#define TEST_RUN 1
+#define TEST_RUN 0
 // skip the emergency stop conditions (just ignore missing accelerometer signal etc...)
 #define NOEMSTOP 1  // DO NEVER SET TO 1 IF YOU INTEND TO LIVE.
 // skip the RC init and set to SUMD, just to satisfy the init sequence.
