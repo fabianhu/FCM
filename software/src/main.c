@@ -96,7 +96,7 @@ int main( void )
 	}
 	wdt_opt_t wdopt;
 	wdopt.us_timeout_period = 10000000; // 10s // this is the only one parameter.
-	//wdt_enable(&wdopt); // enable WD
+	wdt_enable(&wdopt); // enable WD
 	
 	INTC_init_interrupts();
 	
