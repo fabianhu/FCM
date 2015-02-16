@@ -4,7 +4,7 @@
  *
  * Created: 14.05.2014 20:47:53
  *
- * (c) 2013-2014 by Fabian Huslik
+ * (c) 2013-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 
 #define VERSION_MAJOR 2 // 0..255 | 100+ = Bootloader
 #define VERSION_MINOR 1 // 0..255
-#define VERSION_BUILD 273
+#define VERSION_BUILD 276
 
 #define VERSION_BUILDL (VERSION_BUILD & 0xff)
 #define VERSION_BUILDH ((VERSION_BUILD & 0xff00) >> 8)

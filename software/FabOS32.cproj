@@ -188,6 +188,7 @@
     <RamSnippetAddress>0x20000000</RamSnippetAddress>
     <UncachedRange />
     <BootSegment>0</BootSegment>
+    <UseGdb>False</UseGdb>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputFileName>FabOS32</OutputFileName>
@@ -1028,9 +1029,9 @@
     <Compile Include="src\modules\quaternions\AHRS2.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="src\modules\quaternions\AHRS3.c">
+    <None Include="src\modules\quaternions\AHRS3.c">
       <SubType>compile</SubType>
-    </Compile>
+    </None>
     <Compile Include="src\modules\quaternions\AHRS3.h">
       <SubType>compile</SubType>
     </Compile>

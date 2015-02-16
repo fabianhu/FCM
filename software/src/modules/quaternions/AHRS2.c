@@ -177,7 +177,7 @@ q.x = q2;
 q.y = q3;
 q.z = q4;
 
-q = perlmutt(q,myPar.test_P.sValue);
+q = perlmutt24(q,myPar.test_P.sValue);
 
 return q;
 

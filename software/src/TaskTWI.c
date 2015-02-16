@@ -5,7 +5,7 @@
  *
  * Created: 10.10.2012 23:15:09
  *
- * (c) 2012-2014 by Fabian Huslik
+ * (c) 2012-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -127,7 +127,11 @@ void TaskTWI(void)
 			long bar = bmp085_calc_pressure(bmp085raw); // just read stuff from rx buffers out of ISR!!! (large calculation!)
 			int32_t h_mm = bmp085_calcHeight_mm(bar);
 			s_nHeight_mm = h_mm; // update global
-			NAV_UpdatePosition_z_m((float)h_mm*0.001);
+			#if  SIMULATION == 1
+				// do not update z position, this is done in TaskNavi to make it even more complicated. ;)
+			#else
+				NAV_UpdatePosition_z_m((float)h_mm*0.001);
+			#endif
 		}
 		
 	}

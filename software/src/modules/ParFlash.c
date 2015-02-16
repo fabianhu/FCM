@@ -3,7 +3,7 @@
  *
  * Created: 31.10.2012 11:37:55
  *
- * (c) 2012-2014 by Fabian Huslik
+ * (c) 2012-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ int ParFlash_load(uint8_t* data, uint32_t len, uint16_t version) // return 0 on 
 	}
 	
 	if(ret != 0)
-		flashc_erase_user_page(true);
+		flashc_erase_user_page(true); // this software can not do anything with this parameter set.
 	
 	return ret;
 }

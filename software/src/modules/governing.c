@@ -3,7 +3,7 @@
  *
  * Created: 07.12.2012 18:27:13
  *
- * (c) 2012-2014 by Fabian Huslik
+ * (c) 2012-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,6 +125,7 @@ int32_t Filter_mem(int32_t* _memVal, int32_t _newVal, int32_t _base)
 	return *_memVal / _base;
 }
 
+// 1= take new value
 float Filter_f(float _oldVal, float _newVal, float _factor)
 {
 	return _oldVal * (1.0 - _factor) + _newVal * _factor ;
@@ -154,6 +155,10 @@ float limitf(float val, float low, float upp)
 
 
 /*
+Browns linear exponent filter
+taken from http://www.camelsoftware.com/firetail/blog/uncategorized/scalar-low-pass-filters-a-comparison-of-algorithms/
+the code was c-ified from the c++ example
+
 The simple expo filter works well over time to find the average of the readings, but what if the average is trending? 
 What if the average is climbing?? In this situation the output from a simple expo filter will begin to lag behind the true value. This is the biggest weakness of the simple expo filter.
 

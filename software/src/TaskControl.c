@@ -4,7 +4,7 @@
  *
  * Created: 06.09.2012 09:40:25
  *
- * (c) 2012-2014 by Fabian Huslik
+ * (c) 2012-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -170,7 +170,6 @@ void TaskControl(void)
 	
 	// globals from the best algo - ever
 	vector3_t v_pos_act_m; // actual position offset from origin (global)
-	vector3_t v_speed_act_mps; // actual speed in m/s (global)
 	
 	vector3_t v_pos_target_m;
 	static vector3_t v_pos_last_m;
@@ -303,12 +302,12 @@ void TaskControl(void)
 		v_accel_glob_flt_mpss.z = Filter_f(v_accel_glob_flt_mpss.z,v_acc_global_mpss.z,filterAcc);
 		
 		// always calculate the interpolation 			// The best of all algorithms - ever:
-		Superfilter(v_accel_glob_flt_mpss, &v_pos_act_m, &v_speed_act_mps);  // internally disabled for now!
-
+		Superfilter(v_accel_glob_flt_mpss, &v_pos_act_m);  
+		
 		quaternion_to_euler(q_ActualOrientation, &ax, &ay, &fActHeading_rad); // remember the actual heading
 		
 		// for the other systems:
-		IMUdata.pitch_deg = ax*57.295779f; // todo is actually wrong, because global!!
+		IMUdata.pitch_deg = ax*57.295779f; // fixme is actually wrong, because global!!
 		IMUdata.roll_deg = ay*57.295779f;
 		IMUdata.mag_heading_deg = fActHeading_rad*57.295779f;
 		IMUdata.height_dm = v_pos_act_m.z *100; // info
@@ -373,7 +372,7 @@ void TaskControl(void)
 				fHeadingDiff_rad = 0;
 			}
 				
-			v_accel_command_mpss = NAV_Governor(&v_pos_act_m, &v_pos_target_m, &v_speed_act_mps); // inner parts tested, not completely!
+			v_accel_command_mpss = NAV_Governor(&v_pos_act_m, &v_pos_target_m); // inner parts tested, not completely!
 
 			if(!swHGov && !RCtimeout)
 			{
@@ -733,17 +732,17 @@ void TaskControl(void)
 					TXData.gx =  debug_der_x*1000;//bank.x * radgra;//v_gyro_raw.x;
 					TXData.gy = debug_der_y*1000;// bank.y * radgra;//v_gyro_raw.y;
 					TXData.gz = fActHeading_rad*radgra;//thrust * 1000;//v_gyro_raw.z;
-					TXData.ax = v_accel_command_mpss.x*1000;//fTrgNavDistance_m;
-					TXData.ay = v_accel_command_mpss.y*1000;//fTrgNavHeading_rad* radgra;
-					TXData.az = v_accel_command_mpss.z*1000;//fHeadingDiff_rad* radgra;
-					TXData.mx = v_speed_act_mps.x*1000; //v_mag.x;
-					TXData.my = v_speed_act_mps.y*1000; //v_mag.y;
-					TXData.mz = v_speed_act_mps.z*1000; //v_mag.z;
-					TXData.gov_x = v_pos_act_m.x*1000;//debug_gov.x*1000;// v_accel_glob_flt_mpss.x*1019;//; //ox; // mag_cal.x;
-					TXData.gov_y = v_pos_act_m.y*1000;//debug_gov.y*1000;// v_accel_glob_flt_mpss.y*1019;//0;// oy; // mag_cal.y;
-					TXData.gov_z = v_pos_act_m.z*1000;//debug_gov.z*1000;// v_accel_glob_flt_mpss.z*1019;//0;// oz; // mag_cal.z;
-					TXData.RC_a = cmd_thr;
-					TXData.RC_x = cmd_elev;
+					TXData.ax = v_accel_command_mpss.x*1019;//fTrgNavDistance_m;
+					TXData.ay = v_accel_command_mpss.y*1019;//fTrgNavHeading_rad* radgra;
+					TXData.az = v_accel_command_mpss.z*1019;//fHeadingDiff_rad* radgra;
+					TXData.mx = v_mag.x;
+					TXData.my = v_mag.y;
+					TXData.mz = v_mag.z;
+					TXData.gov_x = ox; // mag_cal.x;	 v_pos_act_m.x*1000;//debug_gov.x*1000;//
+					TXData.gov_y = oy; // mag_cal.y;	 v_pos_act_m.y*1000;//debug_gov.y*1000;//
+					TXData.gov_z = oz; // mag_cal.z;  	 v_pos_act_m.z*1000;//debug_gov.z*1000;//
+					TXData.RC_a = cmd_thr;												   
+					TXData.RC_x = cmd_elev;												   
 					TXData.RC_y = cmd_roll;
 					TXData.RC_z = cmd_yaw;
 				}
@@ -753,12 +752,12 @@ void TaskControl(void)
 					TXData.gx = v_gyro_radps.x*radgra;
 					TXData.gy = v_gyro_radps.y*radgra;
 					TXData.gz = v_gyro_radps.z*radgra;
-					TXData.ax = v_acc_frame_mpss.x*1000;
-					TXData.ay = v_acc_frame_mpss.y*1000;
-					TXData.az = v_acc_frame_mpss.z*1000;
-					TXData.mx = v_mag.x;
-					TXData.my = v_mag.y;
-					TXData.mz = v_mag.z;
+					TXData.ax = v_acc_frame_mpss.x*1019;
+					TXData.ay = v_acc_frame_mpss.y*1019;
+					TXData.az = v_acc_frame_mpss.z*1019;
+					TXData.mx =  v_mag.x;
+					TXData.my =  v_mag.y;
+					TXData.mz =  v_mag.z;
 					TXData.gov_x = res_cmd.x;
 					TXData.gov_y = res_cmd.y;
 					TXData.gov_z = res_cmd.z;
@@ -792,16 +791,28 @@ void TaskControl(void)
 
 				quaternion_t q_simulated;
 				q_simulated = SimGetorientation();				
-				TXQuaternions.qSet[0]= q_simulated.w;
-				TXQuaternions.qSet[1]= q_simulated.x;
-				TXQuaternions.qSet[2]= q_simulated.y;
-				TXQuaternions.qSet[3]= q_simulated.z;
+				TXQuaternions.qSet[0]= q_ActualOrientation.w;
+				TXQuaternions.qSet[1]= q_ActualOrientation.x;
+				TXQuaternions.qSet[2]= q_ActualOrientation.y;
+				TXQuaternions.qSet[3]= q_ActualOrientation.z;
 				
 				TXQuaternions.qSim[0]= q_simulated.w;
 				TXQuaternions.qSim[1]= q_simulated.x;
 				TXQuaternions.qSim[2]= q_simulated.y;
 				TXQuaternions.qSim[3]= q_simulated.z;
-				#else
+				
+				vector3_t v_simulated;
+				v_simulated = SimGetPos_m();
+				TXQuaternions.vPos[0] = v_simulated.x;
+				TXQuaternions.vPos[1] = v_simulated.y;
+				TXQuaternions.vPos[2] = v_simulated.z;
+				
+				TXQuaternions.vDat[0] = v_pos_act_m.x;
+				TXQuaternions.vDat[1] = v_pos_act_m.y;
+				TXQuaternions.vDat[2] = v_pos_act_m.z;
+				
+				
+				#else // SIMULATION == 0
 				TXQuaternions.qSet[0]= q_set_global.w;
 				TXQuaternions.qSet[1]= q_set_global.x;
 				TXQuaternions.qSet[2]= q_set_global.y;
@@ -811,12 +822,18 @@ void TaskControl(void)
 				TXQuaternions.qSim[1]= q_ActualOrientation.x;
 				TXQuaternions.qSim[2]= q_ActualOrientation.y;
 				TXQuaternions.qSim[3]= q_ActualOrientation.z;
-				#endif
-			
+				
 				TXQuaternions.vPos[0] = v_pos_act_m.x;
 				TXQuaternions.vPos[1] = v_pos_act_m.y;
 				TXQuaternions.vPos[2] = v_pos_act_m.z;
-				TXQuaternions.temp[1] = temperature_degC;
+				
+				TXQuaternions.vDat[0] = v_pos_act_m.x;
+				TXQuaternions.vDat[1] = v_pos_act_m.y;
+				TXQuaternions.vDat[2] = v_pos_act_m.z;
+				
+				#endif
+
+				// fixme TXQuaternions.temp[1] = temperature_degC;
 				
 				strncpy(TXQuaternions.footer,"~~~",3);
 
@@ -831,9 +848,9 @@ void TaskControl(void)
 				TXGPSdata.lon = txpos.lon;
 				TXGPSdata.lat = txpos.lat;
 				TXGPSdata.hGPS = v_pos_act_m.z; // naaah duplicated.
-				TXGPSdata.speedx = v_speed_act_mps.x;
-				TXGPSdata.speedy = v_speed_act_mps.y;
-				TXGPSdata.speedz = v_speed_act_mps.z;
+				TXGPSdata.speedx = 0;//;.x;
+				TXGPSdata.speedy = 0;//;.y;
+				TXGPSdata.speedz = 0;//;.z;
 				TXGPSdata.posx = v_pos_act_m.x;
 				TXGPSdata.posy = v_pos_act_m.y;
 				TXGPSdata.posz = v_pos_act_m.z;

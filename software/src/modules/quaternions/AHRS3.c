@@ -240,4 +240,6 @@ quaternion_t AHRS3(vector3_t v_Gyro, vector3_t v_Accel, vector3_t v_Mag)
 			////altitude = Baro.altitude * ALT_Bias + GPS.altitude * (1-ALT_Bias);
 		//}
 	}
+	quaternion_t q;
+	return q; // fixme return sth
 }

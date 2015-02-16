@@ -3,7 +3,7 @@
  *
  * Created: 07.12.2012 18:27:30
  *
- * (c) 2012-2014 by Fabian Huslik
+ * (c) 2012-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@ float PIDfxD(pidf_t* inst, float actual, float set, float kP, float kI, float kD
 int32_t propscale(int32_t _value, int32_t _minin, int32_t _maxin, int32_t _minout, int32_t _maxout);
 int32_t Filter_mem(int32_t* _memVal, int32_t _newVal, int32_t _base);
 float Filter_f(float _oldVal, float _newVal, float _factor); // float variant
+float BrownLinearExpo(brownfilter_t* inst, float measurement, float alfa);
 
 void test_PIDf(void);
 

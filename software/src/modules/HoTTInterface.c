@@ -3,7 +3,7 @@
  *
  * Created: 02.11.2012 23:12:48
  *
- * (c) 2012-2014 by Fabian Huslik
+ * (c) 2012-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ void HoTTFlushBuffer( void )
 void HoTTEnableReceiverMode( void )
 {
 	// disable tx line driver
-	AVR32_USART0.CR.txdis = 1; // fixme fixed to usart 0
+	AVR32_USART0.CR.txdis = 1; // fixed to usart 0
 	AVR32_USART0.CR.rsttx = 1;
 	asm("nop");
 	gpio_enable_gpio_pin (AVR32_USART0_TXD_0_0_PIN); // output driver is disabled there!!

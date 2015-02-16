@@ -3,7 +3,7 @@
  *
  * Created: 14.10.2013 20:23:55
  *
- * (c) 2013-2014 by Fabian Huslik
+ * (c) 2013-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,14 @@
 #include "modules/NAV.h"
 #include "TaskNavi.h"
 #include "modules/governing.h"
+#include "config.h"
+
+#if SIMULATION == 1
+#include "modules/quaternions/quaternions.h"
+#include "modules/SIM.h"
+
+extern GPS_interface_t   gps_dataset; // fixme schönes Interface basteln
+#endif
 //#include "menu/menu.h"
 //#include "menu/menu_variant.h"
 
@@ -35,12 +43,41 @@
 void TaskNavi(void);
 
 
+/*
+the only purpose of this task is to get notified about a successfully evaluated GPGGA frame.
+*/
 
 void TaskNavi(void)
 {
 	OS_WaitTicks(OSALM_NAVIWAIT,500); // wait for serial init
 	
 	gps_init();
+	
+	
+	#if SIMULATION == 1
+	
+	while(1)
+	{
+		
+		OS_SetAlarm(OSALM_NAVIWAIT,100);
+		OS_WaitAlarm(OSALM_NAVIWAIT);
+		
+		gps_coordinates_t ActPosSim = SIM_GPS_getpos();
+
+		
+		gps_dataset.status.gps3dfix = 1; // force sim
+		gps_dataset.status.gps2dfix = 1; // force sim
+		gps_dataset.gps_loc.lat = ActPosSim.lat; // fixme BAAAD interface!
+		gps_dataset.gps_loc.lon = ActPosSim.lon;
+
+		NAV_UpdatePosition_xy(ActPosSim);
+		
+		//update baro here
+		NAV_UpdatePosition_z_m(SIM_geth());
+		
+	}
+	#else
+	
 	
 	while(1)
 	{
@@ -52,12 +89,16 @@ void TaskNavi(void)
 		}
 		else
 		{
-			// work GPS data
+			// work GPS data on incoming data
 			gps_coordinates_t ActPos;
-			GPSgetPos(&ActPos); // fixme error ?
+			GPSgetPos(&ActPos); // errorhandling? this event is only released on a successful frame. (frame evaluated on character basis in ISR)
 			NAV_UpdatePosition_xy(ActPos);
 
 		}
+		
+		
+		
 	}
+	#endif
 }
 

@@ -3,7 +3,7 @@
  *
  * Created: 15.08.2013 13:11:14
  *
- * (c) 2013-2014 by Fabian Huslik
+ * (c) 2013-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

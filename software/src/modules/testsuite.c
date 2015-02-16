@@ -4,7 +4,7 @@
  *
  * Created: 25.04.2014 16:55:40
  *
- * (c) 2014 by Fabian Huslik
+ * (c) 2014-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ void test_run(void)
 	LED_BLUE_ON;
 	
 	// set parameters:
-	myPar.nav_max_accel.sValue = 2;	// The max acceleration out of nav in ms^2  (2)
+	//myPar.nav_max_accel.sValue = 2;	// The max acceleration out of nav in ms^2  (2)
 	//myPar.nav_acc_flt_glob.sValue = ;	// global acceleration filter value (1000) 1000 i
 	//myPar.nav_alpha_H.sValue = ;	// speed filter value (9990) 10000 is fast prio
 	//myPar.nav_alpha_speed.sValue = ;	// speed filter value (9990) 10000 is fast prio
@@ -55,15 +55,17 @@ void test_run(void)
 	
 	//////////////////////////////////////////////////////////////////////////
 	testcase = 1;
-	test_GPS_calcHeading();
+	TheBigTest();//quaternion_test();
+	
+	//test_GPS_calcHeading();
 
 	//////////////////////////////////////////////////////////////////////////
 	testcase = 2;
-	test_GetSetSpeed();
+	//test_GetSetSpeed();
 
 	//////////////////////////////////////////////////////////////////////////
 	testcase = 3;
-	test_GetBankAndThrustFromAccel();
+	//test_GetBankAndThrustFromAccel();
 
 
 	//////////////////////////////////////////////////////////////////////////
@@ -150,15 +152,16 @@ void test_run(void)
 	n = 1000;	
 	while (n--)
 	{	
-		Superfilter(sim_acc,&pos_res,&vel_res);
+		//Superfilter(sim_acc,&pos_res,&vel_res);
 	}
+
 	assert(fabs(pos_res.x + 1511)<3);
 	assert(fabs(pos_res.y - 3029)<3);
 	
 	//////////////////////////////////////////////////////////////////////////
 	testcase = 9;
 	// Nav Governor
-	test_NAV_Governor();
+	//test_NAV_Governor();
 	
 	
 	//////////////////////////////////////////////////////////////////////////

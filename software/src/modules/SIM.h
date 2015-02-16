@@ -3,7 +3,7 @@
  *
  * Created: 29.10.2014 22:53:37
  *
- * (c) 2014 by Fabian Huslik
+ * (c) 2014-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@
 
 #define SIM_DT 0.01 // fixed 10ms in our case
 #define SIM_POWERFILTER 0.98 // for delaying the power application
-#define SIM_RATEFLT 0.50 // delaying the application of the rate (simulated motor lag) fixme experiment with it !
-#define SIM_RATEFACT 0.0002 // factor by which the input rotation command is multiplied to get the rotation response from simulated copter fixme experiment with it !
+#define SIM_RATEFLT 0.50 // delaying the application of the rate (simulated motor lag) todo experiment with it !
+#define SIM_RATEFACT 0.0002 // factor by which the input rotation command is multiplied to get the rotation response from simulated copter todo experiment with it !
 
 #define SIM_AIRDENSITY		1.1839	// in kg/m³
 #define SIM_CWVALUE			1.1		// cw value without unit (for a cube)
@@ -40,12 +40,25 @@
 #define SIM_MAGDEFAULT_Y cos(SIM_MAGINC_DEG/radgra)*SIM_MAGFIELD_nT
 #define SIM_MAGDEFAULT_Z -sin(SIM_MAGINC_DEG/radgra)*SIM_MAGFIELD_nT
 
+#define SIMFACTORLAT1 111.3 // gives m from degrees, correct only around "home"
+#define SIMFACTORLON1 74.47 // gives m from degrees
+
+#define SIMFACTORLAT 89.84 // gives 10 millionth degrees from m, correct only around "home"
+#define SIMFACTORLON 134.27 // gives 10 millionth degrees from m
+
+#define SIMGPSFILTER 0.15 // GPS delaying filter
+#define SIMHFILTER   0.25 // height acquisition delaying filter 
+
+// visu only:
 quaternion_t SimGetorientation(void); // get simulated orientation out of simulation
-vector3_t SimGetRate(void); // get simulated rotation rate (equivalent to gyro output)
 vector3_t SimGetPos_m(void); // get the simulated position out of the simulation
+
+// simulated values:
+vector3_t SimGetRate(void); // get simulated rotation rate (equivalent to gyro output)
 vector3_t SimGetVel_m(void); // get the simulated velocity out of the simulation
 vector3_t SimGetMag(void);
 vector3_t SimGetAcc(void);
+
 void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t oa); // input the rotational command + thrust into simulation
 void SimReset(void); //reset the simulation to 0
 float signf(float s);
@@ -53,7 +66,8 @@ float signf(float s);
 void SimDisturbStep(float* value, float* angle, float frequency_hz, float amplitude);
 void SimDisturbVector(vector3_t *value, vector3_t *angle, float frequency_hz, float amplitude);
 
-
+gps_coordinates_t SIM_GPS_getpos(void);
+float SIM_geth(void);
 
 
 #endif /* SIM_H_ */

@@ -3,7 +3,7 @@
  *
  * Created: 28.01.2013 22:08:33
  *
- * (c) 2013-2014 by Fabian Huslik
+ * (c) 2013-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,9 +52,10 @@ typedef struct fcm_quaternion_tag
 	float qActAtt[4];				// measured / estimated attitude
 	float qSet[4];					// setpoint attitude
 	float qSim[4];					// simulated attitude (SIMULATION only)
-	float vPos[4];					// World position
-	int32_t h;						// height in mm (barometric measurement)
-	int16_t temp[2];				// Temperature in 10th °C
+	float vPos[3];					// World position
+	float vDat[3];					// extra data
+	/*int32_t h;						// height in mm (barometric measurement)
+	int16_t temp[2];				// Temperature in 10th °C*/
 	char footer[4];					// ~~~0
 }fcm_quaternion_t;
 

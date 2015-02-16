@@ -1,13 +1,14 @@
 /*
  * SIM.c
- Simple simulation of position hold etc...
- Enables virtual flying (kind of)
- The orientation governor (gyro) is skipped here, this is for simulating the GPS-related stuff only.
+ Simple simulation of vehicle dynamics.
+ Enables virtual flying.
+ The orientation governor (gyro) is included here.
+ 
  
  *
  * Created: 29.10.2014 22:39:56
  *
- * (c) 2014 by Fabian Huslik
+ * (c) 2014-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,22 +35,25 @@
 #include "../menu/menu_variant.h"
 #include "../FabOS_config.h"
 #include "../FabOS/FabOS.h"
+#include "GPS.h"
 #include "SIM.h"
 
 quaternion_t sim_orientation= {1,0,0,0};  
 vector3_t sim_rate_radps= {0,0,0}; // rotational speed in rad/s
-vector3_t sim_rate_radps_dist= {0,0,0}; // rotational speed in rad/s
+vector3_t sim_rate_radps_dist= {0,0,0}; // rotational speed in rad/s (disturbed)
 vector3_t sim_pos_m= {0,0,0}; // world position
 vector3_t sim_vel_world_mps= {0,0,0}; // world velocity
 float sim_accel_mpss = 0; // acceleration by thrust (filtered,therefore static)
 vector3_t sim_accel_frame_mpss = {0,0,9.81f};
 vector3_t sim_magneto_frame_nT = {0,0,0};
 
+// for display purposes only, the flight controller should not know about the simulated orientation.
 quaternion_t SimGetorientation(void)
 {
 	return sim_orientation;
 }
 
+// returns the rate as measured by a gyroscope
 vector3_t SimGetRate(void)
 {
 	//vector3_t gyro_drift = {0.03,0.03,0.03};
@@ -58,9 +62,10 @@ vector3_t SimGetRate(void)
 	return sim_rate_radps_dist;
 }
 
+// simulated position - for display purposes only, the flight controller should not know about the simulated position directly.
 vector3_t SimGetPos_m(void)
 {
-	return sim_pos_m;	// fixme make filtered to add some delay and make it more GPS like.
+	return sim_pos_m;
 }
 
 vector3_t SimGetVel_m(void)
@@ -68,19 +73,53 @@ vector3_t SimGetVel_m(void)
 	return sim_vel_world_mps;
 }
 
+// returns the flux as measured by a magnetometer
 vector3_t SimGetMag(void)
 {
 	return sim_magneto_frame_nT;
 }
 
+// returns the acceleration as measured by a accelerometer
 vector3_t SimGetAcc(void)
 {
 	return sim_accel_frame_mpss;
 }
 
+
 float signf(float s)
 {
 	return (s<0.0f?-1.0f:1.0f);
+}
+
+gps_coordinates_t SIM_GPS_getpos(void)
+{
+	static vector2_t filtered;
+	
+
+	gps_coordinates_t ActPosSim = {483829100 , 108527100}; // FCM "home"
+	
+	vector3_t v_simul = SimGetPos_m();
+	
+	filtered.x = Filter_f(filtered.x,v_simul.x,SIMGPSFILTER);
+	filtered.y = Filter_f(filtered.y,v_simul.y,SIMGPSFILTER);
+	
+	
+	ActPosSim.lon += (int32_t)(filtered.x * SIMFACTORLON);
+	ActPosSim.lat += (int32_t)(filtered.y * SIMFACTORLAT);
+	
+	return ActPosSim;
+}
+
+
+float SIM_geth(void)
+{
+	static float filtered;
+		
+	vector3_t v_simul = SimGetPos_m();
+	
+	filtered = Filter_f(filtered,v_simul.z,SIMHFILTER);
+	
+	return filtered;
 }
 
 
@@ -95,7 +134,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	// calc acceleration caused by trust:
 	float thrust_mpss = o_thrust;
 	thrust_mpss /= 8000.0;
-	thrust_mpss *= 9.81*2.5; // max acceleration is 2g
+	thrust_mpss *= 9.81 * 2.3; // max acceleration is 2.3G
 	Filter_f(sim_accel_mpss, thrust_mpss, SIM_POWERFILTER);
 	
 	vector3_t vel_vehicle;
@@ -104,13 +143,15 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	SimDisturbStep(&vel_vehicle.x,&DisturbAngleWind.x,(float)myPar.wind_freq.sValue*0.1, (float)myPar.wind_ampl.sValue*0.1); // add wind	xy only
 	SimDisturbStep(&vel_vehicle.y,&DisturbAngleWind.y,(float)myPar.wind_freq.sValue*0.1, (float)myPar.wind_ampl.sValue*0.1);
 	
-	vel_vehicle = quaternion_rotateVector(vel_vehicle,quaternion_inverse(sim_orientation)); // rotate into vehicle orientation // fixme this "inverse" seems not plausible, but works better than without.
-	
+	vel_vehicle = quaternion_rotateVector(vel_vehicle,sim_orientation); // rotate into vehicle orientation
+
 	//create vehicle acceleration vector
 	vector3_t vAccel_mpss;
 	vAccel_mpss.x = 0;
 	vAccel_mpss.y = 0;
 	vAccel_mpss.z = thrust_mpss;
+	
+	//vAccel_mpss = quaternion_rotateVector(vAccel_mpss,sim_orientation); // rotate into vehicle or. TEST 
 	
 	//reduce the velocity by air resistance
 	// F = r * cw * A * v^2 /2
@@ -131,7 +172,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	vAccel_mpss.z -=9.81; // subtract earths acceleration.
 	// in steady state, the earths acceleration and the "o_thrust" acceleration neutralize to 0.
 	
-	vector3_t vDv = vector_scale(&vAccel_mpss,SIM_DT);
+	vector3_t vDv = vector_scale(&vAccel_mpss,SIM_DT); // multiply by time -> delta v for this step
 	
 	sim_vel_world_mps = vector_add(&sim_vel_world_mps,&vDv);
 	
@@ -154,7 +195,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	qdiff = quaternion_from_euler(sim_rate_radps.x*SIM_DT,sim_rate_radps.y*SIM_DT,sim_rate_radps.z*SIM_DT);
 	sim_orientation = quaternion_multiply_flip_norm(sim_orientation,qdiff);
 	
-	if(sim_pos_m.z < 0.0)
+	if(sim_pos_m.z <= 0.0)
 	{
 		SimReset();
 	}
@@ -162,7 +203,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	vector3_t mag_world;
 	
 	mag_world.x = SIM_MAGDEFAULT_X;
-	mag_world.y = -SIM_MAGDEFAULT_Y; // this minus does not belong here !!! wtf?? fixme and understand
+	mag_world.y = SIM_MAGDEFAULT_Y;
 	mag_world.z = SIM_MAGDEFAULT_Z;
 	float rotation_disturbance = 0;
 	static float rotation_disturbance_angle = 0;

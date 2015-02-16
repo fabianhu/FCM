@@ -3,7 +3,7 @@
  *
  * Created: 25.04.2014 16:55:59
  *
- * (c) 2014 by Fabian Huslik
+ * (c) 2014-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,9 +43,10 @@ extern uint8_t TestProcessed[MAXTESTCASES]; // test passed array (number of proc
 	OS_ENABLEALLINTERRUPTS;		\
 }while(0)
 
-#define epsilon 10.0E-5
+#define epsilon 10.0E-3
 
-#define fequal(x,y) fabs((x) - (y)) < epsilon
+
+#define fequal(x,y) (fabs((x) - (y)) < epsilon)
 #define assertfequal(x,y) assert(fequal(x,y))
 #define radgra 57.295779513f
 

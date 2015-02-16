@@ -6,7 +6,7 @@
       <node text="Max Integr" imageindex="3" tagType="parameter" tagID="10" tagInfo="integrator_limit" tagParUpper="10000" tagParLower="0" tagParStepSize="100" tagParType="perc" tagParDesc="Max Integrator windup (4000)" />
       <node text="Gov at Max" imageindex="3" tagType="parameter" tagID="11" tagInfo="govAtMax" tagParUpper="100" tagParLower="0" tagParStepSize="1" tagParType="perc" tagParDesc="Governor intensity at max power [%] (20)" />
       <node text="Q Gain" imageindex="3" tagType="parameter" tagID="12" tagInfo="quat_amp" tagParUpper="10000" tagParLower="0" tagParStepSize="100" tagParType="perc" tagParDesc="Quaternion turn rate (4000)" />
-      <node text="*Swash as Poti" imageindex="4" tagType="action" tagID="13" tagInfo="actSwashasPot" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="perc" tagParDesc="Use Potis as PID settings for Swash (x&amp;y)" />
+      <node text="*Swash as Poti" imageindex="4" tagType="action" tagID="13" tagInfo="actSwashasPot" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="perc" tagParDesc="Use Potis as PID settings for Swash (xy)" />
       <node text="Swash P" imageindex="3" tagType="parameter" tagID="14" tagInfo="pid_r_p" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="perc" tagParDesc="(60)" />
       <node text="Swash I" imageindex="3" tagType="parameter" tagID="15" tagInfo="pid_r_i" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="perc" tagParDesc="(37)" />
       <node text="Swash D" imageindex="3" tagType="parameter" tagID="16" tagInfo="pid_r_d" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="perc" tagParDesc="(37)" />
@@ -22,25 +22,22 @@
         <node text="Max Angle" imageindex="3" tagType="parameter" tagID="34" tagInfo="nav_max_angle" tagParUpper="60" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="The max lean angle in degrees (30)" />
         <node text="Max Accel" imageindex="3" tagType="parameter" tagID="35" tagInfo="nav_max_acc_lim" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="The max acceleration out of nav in 1/10 m/s^2  (2)" />
         <node text="Max Acc int" imageindex="3" tagType="parameter" tagID="36" tagInfo="nav_max_accelint" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="The max acceleration integrator windup out of nav in 1/10  m/s^2  (2)" />
-        <node text="Speed NAV" imageindex="3" tagType="parameter" tagID="37" tagInfo="nav_set_speed" tagParUpper="30" tagParLower="0" tagParStepSize="1" tagParType="mps" tagParDesc="the desired cruise speed m/s (5)" />
-        <node text="Radius NAV" imageindex="3" tagType="parameter" tagID="38" tagInfo="nav_decel_radius" tagParUpper="50" tagParLower="0" tagParStepSize="1" tagParType="m" tagParDesc="The radius in meters, at which the cruise speed starts to decelerate (20)" />
-        <node text="Speed h" imageindex="3" tagType="parameter" tagID="39" tagInfo="nav_set_speedh" tagParUpper="30" tagParLower="0" tagParStepSize="1" tagParType="mps" tagParDesc="the desired height change speed m/s (5)" />
-        <node text="Radius h" imageindex="3" tagType="parameter" tagID="40" tagInfo="nav_decel_radiush" tagParUpper="50" tagParLower="0" tagParStepSize="1" tagParType="m" tagParDesc="The radius in meters, at which the height change speed starts to decelerate (20)" />
+        <node text="Radius NAV" imageindex="3" tagType="parameter" tagID="37" tagInfo="nav_decel_radius" tagParUpper="50" tagParLower="0" tagParStepSize="1" tagParType="m" tagParDesc="The radius in meters, at which the cruise speed starts to decelerate (20)" />
+        <node text="Radius h" imageindex="3" tagType="parameter" tagID="38" tagInfo="nav_decel_radiush" tagParUpper="50" tagParLower="0" tagParStepSize="1" tagParType="m" tagParDesc="The radius in meters, at which the height change speed starts to decelerate (20)" />
       </node>
       <node text="NAV Filters" imageindex="0" tagType="normal" tagID="23" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="Navigation Governor Parameters">
-        <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="41" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
-        <node text="Acc Flt glob" imageindex="3" tagType="parameter" tagID="42" tagInfo="nav_acc_flt_glob" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="global acceleration filter value (1000) 1000 is unfiltered" />
-        <node text="alpha H spd" imageindex="3" tagType="parameter" tagID="43" tagInfo="nav_alpha_H" tagParUpper="10000" tagParLower="0" tagParStepSize="10" tagParType="none" tagParDesc="complementary filter for z speed (9990) 10000 is accel prio" />
-        <node text="alpha speed" imageindex="3" tagType="parameter" tagID="44" tagInfo="nav_alpha_speed" tagParUpper="10000" tagParLower="0" tagParStepSize="10" tagParType="none" tagParDesc="complementary filter for x/y speed (9990) 10000 is accel prio" />
-        <node text="alpha pos" imageindex="3" tagType="parameter" tagID="45" tagInfo="nav_alpha_Pos" tagParUpper="10000" tagParLower="0" tagParStepSize="10" tagParType="none" tagParDesc="complementary filter for position (9990) 10000 is accel prio" />
+        <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="39" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
+        <node text="Acc Flt glob" imageindex="3" tagType="parameter" tagID="40" tagInfo="nav_acc_flt_glob" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="global acceleration filter value (1000) 1000 is unfiltered" />
+        <node text="alpha pos" imageindex="3" tagType="parameter" tagID="41" tagInfo="nav_alpha_Pos" tagParUpper="1000" tagParLower="0" tagParStepSize="10" tagParType="none" tagParDesc="complementary filter for position (???) 0 is prio for GPS" />
+        <node text="alpha spd" imageindex="3" tagType="parameter" tagID="42" tagInfo="nav_alpha_Spd" tagParUpper="1000" tagParLower="0" tagParStepSize="10" tagParType="none" tagParDesc="complementary filter for position (???) 1000 is accel prio" />
       </node>
       <node text="NAV Compensation" imageindex="0" tagType="normal" tagID="24" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="Navigation Compensation">
-        <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="46" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
-        <node text="Comp On" imageindex="3" tagType="parameter" tagID="47" tagInfo="pid_nav_mislead_on" tagParUpper="1" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="Activate the compensation algorithm" />
-        <node text="Min Speed" imageindex="3" tagType="parameter" tagID="48" tagInfo="pid_nav_mislead_minspeed" tagParUpper="100" tagParLower="0" tagParStepSize="1" tagParType="mps" tagParDesc="Minimum speed, at which the vectoring calculation starts (1)" />
-        <node text="Min Time" imageindex="3" tagType="parameter" tagID="49" tagInfo="pid_nav_mislead_mintime" tagParUpper="10" tagParLower="0" tagParStepSize="1" tagParType="s" tagParDesc="Minimum time en route, after which the vectoring calculation starts (5)" />
-        <node text="Filter" imageindex="3" tagType="parameter" tagID="50" tagInfo="pid_nav_mislead_filter" tagParUpper="100" tagParLower="0" tagParStepSize="1" tagParType="perc" tagParDesc="100 is unfiltered" />
-        <node text="Min Distance" imageindex="3" tagType="parameter" tagID="51" tagInfo="pid_nav_mislead_mindist" tagParUpper="100" tagParLower="0" tagParStepSize="1" tagParType="m" tagParDesc="Minimum distance from target to activate the compensation" />
+        <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="43" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
+        <node text="Comp On" imageindex="3" tagType="parameter" tagID="44" tagInfo="pid_nav_mislead_on" tagParUpper="1" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="Activate the compensation algorithm" />
+        <node text="Min Speed" imageindex="3" tagType="parameter" tagID="45" tagInfo="pid_nav_mislead_minspeed" tagParUpper="100" tagParLower="0" tagParStepSize="1" tagParType="mps" tagParDesc="Minimum speed, at which the vectoring calculation starts (1)" />
+        <node text="Min Time" imageindex="3" tagType="parameter" tagID="46" tagInfo="pid_nav_mislead_mintime" tagParUpper="10" tagParLower="0" tagParStepSize="1" tagParType="s" tagParDesc="Minimum time en route, after which the vectoring calculation starts (5)" />
+        <node text="Filter" imageindex="3" tagType="parameter" tagID="47" tagInfo="pid_nav_mislead_filter" tagParUpper="100" tagParLower="0" tagParStepSize="1" tagParType="perc" tagParDesc="100 is unfiltered" />
+        <node text="Min Distance" imageindex="3" tagType="parameter" tagID="48" tagInfo="pid_nav_mislead_mindist" tagParUpper="100" tagParLower="0" tagParStepSize="1" tagParType="m" tagParDesc="Minimum distance from target to activate the compensation" />
       </node>
       <node text="*NAV as Poti" imageindex="4" tagType="action" tagID="25" tagInfo="actNAVasPot" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="Use Potis as PID settings" />
       <node text="NAV P" imageindex="3" tagType="parameter" tagID="26" tagInfo="pid_nav_p" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="perc" tagParDesc="(25)" />
@@ -52,88 +49,88 @@
       <node text="H D  " imageindex="3" tagType="parameter" tagID="32" tagInfo="pid_h_d" tagParUpper="2000" tagParLower="0" tagParStepSize="1" tagParType="perc" tagParDesc="(1000)" />
     </node>
     <node text="Settings" imageindex="0" tagType="normal" tagID="3" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="General settings">
-      <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="52" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
-      <node text="Max Power  " imageindex="3" tagType="parameter" tagID="53" tagInfo="max_power" tagParUpper="10000" tagParLower="0" tagParStepSize="100" tagParType="perc" tagParDesc="Max throttle (6500)" />
-      <node text="Idle Power " imageindex="3" tagType="parameter" tagID="54" tagInfo="idle_power" tagParUpper="3000" tagParLower="0" tagParStepSize="100" tagParType="perc" tagParDesc="Min throttle, use above 1500 for idle running props" />
-      <node text="Agility fact" imageindex="3" tagType="parameter" tagID="55" tagInfo="Agilityfactor" tagParUpper="2" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="How aggressive the copter reacts to RC (1-2)" />
-      <node text="wait GPS Fix" imageindex="3" tagType="parameter" tagID="56" tagInfo="waitGPSFix" tagParUpper="1" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="1 = Flight is only released if GPS is fixed " />
-      <node text="No BT222 cfg" imageindex="3" tagType="parameter" tagID="57" tagInfo="NoConfigBTM222atStart" tagParUpper="1" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="1 = skip BTM222 initialisation sequence at start" />
-      <node text="Direct Mode" imageindex="3" tagType="parameter" tagID="58" tagInfo="DirectMode" tagParUpper="1" tagParLower="-6" tagParStepSize="1" tagParType="none" tagParDesc="1 = NO Flight control, throttle directly &amp; without unlock&#xA; to all ESC!&#xA; Use this to calibrate all ESCs at once.&#xA; Negative numbers = single motor control, others off" />
-      <node text="SPEKTRUM DSMX" imageindex="3" tagType="parameter" tagID="59" tagInfo="dsmx_on" tagParUpper="1" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="1= try bind in DSMX mode" />
-      <node text="*Bnd SPEKTRUM" imageindex="4" tagType="action" tagID="60" tagInfo="actBindSPEKTRUM" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="Do bind Spectrum Sattelite at RC-Port" />
-      <node text="*Start Bootloader" imageindex="4" tagType="action" tagID="61" tagInfo="actStartBootloader" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="Go into bootloader mode" />
+      <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="49" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      <node text="Max Power  " imageindex="3" tagType="parameter" tagID="50" tagInfo="max_power" tagParUpper="10000" tagParLower="0" tagParStepSize="100" tagParType="perc" tagParDesc="Max throttle (6500)" />
+      <node text="Idle Power " imageindex="3" tagType="parameter" tagID="51" tagInfo="idle_power" tagParUpper="3000" tagParLower="0" tagParStepSize="100" tagParType="perc" tagParDesc="Min throttle, use above 1500 for idle running props" />
+      <node text="Agility fact" imageindex="3" tagType="parameter" tagID="52" tagInfo="Agilityfactor" tagParUpper="2" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="How aggressive the copter reacts to RC (1-2)" />
+      <node text="wait GPS Fix" imageindex="3" tagType="parameter" tagID="53" tagInfo="waitGPSFix" tagParUpper="1" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="1 = Flight is only released if GPS is fixed " />
+      <node text="No BT222 cfg" imageindex="3" tagType="parameter" tagID="54" tagInfo="NoConfigBTM222atStart" tagParUpper="1" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="1 = skip BTM222 initialisation sequence at start" />
+      <node text="Direct Mode" imageindex="3" tagType="parameter" tagID="55" tagInfo="DirectMode" tagParUpper="1" tagParLower="-6" tagParStepSize="1" tagParType="none" tagParDesc="1 = NO Flight control, throttle directly without unlock to all ESC! Use this to calibrate all ESCs at once. Negative numbers = single motor control, others off" />
+      <node text="SPEKTRUM DSMX" imageindex="3" tagType="parameter" tagID="56" tagInfo="dsmx_on" tagParUpper="1" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="1= try bind in DSMX mode" />
+      <node text="*Bnd SPEKTRUM" imageindex="4" tagType="action" tagID="57" tagInfo="actBindSPEKTRUM" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="Do bind Spectrum Sattelite at RC-Port" />
+      <node text="*Start Bootloader" imageindex="4" tagType="action" tagID="58" tagInfo="actStartBootloader" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="Go into bootloader mode" />
     </node>
     <node text="Calibration" imageindex="0" tagType="normal" tagID="4" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="Sensor calibration">
-      <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="62" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
-      <node text="Filters" imageindex="0" tagType="normal" tagID="63" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="Sensor calibration">
-        <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="75" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
-        <node text="Gyro Filter" imageindex="3" tagType="parameter" tagID="76" tagInfo="cal_gyro_filter" tagParUpper="32" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="Gyroscope filter: 1= unfiltered (1)" />
-        <node text="Accel Filter" imageindex="3" tagType="parameter" tagID="77" tagInfo="cal_acc_filter" tagParUpper="32" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="Accelerometer filter: 1= unfiltered (4)" />
-        <node text="Magneto Flt" imageindex="3" tagType="parameter" tagID="78" tagInfo="cal_mag_filter" tagParUpper="32" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="Magnetometer filter: 1= unfiltered   (4)" />
-        <node text="Baro Filter" imageindex="3" tagType="parameter" tagID="79" tagInfo="cal_baro_filter" tagParUpper="1000" tagParLower="1" tagParStepSize="10" tagParType="none" tagParDesc="Barometer filter: 1000= unfiltered   (990)" />
-        <node text="GPS Filter" imageindex="3" tagType="parameter" tagID="80" tagInfo="cal_gps_filter" tagParUpper="1000" tagParLower="1" tagParStepSize="10" tagParType="none" tagParDesc="GPS filter: 1000= unfiltered  (990)" />
+      <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="59" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      <node text="Filters" imageindex="0" tagType="normal" tagID="60" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="Sensor calibration">
+        <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="72" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
+        <node text="Gyro Filter" imageindex="3" tagType="parameter" tagID="73" tagInfo="cal_gyro_filter" tagParUpper="32" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="Gyroscope filter: 1= unfiltered (1)" />
+        <node text="Accel Filter" imageindex="3" tagType="parameter" tagID="74" tagInfo="cal_acc_filter" tagParUpper="32" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="Accelerometer filter: 1= unfiltered (4)" />
+        <node text="Magneto Flt" imageindex="3" tagType="parameter" tagID="75" tagInfo="cal_mag_filter" tagParUpper="32" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="Magnetometer filter: 1= unfiltered   (4)" />
+        <node text="Baro Filter" imageindex="3" tagType="parameter" tagID="76" tagInfo="cal_baro_filter" tagParUpper="1000" tagParLower="1" tagParStepSize="10" tagParType="none" tagParDesc="Barometer filter: 1000= unfiltered   (990)" />
+        <node text="GPS Filter" imageindex="3" tagType="parameter" tagID="77" tagInfo="cal_gps_filter" tagParUpper="1000" tagParLower="1" tagParStepSize="10" tagParType="none" tagParDesc="GPS filter: 1000= unfiltered  (990)" />
       </node>
-      <node text="*Calibrate R+A" imageindex="4" tagType="action" tagID="64" tagInfo="actCalibrate" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="Calibrate Gyro and Accelometer ? put on flat surface!" />
-      <node text="Gyro X" imageindex="3" tagType="parameter" tagID="65" tagInfo="cal_gyro_x" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Gyro calibration value" />
-      <node text="Gyro Y" imageindex="3" tagType="parameter" tagID="66" tagInfo="cal_gyro_y" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Gyro calibration value" />
-      <node text="Gyro Z" imageindex="3" tagType="parameter" tagID="67" tagInfo="cal_gyro_z" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Gyro calibration value" />
-      <node text="Acc X" imageindex="3" tagType="parameter" tagID="68" tagInfo="cal_acc_x" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Accelometer calibration value" />
-      <node text="Acc Y" imageindex="3" tagType="parameter" tagID="69" tagInfo="cal_acc_y" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Accelometer calibration value" />
-      <node text="Acc Z" imageindex="3" tagType="parameter" tagID="70" tagInfo="cal_acc_z" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Accelometer calibration value" />
-      <node text="MagCal flght" imageindex="3" tagType="parameter" tagID="71" tagInfo="cal_mag_auto_inflight" tagParUpper="1" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="Magnetometer calibration during engines on allowed ? (0)" />
-      <node text="Mag X" imageindex="3" tagType="parameter" tagID="72" tagInfo="cal_mag_x" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Magnetometer calibration value (via online calibration)" />
-      <node text="Mag Y" imageindex="3" tagType="parameter" tagID="73" tagInfo="cal_mag_y" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Magnetometer calibration value (via online calibration)" />
-      <node text="Mag Z" imageindex="3" tagType="parameter" tagID="74" tagInfo="cal_mag_z" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Magnetometer calibration value (via online calibration)" />
+      <node text="*Calibrate R+A" imageindex="4" tagType="action" tagID="61" tagInfo="actCalibrate" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="Calibrate Gyro and Accelometer ? put on flat surface!" />
+      <node text="Gyro X" imageindex="3" tagType="parameter" tagID="62" tagInfo="cal_gyro_x" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Gyro calibration value" />
+      <node text="Gyro Y" imageindex="3" tagType="parameter" tagID="63" tagInfo="cal_gyro_y" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Gyro calibration value" />
+      <node text="Gyro Z" imageindex="3" tagType="parameter" tagID="64" tagInfo="cal_gyro_z" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Gyro calibration value" />
+      <node text="Acc X" imageindex="3" tagType="parameter" tagID="65" tagInfo="cal_acc_x" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Accelometer calibration value" />
+      <node text="Acc Y" imageindex="3" tagType="parameter" tagID="66" tagInfo="cal_acc_y" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Accelometer calibration value" />
+      <node text="Acc Z" imageindex="3" tagType="parameter" tagID="67" tagInfo="cal_acc_z" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Accelometer calibration value" />
+      <node text="MagCal flght" imageindex="3" tagType="parameter" tagID="68" tagInfo="cal_mag_auto_inflight" tagParUpper="1" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="Magnetometer calibration during engines on allowed ? (0)" />
+      <node text="Mag X" imageindex="3" tagType="parameter" tagID="69" tagInfo="cal_mag_x" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Magnetometer calibration value (via online calibration)" />
+      <node text="Mag Y" imageindex="3" tagType="parameter" tagID="70" tagInfo="cal_mag_y" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Magnetometer calibration value (via online calibration)" />
+      <node text="Mag Z" imageindex="3" tagType="parameter" tagID="71" tagInfo="cal_mag_z" tagParUpper="32000" tagParLower="-32000" tagParStepSize="1" tagParType="perc" tagParDesc="Magnetometer calibration value (via online calibration)" />
     </node>
     <node text="RC Channels" imageindex="0" tagType="normal" tagID="5" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="RC channel assignment. Go to diag mode to see results.">
-      <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="81" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
-      <node text="Sw  PosHold" imageindex="3" tagType="parameter" tagID="82" tagInfo="SwitchPosHold" tagParUpper="12" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="Which channel is used for Pos hold (ch #)" />
-      <node text="SwP PosHold" imageindex="3" tagType="parameter" tagID="83" tagInfo="SwPPosHold" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="At which pos is the function active (0=lo 1=mid 2=hi)&#xA; Pos Hold wins over RTH!" />
-      <node text="Sw  H Gov" imageindex="3" tagType="parameter" tagID="84" tagInfo="SwitchHGov" tagParUpper="12" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="Which channel is used for height governor on (ch #)" />
-      <node text="SwP H Gov" imageindex="3" tagType="parameter" tagID="85" tagInfo="SwPHGov" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="At which pos is the function active (0=lo 1=mid 2=hi)" />
-      <node text="Sw  RTH" imageindex="3" tagType="parameter" tagID="86" tagInfo="SwitchReturnToHome" tagParUpper="12" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="Which channel is used for Return To Home (ch #)" />
-      <node text="SwP RTH" imageindex="3" tagType="parameter" tagID="87" tagInfo="SwPReturnToHome" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="At which pos is the function active (0=lo 1=mid 2=hi)" />
-      <node text="Sw  Aux" imageindex="3" tagType="parameter" tagID="88" tagInfo="SwitchAux" tagParUpper="12" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="Which channel is used for Auxiliary function (ch #)" />
-      <node text="SwP Aux" imageindex="3" tagType="parameter" tagID="89" tagInfo="SwPAux" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="At which pos is the function active (0=lo 1=mid 2=hi)" />
-      <node text="Poti P" imageindex="3" tagType="parameter" tagID="90" tagInfo="PotiP" tagParUpper="12" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="Which channel is used for P potmeter" />
-      <node text="Poti I" imageindex="3" tagType="parameter" tagID="91" tagInfo="PotiI" tagParUpper="12" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="Which channel is used for I potmeter" />
-      <node text="Poti D" imageindex="3" tagType="parameter" tagID="92" tagInfo="PotiD" tagParUpper="12" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="Which channel is used for D potmeter" />
+      <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="78" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      <node text="Sw  PosHold" imageindex="3" tagType="parameter" tagID="79" tagInfo="SwitchPosHold" tagParUpper="12" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="Which channel is used for Pos hold (ch #)" />
+      <node text="SwP PosHold" imageindex="3" tagType="parameter" tagID="80" tagInfo="SwPPosHold" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="At which pos is the function active (0=lo 1=mid 2=hi) Pos Hold wins over RTH!" />
+      <node text="Sw  H Gov" imageindex="3" tagType="parameter" tagID="81" tagInfo="SwitchHGov" tagParUpper="12" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="Which channel is used for height governor on (ch #)" />
+      <node text="SwP H Gov" imageindex="3" tagType="parameter" tagID="82" tagInfo="SwPHGov" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="At which pos is the function active (0=lo 1=mid 2=hi)" />
+      <node text="Sw  RTH" imageindex="3" tagType="parameter" tagID="83" tagInfo="SwitchReturnToHome" tagParUpper="12" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="Which channel is used for Return To Home (ch #)" />
+      <node text="SwP RTH" imageindex="3" tagType="parameter" tagID="84" tagInfo="SwPReturnToHome" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="At which pos is the function active (0=lo 1=mid 2=hi)" />
+      <node text="Sw  Aux" imageindex="3" tagType="parameter" tagID="85" tagInfo="SwitchAux" tagParUpper="12" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="Which channel is used for Auxiliary function (ch #)" />
+      <node text="SwP Aux" imageindex="3" tagType="parameter" tagID="86" tagInfo="SwPAux" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="At which pos is the function active (0=lo 1=mid 2=hi)" />
+      <node text="Poti P" imageindex="3" tagType="parameter" tagID="87" tagInfo="PotiP" tagParUpper="12" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="Which channel is used for P potmeter" />
+      <node text="Poti I" imageindex="3" tagType="parameter" tagID="88" tagInfo="PotiI" tagParUpper="12" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="Which channel is used for I potmeter" />
+      <node text="Poti D" imageindex="3" tagType="parameter" tagID="89" tagInfo="PotiD" tagParUpper="12" tagParLower="0" tagParStepSize="1" tagParType="ch" tagParDesc="Which channel is used for D potmeter" />
     </node>
-    <node text="*Save to Flash" imageindex="4" tagType="action" tagID="6" tagInfo="actSaveToFlash" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="Saves all settings &amp; values to flash" />
+    <node text="*Save to Flash" imageindex="4" tagType="action" tagID="6" tagInfo="actSaveToFlash" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="Saves all settings values to flash" />
     <node text="*Diag mode" imageindex="4" tagType="action" tagID="7" tagInfo="act_diag" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="Display diag page (press enter to leave)" />
-    <node text="Test" imageindex="0" tagType="normal" tagID="8" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
-      <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="93" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
-      <node text="Madgwick" imageindex="3" tagType="parameter" tagID="94" tagInfo="madgwick" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
-      <node text="alpha Madg" imageindex="3" tagType="parameter" tagID="95" tagInfo="a_madg" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="x 0.01 --&gt; 100 = 1.0 (10)" />
-      <node text="prop Mah" imageindex="3" tagType="parameter" tagID="96" tagInfo="P_mahony" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="x 0.01 --&gt; 100 = 1.0 (50)" />
-      <node text="integr Mah" imageindex="3" tagType="parameter" tagID="97" tagInfo="I_mahony" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="x 0.01 --&gt; 100 = 1.0 (10)" />
-      <node text="test P" imageindex="3" tagType="parameter" tagID="98" tagInfo="test_P" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="" />
-      <node text="test I" imageindex="3" tagType="parameter" tagID="99" tagInfo="test_I" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="" />
-      <node text="test D" imageindex="3" tagType="parameter" tagID="100" tagInfo="test_D" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="" />
-      <node text="wind" imageindex="0" tagType="normal" tagID="101" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
-        <node text="wind_freq" imageindex="3" tagType="parameter" tagID="106" tagInfo="wind_freq" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
-        <node text="wind_ampl" imageindex="3" tagType="parameter" tagID="107" tagInfo="wind_ampl" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+    <node text="Test" imageindex="0" tagType="normal" tagID="8" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="This is magic stuff... will disappear later.">
+      <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="90" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      <node text="Madgwick" imageindex="3" tagType="parameter" tagID="91" tagInfo="madgwick" tagParUpper="2" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      <node text="alpha Madg" imageindex="3" tagType="parameter" tagID="92" tagInfo="a_madg" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="x 0.01 --&gt; 100 = 1.0 (10)" />
+      <node text="prop Mah" imageindex="3" tagType="parameter" tagID="93" tagInfo="P_mahony" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="x 0.01 --&gt; 100 = 1.0 (50)" />
+      <node text="integr Mah" imageindex="3" tagType="parameter" tagID="94" tagInfo="I_mahony" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="x 0.01 --&gt; 100 = 1.0 (10)" />
+      <node text="test P" imageindex="3" tagType="parameter" tagID="95" tagInfo="test_P" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      <node text="test I" imageindex="3" tagType="parameter" tagID="96" tagInfo="test_I" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      <node text="test D" imageindex="3" tagType="parameter" tagID="97" tagInfo="test_D" tagParUpper="100" tagParLower="1" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      <node text="wind" imageindex="0" tagType="normal" tagID="98" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
+        <node text="wind_freq" imageindex="3" tagType="parameter" tagID="103" tagInfo="wind_freq" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="wind_ampl" imageindex="3" tagType="parameter" tagID="104" tagInfo="wind_ampl" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="105" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
+      </node>
+      <node text="mag_mis" imageindex="0" tagType="normal" tagID="99" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
+        <node text="mag_mis_freq" imageindex="3" tagType="parameter" tagID="106" tagInfo="mag_mis_freq" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="mag_mis_ampl" imageindex="3" tagType="parameter" tagID="107" tagInfo="mag_mis_ampl" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
         <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="108" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
       </node>
-      <node text="mag_mis" imageindex="0" tagType="normal" tagID="102" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
-        <node text="mag_mis_freq" imageindex="3" tagType="parameter" tagID="109" tagInfo="mag_mis_freq" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
-        <node text="mag_mis_ampl" imageindex="3" tagType="parameter" tagID="110" tagInfo="mag_mis_ampl" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+      <node text="gyro" imageindex="0" tagType="normal" tagID="100" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
+        <node text="gyro_freq" imageindex="3" tagType="parameter" tagID="109" tagInfo="gyro_freq" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="gyro_ampl" imageindex="3" tagType="parameter" tagID="110" tagInfo="gyro_ampl" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
         <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="111" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
       </node>
-      <node text="gyro" imageindex="0" tagType="normal" tagID="103" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
-        <node text="gyro_freq" imageindex="3" tagType="parameter" tagID="112" tagInfo="gyro_freq" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
-        <node text="gyro_ampl" imageindex="3" tagType="parameter" tagID="113" tagInfo="gyro_ampl" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+      <node text="accel" imageindex="0" tagType="normal" tagID="101" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
+        <node text="accel_freq" imageindex="3" tagType="parameter" tagID="112" tagInfo="accel_freq" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="accel_ampl" imageindex="3" tagType="parameter" tagID="113" tagInfo="accel_ampl" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
         <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="114" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
       </node>
-      <node text="accel" imageindex="0" tagType="normal" tagID="104" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
-        <node text="accel_freq" imageindex="3" tagType="parameter" tagID="115" tagInfo="accel_freq" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
-        <node text="accel_ampl" imageindex="3" tagType="parameter" tagID="116" tagInfo="accel_ampl" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+      <node text="magneto" imageindex="0" tagType="normal" tagID="102" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
+        <node text="magneto_freq" imageindex="3" tagType="parameter" tagID="115" tagInfo="magneto_freq" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
+        <node text="magneto_ampl" imageindex="3" tagType="parameter" tagID="116" tagInfo="magneto_ampl" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
         <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="117" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
-      </node>
-      <node text="magneto" imageindex="0" tagType="normal" tagID="105" tagInfo="" tagParUpper="0" tagParLower="0" tagParStepSize="0" tagParType="none" tagParDesc="">
-        <node text="magneto_freq" imageindex="3" tagType="parameter" tagID="118" tagInfo="magneto_freq" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
-        <node text="magneto_ampl" imageindex="3" tagType="parameter" tagID="119" tagInfo="magneto_ampl" tagParUpper="100" tagParLower="0" tagParStepSize="5" tagParType="none" tagParDesc="" />
-        <node text="&lt;back&gt;" imageindex="1" tagType="back" tagID="120" tagInfo="" tagParUpper="1000" tagParLower="0" tagParStepSize="1" tagParType="none" tagParDesc="" />
       </node>
     </node>
   </node>

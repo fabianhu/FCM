@@ -1,7 +1,7 @@
 /*
 	FabOS for ATMEL AVR32 Test suite
 
-    (c) 2008-2014 Fabian Huslik
+    (c) 2008-2015 Fabian Huslik
 
 	This file implememts automated software testing of the OS modules.
 	This file should only be altered if really necessary.

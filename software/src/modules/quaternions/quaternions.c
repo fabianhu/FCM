@@ -3,7 +3,7 @@
  *
  * Created: 10.02.2013 20:51:44
  *  
- * (c) 2013-2014 by Fabian Huslik
+ * (c) 2013-2015 by Fabian Huslik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +23,16 @@
 #include <fastmath.h>
 #include "../vector.h"
 #include "quaternions.h"
+#include "../../config.h"
+#include "../../FabOS_config.h"
+#include "../../FabOS/FabOS.h"
 
-int debug_perlmutti=0;
+#include "../testsuite.h"
+
+
+#include "../menu/menu.h"
+#include "../menu/menu_variant.h"
+//int debug_perlmutti=0;
  
 // all angles are in radians.
 
@@ -107,13 +115,26 @@ quaternion_t quaternion_multiply(quaternion_t q1, quaternion_t q2) // todo rebui
 {
 	quaternion_t ret;
 
+/*	ret.w = -q1.x * q2.x - q1.y * q2.y - q1.z * q2.z + q1.w * q2.w;
 	ret.x =  q1.x * q2.w + q1.y * q2.z - q1.z * q2.y + q1.w * q2.x;
 	ret.y = -q1.x * q2.z + q1.y * q2.w + q1.z * q2.x + q1.w * q2.y;
 	ret.z =  q1.x * q2.y - q1.y * q2.x + q1.z * q2.w + q1.w * q2.z;
-	ret.w = -q1.x * q2.x - q1.y * q2.y - q1.z * q2.z + q1.w * q2.w;
+*/	
+	ret.w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z;
+	ret.x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y;
+	ret.y = q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x;
+	ret.z = q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w;
 
 	return ret; 
 }
+
+
+
+
+
+
+
+
 
 // flip quaternion to get shortest path (otherwise we "win" a whole revolution) quaternions store 720°!
 quaternion_t quaternion_multiply_flip_norm(quaternion_t q1, quaternion_t q2) // todo rebuild to pointers
@@ -132,7 +153,7 @@ quaternion_t quaternion_multiply_flip_norm(quaternion_t q1, quaternion_t q2) // 
 	return ret; 
 }
 
-
+// conjugate / inverse quaternion
 quaternion_t quaternion_inverse(quaternion_t q)  // todo rebuild to pointers
 {
 	quaternion_t r;
@@ -239,35 +260,266 @@ void quaternion_copy(quaternion_t* qtrg, quaternion_t* qsrc)
 }
 
 
-vector3_t quaternion_rotateVector(vector3_t _V, quaternion_t _Q)
+volatile int debug_permtest24a,debug_permtest24b,debug_signtest16 ;
+volatile int  debug_persign8a, debug_persign8b;
+//debug_permtest6
+
+
+// http://www.j3d.org/matrix_faq/matrfaq_latest.html
+// v' = qr * v * qr^-1
+vector3_t quaternion_rotateVector(vector3_t _V, quaternion_t _Qi)
 {
-
-//  	if(_Q.w <0)
-//  	{
-// 	 	quaternion_flip(&_Q);
-//  	}
-
-// 	quaternion_t _Q;
-// 	_Q = perlmutt(_Qi,debug_perlmutti);
+	quaternion_t qv,qi,qq;
+	vector3_t v;
 	
-	// o[w]=i[z];o[x]=i[x];o[y]=i[y];o[z]=i[w];
+	qv.w =0;
+	qv.x=-_V.y;
+	qv.y=_V.x;
+	qv.z=-_V.z;
 	
-	if(_Q.w <0)
-	{
-		quaternion_flip(&_Q);
-	}
+	qi=quaternion_multiply(_Qi,qv);
+	qv=quaternion_multiply(qi,quaternion_inverse(_Qi));
 	
-	float i = _Q.x;
-	float j = _Q.y;
-	float k = _Q.w;
-	float r = _Q.z;	
+	v.x = qv.y;
+	v.y = -qv.x;
+	v.z = -qv.z;
 	
-	vector3_t vec; 
-	vec.x = 2*(r*_V.z*j + i*_V.z*k - r*_V.y*k + i*_V.y*j) + _V.x*(r*r + i*i - j*j - k*k);
-	vec.y = 2*(r*_V.x*k + i*_V.x*j - r*_V.z*i + j*_V.z*k) + _V.y*(r*r - i*i + j*j - k*k);
-	vec.z = 2*(r*_V.y*i - r*_V.x*j + i*_V.x*k + j*_V.y*k) + _V.z*(r*r - i*i - j*j + k*k);
-	return vec;
+	return v;
 }
+
+// http://www.j3d.org/matrix_faq/matrfaq_latest.html
+// v' = qr * v * qr^-1
+vector3_t quaternion_rotateVectortest(vector3_t _V, quaternion_t _Qi)
+{
+	quaternion_t qv,qi,qq;
+	vector3_t v;
+	
+ 	_V = perlsignv8(_V,debug_persign8a); //4 case  4: o[0]= i[0];o[1]=-i[1];o[2]=-i[2]; break;
+//   	_Qi = perlmutt24(_Qi, debug_permtest24a);
+// 	_Qi = perlsign16(_Qi, debug_signtest16);
+	
+	qv.w =0;
+	qv.x=_V.x;
+	qv.y=_V.y;
+	qv.z=_V.z;
+	
+	qv = perlmutt24(qv, debug_permtest24a); // 3 case 3: o[0]=i[0];o[1]=i[2];o[2]=i[1];o[3]=i[3]; break;
+
+	
+// 	if(_Qi.w < 0)
+// 	{
+// 		quaternion_flip(&_Qi);
+// 	}
+	
+	qi=quaternion_multiply(_Qi,qv);
+	qv=quaternion_multiply(qi,quaternion_inverse(_Qi));
+	
+	qv = perlmutt24(qv, debug_permtest24b); // 3 case 3: o[0]=i[0];o[1]=i[2];o[2]=i[1];o[3]=i[3]; break;
+	
+	
+	v.x = qv.x;
+	v.y = qv.y;
+	v.z = qv.z;
+	
+	v = perlsignv8(v,debug_persign8b); // 4 case  4: o[0]= i[0];o[1]=-i[1];o[2]=-i[2]; break;
+	
+	return v;
+	
+}
+
+// Rotate a vector by a Quaternion, w = qvq* 
+vector3_t quaternion_rotateVector3(vector3_t v, quaternion_t rotquaternion)
+{	    
+// 	quaternion_t vquat, wquat, qconj;
+// 	vector3_t w;
+// 	
+// 	//rotquaternion = perlsign(rotquaternion, debug_signtest1);
+// 	rotquaternion = perlmutt24(rotquaternion, debug_permtest24);
+// 	rotquaternion = perlsign16(rotquaternion, debug_signtest16);
+// 	
+// 	v = perlmuttv6(v,debug_permtest6);
+// 		
+// 	vquat.w = 0;
+// 	vquat.x = v.x;
+// 	vquat.y = v.y;
+// 	vquat.z = v.z;
+// 	
+// 	// seems, out vector stuff and the quaternion stuff does not match well...
+// 	
+// 	wquat = quaternion_multiply(rotquaternion, vquat);
+// 	
+// 	qconj = quaternion_inverse(rotquaternion);
+// 	vquat = quaternion_multiply(wquat, qconj);
+// 	
+// 	w.x = vquat.x;
+// 	w.y = vquat.y;
+// 	w.z = vquat.z;
+// 	
+// 	w = perlmuttv6(w,debug_persign8a);
+// 	
+// 	return w;
+}
+
+
+// Rotate a vector by a Quaternion, w = qvq* 
+vector3_t quaternion_rotateVector4(vector3_t vec, quaternion_t quat)
+{
+//hier erst mal die permutationen des quaternions probieren.
+
+// 
+// 	quat = perlsign16(quat, debug_signtest16);
+//	quat = perlmutt24(quat, debug_permtest24);
+//	vec = perlmuttv6(vec,debug_permtest6);
+// 	qv = perlsign(qv, debug_signtest2);
+// // 	qv = perlmutt(qv, debug_permtest2);
+// 
+// 
+// float num = quat.x * 2.0f;
+// float num2 = quat.y * 2.0f;
+// float num3 = quat.z * 2.0f;
+// float num4 = quat.x * num;
+// float num5 = quat.y * num2;
+// float num6 = quat.z * num3;
+// float num7 = quat.x * num2;
+// float num8 = quat.x * num3;
+// float num9 = quat.y * num3;
+// float num10 = quat.w * num;
+// float num11 = quat.w * num2;
+// float num12 = quat.w * num3;
+// vector3_t result;
+// result.x = (1.0f - (num5 + num6)) * vec.x + (num7 - num12) * vec.y + (num8 + num11) * vec.z;
+// result.y = (num7 + num12) * vec.x + (1.0f - (num4 + num6)) * vec.y + (num9 - num10) * vec.z;
+// result.z = (num8 - num11) * vec.x + (num9 + num10) * vec.y + (1.0f - (num4 + num5)) * vec.z;
+// 
+// result = perlmuttv6(result,debug_persign8a);
+// 
+// 
+// return result;
+}
+
+#if TEST_RUN == 1
+
+#define w2h 0.707106781186f  // wurzel 2 halbe
+
+int quaternion_test(void)
+{
+	// test quaternion rotation
+	
+	int t=0;
+	
+	// normal
+	t+=tqr(1.0,	0.0,	0.0,	0.0,	1.0,	2.0,	3.0); // back
+	t+=tqr(w2h,	0.0,	0.0,	-w2h,	2.0,	-1.0,	3.0); // right
+	t+=tqr(w2h,	0.0,	0.0,	w2h,	-2.0,	1.0,	3.0); // left
+	t+=tqr(0.0,	0.0,	0.0,	1.0,	-1.0,	-2.0,	3.0); // nose
+	// nose up
+	t+=tqr(0.5,	-0.5,	-0.5,	0.5,	-3.0,	-1.0,	2.0); // right
+	t+=tqr(w2h,	0.0,	-w2h,	0.0,	1.0,	-3.0,	2.0); // top
+	t+=tqr(0.5,	0.5,	-0.5,	0.5,	3.0,	1.0,	2.0); // left
+	t+=tqr(0.0,	w2h,	0.0,	w2h,	-1.0,	3.0,	2.0); // belly
+	// nose down
+	t+=tqr(0.5,	0.5,	0.5,	-0.5,	3.0,	-1.0,	-2.0); // right
+	t+=tqr(w2h,	0.0,	w2h,	0.0,	1.0,	3.0,	-2.0); // belly
+	t+=tqr(0.5,	-0.5,	0.5,	0.5,	-3.0,	1.0,	-2.0); // left
+	t+=tqr(0.0,	w2h,	0.0,	-w2h,	-1.0,	-3.0,	-2.0); // top
+	// left up
+	t+=tqr(0.5,	0.5,	-0.5,	-0.5,	2.0,	-3.0,	-1.0); // top
+	t+=tqr(w2h,	w2h,	0.0,	0.0,	3.0,	2.0,	-1.0); // back
+	t+=tqr(0.5,	0.5,	0.5,	0.5,	-2.0,	3.0,	-1.0); // belly
+	t+=tqr(0.0,	0.0,	w2h,	w2h,	-3.0,	-2.0,	-1.0); // nose
+	// belly up
+	t+=tqr(0.0,	1.0,	0.0,	0.0,	-1.0,	2.0,	-3.0); // back
+	t+=tqr(0.0,	-w2h,	w2h,	0.0,	2.0,	1.0,	-3.0); // left
+	t+=tqr(0.0,	w2h,	w2h,	0.0,	-2.0,	-1.0,	-3.0); // right
+	t+=tqr(0.0,	0.0,	1.0,	0.0,	1.0,	-2.0,	-3.0); // nose
+	// right up
+	t+=tqr(0.5,	-0.5,	-0.5,	0.5,	-2.0,	-3.0,	1.0); // top
+	t+=tqr(w2h,	-w2h,	0.0,	0.0,	-3.0,	2.0,	1.0); // back
+	t+=tqr(0.5,	-0.5,	0.5,	-0.5,	2.0,	3.0,	1.0); // belly
+	t+=tqr(0.0,	0.0,	-w2h,	w2h,	3.0,	-2.0,	1.0); // nose
+	
+	return t;
+}
+
+// quaternion and expected value as single parameters
+int32_t tqr(float qw,float qx,float qy,float qz,float vx,float vy,float vz)
+{
+	quaternion_t q;
+	int32_t ret = 0;
+	
+	q.w = qw;
+	q.x = qx;
+	q.y = qy;
+	q.z = qz;
+	
+	vector3_t t;
+	t.x=1;
+	t.y=2;
+	t.z=3;	
+		
+	vector3_t r;
+
+	r = quaternion_rotateVector(t,q);
+
+	if(!fequal(r.x,vx)) ret=1;
+	if(!fequal(r.y,vy)) ret=1;
+	if(!fequal(r.z,vz)) ret=1;
+	
+	return ret;
+}
+
+static volatile int smallestResult = 999;
+int permtestAtSmallest = 0;
+int signtestAtSmallest = 0;
+int perm2testAtSmallest = 0;
+int perm3testAtSmallest = 0;
+int equalresults = 0;
+
+void TheBigTest(void)
+{
+	
+	for (debug_permtest24a =1; debug_permtest24a <= 24; debug_permtest24a++)
+	{
+		for (debug_permtest24b =1; debug_permtest24b <= 24; debug_permtest24b++)
+		{
+// 		
+//  		for ( debug_signtest16 = 1; debug_signtest16 <= 16 ; debug_signtest16++)
+//  		{
+ 			for ( debug_persign8a = 1; debug_persign8a <= 6 ; debug_persign8a++)
+ 			{
+// 			 for (debug_permtest6 =1; debug_permtest6 <= 6; debug_permtest6++)
+//  			{
+ 				for ( debug_persign8b = 1; debug_persign8b <= 6 ; debug_persign8b++)
+ 				{
+					int res = quaternion_test();
+					if(res < smallestResult)
+					{
+						smallestResult = res;
+						permtestAtSmallest = debug_permtest24a;
+						signtestAtSmallest = debug_persign8b;
+						perm2testAtSmallest = debug_permtest24b;
+						perm3testAtSmallest = debug_persign8b;
+						equalresults=0;
+					}
+					else if(res == smallestResult)
+					{
+						equalresults++;
+					}
+					
+ 				}
+  			}
+ 		}
+ 	}
+	
+	asm("breakpoint");
+}
+
+
+
+#endif
+
+
+
 
 quaternion_t RC_Get_Offset(int32_t cmd_elev,int32_t cmd_roll,float yaw_rad)
 {
@@ -280,7 +532,7 @@ quaternion_t RC_Get_Offset(int32_t cmd_elev,int32_t cmd_roll,float yaw_rad)
 }
 
 
-quaternion_t perlmutt(quaternion_t qi, int n)
+quaternion_t perlmutt24(quaternion_t qi, int n)
 {
 	float i[4];
 	float o[4];
@@ -325,6 +577,115 @@ quaternion_t perlmutt(quaternion_t qi, int n)
 	ret.x = o[1];
 	ret.y = o[2];
 	ret.z = o[3];
+	
+	return ret;
+
+
+}
+
+vector3_t perlmuttv6(vector3_t qi, int n)
+{
+	float i[3];
+	float o[3];
+	
+	i[0] = qi.x;
+	i[1] = qi.y;
+	i[2] = qi.z;
+	
+	switch(n)
+	{
+		case 1:  o[0]=i[0];o[1]=i[1];o[2]=i[2]; break;
+		case 2:  o[0]=i[0];o[1]=i[2];o[2]=i[1]; break;
+		case 3:  o[0]=i[1];o[1]=i[0];o[2]=i[2]; break;
+		case 4:  o[0]=i[1];o[1]=i[2];o[2]=i[0]; break;
+		case 5:  o[0]=i[2];o[1]=i[0];o[2]=i[1]; break;
+		case 6:  o[0]=i[2];o[1]=i[1];o[2]=i[0]; break;
+		default: o[0]=1;o[1]=0;o[2]=0; break;
+	}
+	
+	vector3_t ret;
+	ret.x = o[0];
+	ret.y = o[1];
+	ret.z = o[2];
+	
+	return ret;
+}
+
+
+quaternion_t perlsign16(quaternion_t qi, int n)
+{
+	float i[4];
+	float o[4];
+	
+	i[0] = qi.w;
+	i[1] = qi.x;
+	i[2] = qi.y;
+	i[3] = qi.z;
+	
+	switch(n)
+	{
+		case  1: o[0]= i[0];o[1]= i[1];o[2]= i[2];o[3]= i[3]; break;
+		case  2: o[0]= i[0];o[1]= i[1];o[2]= i[2];o[3]=-i[3]; break;
+		case  3: o[0]= i[0];o[1]= i[1];o[2]=-i[2];o[3]= i[3]; break;
+		case  4: o[0]= i[0];o[1]= i[1];o[2]=-i[2];o[3]=-i[3]; break;
+		case  5: o[0]= i[0];o[1]=-i[1];o[2]= i[2];o[3]= i[3]; break;
+		case  6: o[0]= i[0];o[1]=-i[1];o[2]= i[2];o[3]=-i[3]; break;
+		case  7: o[0]= i[0];o[1]=-i[1];o[2]=-i[2];o[3]= i[3]; break;
+		case  8: o[0]= i[0];o[1]=-i[1];o[2]=-i[2];o[3]=-i[3]; break;
+		case  9: o[0]=-i[0];o[1]= i[1];o[2]= i[2];o[3]= i[3]; break;
+		case 10: o[0]=-i[0];o[1]= i[1];o[2]= i[2];o[3]=-i[3]; break;
+		case 11: o[0]=-i[0];o[1]= i[1];o[2]=-i[2];o[3]= i[3]; break;
+		case 12: o[0]=-i[0];o[1]= i[1];o[2]=-i[2];o[3]=-i[3]; break;
+		case 13: o[0]=-i[0];o[1]=-i[1];o[2]= i[2];o[3]= i[3]; break;
+		case 14: o[0]=-i[0];o[1]=-i[1];o[2]= i[2];o[3]=-i[3]; break;
+		case 15: o[0]=-i[0];o[1]=-i[1];o[2]=-i[2];o[3]= i[3]; break;
+		case 16: o[0]=-i[0];o[1]=-i[1];o[2]=-i[2];o[3]=-i[3]; break;
+	
+		default: o[0]= 1;o[1]= 0;o[2]= 0;o[3]= 0; break;
+
+	}
+	
+	quaternion_t ret;
+	ret.w = o[0];
+	ret.x = o[1];
+	ret.y = o[2];
+	ret.z = o[3];
+	
+	return ret;
+
+
+}
+
+vector3_t perlsignv8(vector3_t vi, int n)
+{
+	float i[3];
+	float o[3];
+	
+	i[0] = vi.x;
+	i[1] = vi.y;
+	i[2] = vi.z;
+	
+	switch(n)
+	{
+		case  1: o[0]= i[0];o[1]= i[1];o[2]= i[2]; break;
+		case  2: o[0]= i[0];o[1]= i[1];o[2]=-i[2]; break;
+		case  3: o[0]= i[0];o[1]=-i[1];o[2]= i[2]; break;
+		case  4: o[0]= i[0];o[1]=-i[1];o[2]=-i[2]; break;
+		case  5: o[0]=-i[0];o[1]= i[1];o[2]= i[2]; break;
+		case  6: o[0]=-i[0];o[1]= i[1];o[2]=-i[2]; break;
+		case  7: o[0]=-i[0];o[1]=-i[1];o[2]= i[2]; break;
+		case  8: o[0]=-i[0];o[1]=-i[1];o[2]=-i[2]; break;
+		
+	
+		default: o[0]= 1;o[1]= 0;o[2]= 0; break;
+
+	}
+	
+	vector3_t ret;
+	ret.x = o[0];
+	ret.y = o[1];
+	ret.z = o[2];
+
 	
 	return ret;
 
@@ -713,3 +1074,130 @@ q = [c1.*c2.*c3 + s1.*s2.*s3, s1.*c2.*c3 - c1.*s2.*s3, c1.*s2.*c3 + s1.*c2.*s3, 
 
 
 */	
+
+
+
+/*
+rosettacode.org:
+
+typedef struct quaternion
+{
+	double q[4];
+} quaternion_t;
+
+
+quaternion_t *quaternion_new(void)
+{
+	return malloc(sizeof(quaternion_t));
+}
+
+quaternion_t *quaternion_new_set(double q1,
+double q2,
+double q3,
+double q4)
+{
+	quaternion_t *q = malloc(sizeof(quaternion_t));
+	if (q != NULL) {
+		q->q[0] = q1; q->q[1] = q2; q->q[2] = q3; q->q[3] = q4;
+	}
+	return q;
+}
+
+
+void quaternion_copy(quaternion_t *r, quaternion_t *q)
+{
+	size_t i;
+	
+	if (r == NULL || q == NULL) return;
+	for(i = 0; i < 4; i++) r->q[i] = q->q[i];
+}
+
+
+double quaternion_norm(quaternion_t *q)
+{
+	size_t i;
+	double r = 0.0;
+	
+	if (q == NULL) {
+		fprintf(stderr, "NULL quaternion in norm\n");
+		return 0.0;
+	}
+	
+	for(i = 0; i < 4; i++) r += q->q[i] * q->q[i];
+	return sqrt(r);
+}
+
+
+void quaternion_neg(quaternion_t *r, quaternion_t *q)
+{
+	size_t i;
+	
+	if (q == NULL || r == NULL) return;
+	for(i = 0; i < 4; i++) r->q[i] = -q->q[i];
+}
+
+
+void quaternion_conj(quaternion_t *r, quaternion_t *q)
+{
+	size_t i;
+	
+	if (q == NULL || r == NULL) return;
+	r->q[0] = q->q[0];
+	for(i = 1; i < 4; i++) r->q[i] = -q->q[i];
+}
+
+
+void quaternion_add_d(quaternion_t *r, quaternion_t *q, double d)
+{
+	if (q == NULL || r == NULL) return;
+	quaternion_copy(r, q);
+	r->q[0] += d;
+}
+
+
+void quaternion_add(quaternion_t *r, quaternion_t *a, quaternion_t *b)
+{
+	size_t i;
+	
+	if (r == NULL || a == NULL || b == NULL) return;
+	for(i = 0; i < 4; i++) r->q[i] = a->q[i] + b->q[i];
+}
+
+
+void quaternion_mul_d(quaternion_t *r, quaternion_t *q, double d)
+{
+	size_t i;
+	
+	if (r == NULL || q == NULL) return;
+	for(i = 0; i < 4; i++) r->q[i] = q->q[i] * d;
+}
+
+bool quaternion_equal(quaternion_t *a, quaternion_t *b)
+{
+	size_t i;
+	
+	for(i = 0; i < 4; i++) if (a->q[i] != b->q[i]) return false;
+	return true;
+}
+
+
+#define A(N) (a->q[(N)])
+#define B(N) (b->q[(N)])
+#define R(N) (r->q[(N)])
+void quaternion_mul(quaternion_t *r, quaternion_t *a, quaternion_t *b)
+{
+	size_t i;
+	double ri = 0.0;
+	
+	if (r == NULL || a == NULL || b == NULL) return;
+	R(0) = A(0)*B(0) - A(1)*B(1) - A(2)*B(2) - A(3)*B(3);
+	R(1) = A(0)*B(1) + A(1)*B(0) + A(2)*B(3) - A(3)*B(2);
+	R(2) = A(0)*B(2) - A(1)*B(3) + A(2)*B(0) + A(3)*B(1);
+	R(3) = A(0)*B(3) + A(1)*B(2) - A(2)*B(1) + A(3)*B(0);
+}
+#undef A
+#undef B
+#undef R
+
+
+*/
