@@ -115,26 +115,13 @@ quaternion_t quaternion_multiply(quaternion_t q1, quaternion_t q2) // todo rebui
 {
 	quaternion_t ret;
 
-/*	ret.w = -q1.x * q2.x - q1.y * q2.y - q1.z * q2.z + q1.w * q2.w;
 	ret.x =  q1.x * q2.w + q1.y * q2.z - q1.z * q2.y + q1.w * q2.x;
 	ret.y = -q1.x * q2.z + q1.y * q2.w + q1.z * q2.x + q1.w * q2.y;
 	ret.z =  q1.x * q2.y - q1.y * q2.x + q1.z * q2.w + q1.w * q2.z;
-*/	
-	ret.w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z;
-	ret.x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y;
-	ret.y = q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x;
-	ret.z = q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w;
+	ret.w = -q1.x * q2.x - q1.y * q2.y - q1.z * q2.z + q1.w * q2.w;
 
 	return ret; 
 }
-
-
-
-
-
-
-
-
 
 // flip quaternion to get shortest path (otherwise we "win" a whole revolution) quaternions store 720°!
 quaternion_t quaternion_multiply_flip_norm(quaternion_t q1, quaternion_t q2) // todo rebuild to pointers

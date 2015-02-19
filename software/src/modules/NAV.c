@@ -456,29 +456,29 @@ void test_NAV_Governor(void)
 	vector3_t gov_actpos_m = {0,0,0}; // x,y,z = E N U
 	vector3_t gov_setpos_m = {0,0,0}; // x,y,z = E N U
 	vector3_t gov_testres_m = {0,0,0}; // x,y,z = E N U
-	myPar.nav_set_speed.sValue = 5;
+//	myPar.nav_set_speed.sValue = 5;
 	myPar.nav_decel_radius.sValue = 5;
 	myPar.nav_decel_radiush.sValue = 3;
-	myPar.nav_set_speedh.sValue = 3;
+//	myPar.nav_set_speedh.sValue = 3;
 
 	myPar.pid_nav_p.sValue = 100; // P of 1
 	myPar.pid_nav_i.sValue = 0;
 	myPar.pid_nav_d.sValue = 0;
-	myPar.nav_max_accel.sValue = 4;
+//	myPar.nav_max_accel.sValue = 4;
 
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m);
 	assertfequal(gov_testres_m.x,0);
 	assertfequal(gov_testres_m.y,0);
 	assertfequal(gov_testres_m.z,0);
 
 	//x
 	gov_setpos_m.x = 100;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m);
 	assertfequal(gov_testres_m.x,4);
 	assertfequal(gov_testres_m.y,0);
 	assertfequal(gov_testres_m.z,0);
 	gov_setpos_m.x = -100;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m);
 	assertfequal(gov_testres_m.x,-4);
 	assertfequal(gov_testres_m.y,0);
 	assertfequal(gov_testres_m.z,0);
@@ -486,12 +486,12 @@ void test_NAV_Governor(void)
 	//y
 	gov_setpos_m.x = 0;
 	gov_setpos_m.y = 100;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m);
 	assertfequal(gov_testres_m.x,0);
 	assertfequal(gov_testres_m.y,4);
 	assertfequal(gov_testres_m.z,0);
 	gov_setpos_m.y = -100;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m);
 	assertfequal(gov_testres_m.x,0);
 	assertfequal(gov_testres_m.y,-4);
 	assertfequal(gov_testres_m.z,0);
@@ -499,12 +499,12 @@ void test_NAV_Governor(void)
 	//z
 	gov_setpos_m.y = 0;
 	gov_setpos_m.z = 100;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m);
 	assertfequal(gov_testres_m.x,0);
 	assertfequal(gov_testres_m.y,0);
 	assertfequal(gov_testres_m.z,3);
 	gov_setpos_m.z = -100;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m);
 	assertfequal(gov_testres_m.x,0);
 	assertfequal(gov_testres_m.y,0);
 	assertfequal(gov_testres_m.z,-3);
@@ -513,12 +513,12 @@ void test_NAV_Governor(void)
 	// now with velocity...
 	//x
 	gov_actSpeed_m.x=10;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m);
 	assertfequal(gov_testres_m.x,-4);
 	assertfequal(gov_testres_m.y,0);
 	assertfequal(gov_testres_m.z,0);
 	gov_actSpeed_m.x=-10;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m);
 	assertfequal(gov_testres_m.x,4);
 	assertfequal(gov_testres_m.y,0);
 	assertfequal(gov_testres_m.z,0);
@@ -526,12 +526,12 @@ void test_NAV_Governor(void)
 	
 	//y
 	gov_actSpeed_m.y=10;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m);
 	assertfequal(gov_testres_m.x,0);
 	assertfequal(gov_testres_m.y,-4);
 	assertfequal(gov_testres_m.z,0);
 	gov_actSpeed_m.y=-10;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m);
 	assertfequal(gov_testres_m.x,0);
 	assertfequal(gov_testres_m.y,4);
 	assertfequal(gov_testres_m.z,0);
@@ -539,12 +539,12 @@ void test_NAV_Governor(void)
 	
 	//z
 	gov_actSpeed_m.z=10;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m);
 	assertfequal(gov_testres_m.y,0);
 	assertfequal(gov_testres_m.x,0);
 	assertfequal(gov_testres_m.z,-4);
 	gov_actSpeed_m.z=-10;
-	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m,&gov_actSpeed_m);
+	gov_testres_m = NAV_Governor(&gov_actpos_m,&gov_setpos_m);
 	assertfequal(gov_testres_m.x,0);
 	assertfequal(gov_testres_m.y,0);
 	assertfequal(gov_testres_m.z,4);
@@ -554,9 +554,7 @@ void test_GetSetSpeed(void)
 {
 	/// GetSetSpeed
 	
-	myPar.nav_set_speed.sValue = 5;	// the desired cruise speed ms (5)
 	myPar.nav_decel_radius.sValue = 10;	// The radius in meters, at which the cruise spee
-	myPar.nav_set_speedh.sValue = 5;	// the desired height change speed ms (5)
 	myPar.nav_decel_radiush.sValue = 5;	// The radius in meters, at which the height
 	vector3_t actpos_m = {0,0,0}; // x,y,z = E N U
 	vector3_t setpos_m = {20,0,10}; // x,y,z = E N U

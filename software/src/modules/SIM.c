@@ -143,7 +143,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	SimDisturbStep(&vel_vehicle.x,&DisturbAngleWind.x,(float)myPar.wind_freq.sValue*0.1, (float)myPar.wind_ampl.sValue*0.1); // add wind	xy only
 	SimDisturbStep(&vel_vehicle.y,&DisturbAngleWind.y,(float)myPar.wind_freq.sValue*0.1, (float)myPar.wind_ampl.sValue*0.1);
 	
-	vel_vehicle = quaternion_rotateVector(vel_vehicle,sim_orientation); // rotate into vehicle orientation
+	vel_vehicle = quaternion_rotateVector(vel_vehicle,quaternion_inverse(sim_orientation)); // rotate into vehicle orientation // fixme this "inverse" seems not plausible, but works better than without.
 
 	//create vehicle acceleration vector
 	vector3_t vAccel_mpss;
@@ -164,10 +164,11 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	vAccel_mpss.z -= signf(vel_vehicle.z) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREATOP* (vel_vehicle.z*vel_vehicle.z)* 0.5) / SIM_COPTERMASS; 
 	OS_DISABLEALLINTERRUPTS
 	sim_accel_frame_mpss = vector_copy(&vAccel_mpss);// simulation output
+	//sim_accel_frame_mpss = vector_scale(sim_accel_frame_mpss,-1);
 	SimDisturbVector(&sim_accel_frame_mpss,&DisturbAngleAcc,(float)myPar.accel_freq.sValue,(float) myPar.accel_ampl.sValue*0.1); // add noise only for simulated measurement
 	OS_ENABLEALLINTERRUPTS
 	
-	vAccel_mpss = quaternion_rotateVector(vAccel_mpss,quaternion_inverse(sim_orientation)); // rotate into world orientation
+	vAccel_mpss = quaternion_rotateVector(vAccel_mpss,sim_orientation); // rotate into world orientation
 	
 	vAccel_mpss.z -=9.81; // subtract earths acceleration.
 	// in steady state, the earths acceleration and the "o_thrust" acceleration neutralize to 0.
@@ -203,7 +204,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	vector3_t mag_world;
 	
 	mag_world.x = SIM_MAGDEFAULT_X;
-	mag_world.y = SIM_MAGDEFAULT_Y;
+	mag_world.y = -SIM_MAGDEFAULT_Y; // this minus does not belong here !!! wtf?? fixme and understand
 	mag_world.z = SIM_MAGDEFAULT_Z;
 	float rotation_disturbance = 0;
 	static float rotation_disturbance_angle = 0;
@@ -212,7 +213,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	quaternion_t rotation = quaternion_from_euler(0,0,rotation_disturbance);
 	rotation = quaternion_multiply_flip_norm(sim_orientation,rotation);
 	
-	mag_world = quaternion_rotateVector(mag_world,rotation); // simulation output rotated into vehicle frame
+	mag_world = quaternion_rotateVector(mag_world,quaternion_inverse(rotation)); // simulation output rotated into vehicle frame
 	SimDisturbVector(&mag_world,&DisturbAngleMag, (float)myPar.magneto_freq.sValue*0.01, (float)myPar.magneto_ampl.sValue*1000.0f); // add noise
 	sim_magneto_frame_nT = vector_copy( &mag_world);
 }
