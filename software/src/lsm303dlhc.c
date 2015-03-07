@@ -102,9 +102,9 @@ int32_t lsm303_get_acc_results(vector3_t* res) // results in mg
 	
 	if((acc_twi_buf.STATUS_REG_A & 0x0f) == 0x0f)
 	{
-		res->x = -xr;
-		res->y = yr;
-		res->z = -zr;
+		res->x = xr;
+		res->y = -yr;
+		res->z = zr;
 		state = 0;
 	}
 	else

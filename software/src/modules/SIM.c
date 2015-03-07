@@ -44,7 +44,7 @@ vector3_t sim_rate_radps_dist= {0,0,0}; // rotational speed in rad/s (disturbed)
 vector3_t sim_pos_m= {0,0,0}; // world position
 vector3_t sim_vel_world_mps= {0,0,0}; // world velocity
 float sim_accel_mpss = 0; // acceleration by thrust (filtered,therefore static)
-vector3_t sim_accel_frame_mpss = {0,0,9.81f};
+vector3_t sim_accel_frame_mpss = {0,0,-9.81f};
 vector3_t sim_magneto_frame_nT = {0,0,0};
 
 // for display purposes only, the flight controller should not know about the simulated orientation.
@@ -164,13 +164,13 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	vAccel_mpss.z -= signf(vel_vehicle.z) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREATOP* (vel_vehicle.z*vel_vehicle.z)* 0.5) / SIM_COPTERMASS; 
 	OS_DISABLEALLINTERRUPTS
 	sim_accel_frame_mpss = vector_copy(&vAccel_mpss);// simulation output
-	//sim_accel_frame_mpss = vector_scale(sim_accel_frame_mpss,-1);
 	SimDisturbVector(&sim_accel_frame_mpss,&DisturbAngleAcc,(float)myPar.accel_freq.sValue,(float) myPar.accel_ampl.sValue*0.1); // add noise only for simulated measurement
+	sim_accel_frame_mpss = vector_scale(&sim_accel_frame_mpss,-1); // the measured = resulting acceleration is the other way!!
 	OS_ENABLEALLINTERRUPTS
 	
 	vAccel_mpss = quaternion_rotateVector(vAccel_mpss,sim_orientation); // rotate into world orientation
 	
-	vAccel_mpss.z -=9.81; // subtract earths acceleration.
+	vAccel_mpss.z -=9.81; // add earths acceleration.
 	// in steady state, the earths acceleration and the "o_thrust" acceleration neutralize to 0.
 	
 	vector3_t vDv = vector_scale(&vAccel_mpss,SIM_DT); // multiply by time -> delta v for this step
@@ -204,7 +204,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	vector3_t mag_world;
 	
 	mag_world.x = SIM_MAGDEFAULT_X;
-	mag_world.y = -SIM_MAGDEFAULT_Y; // this minus does not belong here !!! wtf?? fixme and understand
+	mag_world.y = SIM_MAGDEFAULT_Y;
 	mag_world.z = SIM_MAGDEFAULT_Z;
 	float rotation_disturbance = 0;
 	static float rotation_disturbance_angle = 0;
@@ -240,7 +240,7 @@ void SimReset(void) //reset the simulation to 0
 	
 	sim_accel_frame_mpss.x = 0;
 	sim_accel_frame_mpss.y = 0;
-	sim_accel_frame_mpss.z = 9.81f; // earths acceleration.
+	sim_accel_frame_mpss.z = -9.81f; // earths acceleration.
 	
 	sim_magneto_frame_nT.x = SIM_MAGDEFAULT_X;
 	sim_magneto_frame_nT.y = SIM_MAGDEFAULT_Y;

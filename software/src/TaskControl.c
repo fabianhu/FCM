@@ -277,10 +277,10 @@ void TaskControl(void)
 		switch(myPar.madgwick.sValue)
 		{
 			case 0:
-				q_ActualOrientation = MahonyAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,v_acc_frame_mpss.x,v_acc_frame_mpss.y,v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
+				q_ActualOrientation = MahonyAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,-v_acc_frame_mpss.x,-v_acc_frame_mpss.y,-v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
 				break;
 			case 1:
-				q_ActualOrientation = MadgwickAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,v_acc_frame_mpss.x,v_acc_frame_mpss.y,v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
+				q_ActualOrientation = MadgwickAHRSupdate(v_gyro_radps.x,v_gyro_radps.y,v_gyro_radps.z,-v_acc_frame_mpss.x,-v_acc_frame_mpss.y,-v_acc_frame_mpss.z,v_mag.x,v_mag.y,v_mag.z); // todo make vector interface
 				break;
 			case 2:
 				q_ActualOrientation = AHRS2(v_gyro_radps,v_acc_frame_mpss,v_mag);
