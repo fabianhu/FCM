@@ -170,7 +170,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	
 	vAccel_mpss = quaternion_rotateVector(vAccel_mpss,sim_orientation); // rotate into world orientation
 	
-	vAccel_mpss.z -=9.81; // add earths acceleration.
+	vAccel_mpss.z -=9.81; // subtract earths acceleration.
 	// in steady state, the earths acceleration and the "o_thrust" acceleration neutralize to 0.
 	
 	vector3_t vDv = vector_scale(&vAccel_mpss,SIM_DT); // multiply by time -> delta v for this step
