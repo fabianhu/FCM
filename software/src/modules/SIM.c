@@ -115,8 +115,8 @@ gps_coordinates_t SIM_GPS_getpos(void)
 	ActPosSim.lat += (int32_t)(filtered.y * SIMFACTORLAT);
 	
 	// increase delay counters
-	if (wr++ == SIMGPSDELAYBY) wr = 0;
-	if (rd++ == SIMGPSDELAYBY) rd = 0;
+	if (++wr == SIMGPSDELAYBY) wr = 0;
+	if (++rd == SIMGPSDELAYBY) rd = 0;
 	
 	return ActPosSim;
 }

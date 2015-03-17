@@ -92,12 +92,12 @@ void NAV_UpdatePosition_xy(gps_coordinates_t coords)
 {
 	static vector2_t old; 
 	vector2_t diff;
+	vector2_t act_m;
 
 	uint32_t time = OS_GetTicks();
 //	float dt_s =  (float)(time-lastGPSTime) * 0.001;  // in seconds
 	lastGPSTime = time; // remember the time
 
-	vector2_t act_m;
 	
 	act_m = NAV_ConvertGPS_to_m(coords); 
 	
@@ -149,16 +149,10 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 	//fixme use BrownLinearExpo() for accel filtering, maybe outside.
 
 	#if DISABLE_SENSOR_FUSION_GPS == 1
-	#if SIMULATION == 1
-
-	*pos_act = SimGetPos_m(); // thats a very short shortcut
-
-	#else //SIMULATION == 0
 
 	pos_act->x = slowPos_m.x;
 	pos_act->y = slowPos_m.y;
 	pos_act->z = slowPos_m.z;
-	#endif //SIMULATION
 
 	#else
 
