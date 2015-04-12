@@ -140,11 +140,13 @@ All in global coordinates.
 acc_mpss: Accerleration world based without gravity in meters / s*s
 pos: gps position and barometer height
 */
+
+
 void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 {
-	vector3_t fltSpeed;
-	vector3_t oldPos;
-	vector3_t slowSpeed;
+	static vector3_t fltSpeed={0.0,0.0,0.0};
+	static vector3_t oldPos={0.0,0.0,0.0};
+	static vector3_t slowSpeed={0.0,0.0,0.0};
 	
 	//fixme use BrownLinearExpo() for accel filtering, maybe outside.
 
