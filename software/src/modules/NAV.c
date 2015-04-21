@@ -199,9 +199,9 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 	pos_act->z = alfa_pos*(pos_act->z + fltSpeed.z * dt_s) + (1.0-alfa_pos)*(slowPos_m.z);
 
 
-	slowSpeed.x = (pos_act->x-oldPos.x)/dt_s; // calculate at: new pos known, and old pos not yet overwritten.
-	slowSpeed.y = (pos_act->y-oldPos.y)/dt_s; 
-	slowSpeed.z = (pos_act->z-oldPos.z)/dt_s; 
+	slowSpeed.x = (pos_act->x - oldPos.x)/dt_s; // calculate at: new pos known, and old pos not yet overwritten.
+	slowSpeed.y = (pos_act->y - oldPos.y)/dt_s; 
+	slowSpeed.z = (pos_act->z - oldPos.z)/dt_s; 
 	
 	oldPos.x = pos_act->x;
 	oldPos.y = pos_act->y;
@@ -339,9 +339,9 @@ vector3_t NAV_Governor( vector3_t* pos_act_m, vector3_t* target_m )
 	volatile vector3_t accel_command;
 	volatile vector3_t accel_command_lim;
 	
-	float nav_kp = myPar.pid_nav_p.sValue*0.1;
+	float nav_kp = myPar.pid_nav_p.sValue*0.01;
 	float nav_ki = myPar.pid_nav_i.sValue*0.0001;
-	float nav_kd = myPar.pid_nav_d.sValue*1.0;
+	float nav_kd = myPar.pid_nav_d.sValue*10.0;
 	float h_kp = myPar.pid_h_p.sValue*0.01;
 	float h_ki = myPar.pid_h_i.sValue*0.0001;
 	float h_kd = myPar.pid_h_d.sValue*1.0;
