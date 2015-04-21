@@ -49,6 +49,8 @@
 #define SIMGPSFILTER 0.15 // GPS delaying filter
 #define SIMHFILTER   0.25 // height acquisition delaying filter 
 
+#define SIMGPSDELAYBY 4 // delay the GPS signal by n calls (100 ms)
+
 // visu only:
 quaternion_t SimGetorientation(void); // get simulated orientation out of simulation
 vector3_t SimGetPos_m(void); // get the simulated position out of the simulation

@@ -18,6 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
+ fixme FIXME todo TODO (yepp) This whole file needs complete rework!
+ 
  */   
 
 #include <asf.h>
@@ -169,7 +172,7 @@ void TaskControl(void)
 	
 	
 	// globals from the best algo - ever
-	vector3_t v_pos_act_m; // actual position offset from origin (global)
+	vector3_t v_pos_act_m = {0.0,0.0,0.0}; // actual position offset from origin (global)
 	
 	vector3_t v_pos_target_m;
 	static vector3_t v_pos_last_m;
@@ -202,7 +205,7 @@ void TaskControl(void)
 	gyro_init();
 
 	servo_in_init(OSALM_CTRLWAIT);
-	servo_out_init(); // init outputs AFTER inputs, otherwise the valibration will not work.
+	servo_out_init(); // init outputs AFTER inputs, otherwise the calibration will not work.
 
 	
 	LED_SetFlightstate(FS_init);
@@ -310,7 +313,7 @@ void TaskControl(void)
 		IMUdata.pitch_deg = ax*57.295779f; // fixme is actually wrong, because global!!
 		IMUdata.roll_deg = ay*57.295779f;
 		IMUdata.mag_heading_deg = fActHeading_rad*57.295779f;
-		IMUdata.height_dm = v_pos_act_m.z *100; // info
+		IMUdata.height_dm = v_pos_act_m.z *100; // fixme cm?
 		
 		float thrustfactor=1;
 		extern int32_t debug_TWI_CountOfMisReads;  // dirty hack to keep flying, even if TWI crashes (which it usually only does during debugging)
@@ -499,8 +502,11 @@ void TaskControl(void)
 		{
 			case FS_init:
 				//Parameters already loaded !
-				
-				NAV_SetOrigin_z_m((float) Filter_mem(&heightflt, twi_get_h_mm(),HEIGHTINITFILTER) * 0.001); // todo out of interpolated value!
+				#if SIMULATION == 1
+				NAV_SetOrigin_z_m(0.0);
+				#else
+				NAV_SetOrigin_z_m((float) Filter_mem(&heightflt, twi_get_h_mm(),HEIGHTINITFILTER) * 0.001); // todo out of interpolated value! // fixme argl
+				#endif
 				// remember GPS position as best idea...
 				gps_coordinates_t gpspos_home_temp;
 				if(GPSgetPos(&gpspos_home_temp)==0)
@@ -549,9 +555,11 @@ void TaskControl(void)
 						{
 							// todo set GPS to "failed"
 						}
-						
+						#if SIMULATION == 1
+						NAV_SetOrigin_z_m(0.0);
+						#else
 						NAV_SetOrigin_z_m((float) Filter_mem(&heightflt, twi_get_h_mm(),HEIGHTINITFILTER) * 0.001); // todo out of interpolated value!
-						
+						#endif
 						// copy actual to setpoint
 						quaternion_copy(&q_RC_Set, &q_ActualOrientation);
 

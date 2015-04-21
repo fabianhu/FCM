@@ -92,12 +92,12 @@ void NAV_UpdatePosition_xy(gps_coordinates_t coords)
 {
 	static vector2_t old; 
 	vector2_t diff;
+	vector2_t act_m;
 
 	uint32_t time = OS_GetTicks();
 //	float dt_s =  (float)(time-lastGPSTime) * 0.001;  // in seconds
 	lastGPSTime = time; // remember the time
 
-	vector2_t act_m;
 	
 	act_m = NAV_ConvertGPS_to_m(coords); 
 	
@@ -140,25 +140,21 @@ All in global coordinates.
 acc_mpss: Accerleration world based without gravity in meters / s*s
 pos: gps position and barometer height
 */
+
+
 void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 {
-	vector3_t fltSpeed;
-	vector3_t oldPos;
-	vector3_t slowSpeed;
+	static vector3_t fltSpeed={0.0,0.0,0.0};
+	static vector3_t oldPos={0.0,0.0,0.0};
+	static vector3_t slowSpeed={0.0,0.0,0.0};
 	
 	//fixme use BrownLinearExpo() for accel filtering, maybe outside.
 
 	#if DISABLE_SENSOR_FUSION_GPS == 1
-	#if SIMULATION == 1
-
-	*pos_act = SimGetPos_m(); // thats a very short shortcut
-
-	#else //SIMULATION == 0
 
 	pos_act->x = slowPos_m.x;
 	pos_act->y = slowPos_m.y;
 	pos_act->z = slowPos_m.z;
-	#endif //SIMULATION
 
 	#else
 
@@ -203,9 +199,9 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 	pos_act->z = alfa_pos*(pos_act->z + fltSpeed.z * dt_s) + (1.0-alfa_pos)*(slowPos_m.z);
 
 
-	slowSpeed.x = (pos_act->x-oldPos.x)/dt_s; // calculate at: new pos known, and old pos not yet overwritten.
-	slowSpeed.y = (pos_act->y-oldPos.y)/dt_s; 
-	slowSpeed.z = (pos_act->z-oldPos.z)/dt_s; 
+	slowSpeed.x = (pos_act->x - oldPos.x)/dt_s; // calculate at: new pos known, and old pos not yet overwritten.
+	slowSpeed.y = (pos_act->y - oldPos.y)/dt_s; 
+	slowSpeed.z = (pos_act->z - oldPos.z)/dt_s; 
 	
 	oldPos.x = pos_act->x;
 	oldPos.y = pos_act->y;
@@ -343,9 +339,9 @@ vector3_t NAV_Governor( vector3_t* pos_act_m, vector3_t* target_m )
 	volatile vector3_t accel_command;
 	volatile vector3_t accel_command_lim;
 	
-	float nav_kp = myPar.pid_nav_p.sValue*0.1;
+	float nav_kp = myPar.pid_nav_p.sValue*0.01;
 	float nav_ki = myPar.pid_nav_i.sValue*0.0001;
-	float nav_kd = myPar.pid_nav_d.sValue*1.0;
+	float nav_kd = myPar.pid_nav_d.sValue*10.0;
 	float h_kp = myPar.pid_h_p.sValue*0.01;
 	float h_ki = myPar.pid_h_i.sValue*0.0001;
 	float h_kd = myPar.pid_h_d.sValue*1.0;
