@@ -116,6 +116,21 @@ int32_t propscale(int32_t _value, int32_t _minin, int32_t _maxin, int32_t _minou
 	return rangedvalue + _minout;
 }
 
+int32_t plateau(int32_t pVal)
+{
+	#define PLATEAUVAL 100
+	
+	if(abs(pVal)<PLATEAUVAL)
+	{
+		pVal = 0;
+	}
+	else if( pVal > 0)
+	pVal = pVal-PLATEAUVAL;
+	else
+	pVal = pVal+PLATEAUVAL;
+	return pVal;
+}
+
 // filter with external "memory".
 // _memVal will be _newVal*_base to increase resolution; multiply by _base for filter initialisation!
 int32_t Filter_mem(int32_t* _memVal, int32_t _newVal, int32_t _base)

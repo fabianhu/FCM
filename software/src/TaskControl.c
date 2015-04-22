@@ -87,21 +87,6 @@ elev : +4000 nose down -4000 nose up
 yaw: -4000 = right +4000 = left
 
 */
-int32_t plateau(int32_t pVal);
-int32_t plateau(int32_t pVal)
-{
-	#define PLATEAUVAL 100
-	
-	if(abs(pVal)<PLATEAUVAL)
-	{
-		pVal = 0;
-	}
-	else if( pVal > 0)
-		pVal = pVal-PLATEAUVAL;
-	else
-		pVal = pVal+PLATEAUVAL;
-	return pVal;
-}
 
 void LoadParameters(void) 
 {
