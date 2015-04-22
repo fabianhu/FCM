@@ -21,6 +21,8 @@
  
  fixme FIXME todo TODO (yepp) This whole file needs complete rework!
  
+ git rev-parse --short=8 HEAD
+ 
  */   
 
 #include <asf.h>

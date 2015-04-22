@@ -454,8 +454,7 @@
         <avr32gcc.preprocessingassembler.debugging.DebugLevel>Default (-Wa,-g)</avr32gcc.preprocessingassembler.debugging.DebugLevel>
       </Avr32Gcc>
     </ToolchainSettings>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>$(SolutionDir)version.bat</PreBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <None Include="src\asf.h">
