@@ -1,30 +1,27 @@
 # FCM Settings 2.1.255
 \GYRO PID\Max Integr	5000
 \GYRO PID\Gov at Max	20
-\GYRO PID\Q Gain	2200
+\GYRO PID\Q Gain	4000
 \GYRO PID\Swash P	66
 \GYRO PID\Swash I	23
 \GYRO PID\Swash D	38
 \GYRO PID\Yaw P  	58
 \GYRO PID\Yaw I  	20
 \GYRO PID\Yaw D  	16
-\NAV\NAV P	13
-\NAV\NAV I	0
-\NAV\NAV D	100
-\NAV\H P  	1
-\NAV\H I  	0
-\NAV\H D  	0
-\NAV\NAV Limits\Max Angle	20
-\NAV\NAV Limits\Max Accel	30
-\NAV\NAV Limits\Max Acc int	10
-\NAV\NAV Limits\Speed NAV	4
-\NAV\NAV Limits\Radius NAV	5
-\NAV\NAV Limits\Speed h	3
-\NAV\NAV Limits\Radius h	3
-\NAV\NAV Filters\Acc Flt glob	1000
-\NAV\NAV Filters\alpha H spd	9990
-\NAV\NAV Filters\alpha speed	9990
-\NAV\NAV Filters\alpha pos	9990
+\NAV\NAV P	15
+\NAV\NAV I	5
+\NAV\NAV D	10
+\NAV\H P  	200
+\NAV\H I  	50
+\NAV\H D  	200
+\NAV\NAV Limits\Max Angle	15
+\NAV\NAV Limits\Max Accel	100
+\NAV\NAV Limits\Max Acc int	30
+\NAV\NAV Limits\Radius NAV	10
+\NAV\NAV Limits\Radius h	1
+\NAV\NAV Filters\Acc Flt glob	990
+\NAV\NAV Filters\alpha pos	950
+\NAV\NAV Filters\alpha spd	500
 \NAV\NAV Compensation\Comp On	0
 \NAV\NAV Compensation\Min Speed	3
 \NAV\NAV Compensation\Min Time	5
@@ -63,7 +60,20 @@
 \RC Channels\Poti P	5
 \RC Channels\Poti I	6
 \RC Channels\Poti D	7
-\Test\Madgwick	0
-\Test\alpha Madg	10
+\Test\Madgwick	1
+\Test\alpha Madg	3
 \Test\prop Mah	50
 \Test\integr Mah	10
+\Test\test P	0
+\Test\test I	0
+\Test\test D	0
+\Test\wind\wind_freq	0
+\Test\wind\wind_ampl	0
+\Test\mag_mis\mag_mis_freq	0
+\Test\mag_mis\mag_mis_ampl	0
+\Test\gyro\gyro_freq	0
+\Test\gyro\gyro_ampl	0
+\Test\accel\accel_freq	0
+\Test\accel\accel_ampl	0
+\Test\magneto\magneto_freq	0
+\Test\magneto\magneto_ampl	0
