@@ -362,7 +362,7 @@ void GetDiagTxt( char* ptxt )
 {
 	//									 "---------------------"
 	//									 " FCM 2.1.0 DIAG "
-	sprintf(ptxt,"FCM "VERSION_STRING" DIAG ");
+	sprintf(ptxt,"FCM "VERSION_STRING );
 	//hott_invert_chars(ptxt,21);
 	//sprintf(&ptxt[1*21],"SW PID %d %d %d ", myPar.pid_r_p.sValue,myPar.pid_r_i.sValue,myPar.pid_r_d.sValue);
 	uint32_t m,s,ms;

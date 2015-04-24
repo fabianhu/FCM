@@ -31,19 +31,17 @@
 
 // FIXME the build number is 32 bit now!
 
-#define VERSION_BUILDL (VERSION_BUILD & 0xff)
-#define VERSION_BUILDH ((VERSION_BUILD & 0xff00) >> 8)
+#define VERSION_BUILDL ((VERSION_GITN & 0xff0000) >> 16)
+#define VERSION_BUILDH ((VERSION_GITN & 0xff000000) >> 24)
 
 #define PARAMETERVERSION 24 // if format is changed, checksum will not match.
 
 // magic macro appending stuff
 #define STR(x)   #x
 #define XSTR(x)  STR(x)
-#if 0 == 1 // modded ?
-	#define VERSION_STRING XSTR(VERSION_MAJOR)"." XSTR(VERSION_MINOR)"." XSTR(VERSION_BUILD)"B"
-#else
-	#define VERSION_STRING XSTR(VERSION_MAJOR)"." XSTR(VERSION_MINOR)"." XSTR(VERSION_BUILD)
-#endif
+
+#define VERSION_STRING XSTR(VERSION_MAJOR)"." XSTR(VERSION_MINOR)" " XSTR(VERSION_BUILD)
+
 #define VERSION_SHORT  XSTR(VERSION_MAJOR)"." XSTR(VERSION_MINOR)
 
 

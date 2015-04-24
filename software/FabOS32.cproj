@@ -1115,6 +1115,9 @@
     <Compile Include="src\TaskTWI.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\version-auto.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\version.h">
       <SubType>compile</SubType>
     </Compile>
