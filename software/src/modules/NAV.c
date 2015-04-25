@@ -40,6 +40,9 @@ vector3_t slowPos_m;
 gps_coordinates_t origin;
 float origin_h_m;
 
+// global info tag for info purposes for communication (not to be used for governing purposes) (not atomic!)
+NAVinfo_t NAV_info;
+
 // set the origin at start, do not use as "home" or "setpoint"
 void NAV_SetOrigin_xy_cm(gps_coordinates_t pos) // tested
 {
@@ -190,7 +193,6 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 	fltSpeed.x = alfa_spd*(fltSpeed.x + acc_mpss.x * dt_s) + (1.0-alfa_spd)*slowSpeed.x; // xxxx fork x!##@ we need slowspeed again.
 	fltSpeed.y = alfa_spd*(fltSpeed.y + acc_mpss.y * dt_s) + (1.0-alfa_spd)*slowSpeed.y; 
 	fltSpeed.z = alfa_spd*(fltSpeed.z + acc_mpss.z * dt_s) + (1.0-alfa_spd)*slowSpeed.z; 
-
 
 	// complementary filter for position
 	// new pos = old pos + spd * dt

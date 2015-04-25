@@ -281,8 +281,8 @@ void TaskControl(void)
 		
 		
 		// calculate normalized acceleration	
-		v_acc_global_mpss = quaternion_rotateVector(v_acc_frame_mpss,quaternion_inverse(q_ActualOrientation));
-		v_acc_global_mpss.z -= 9.81; // subtract the z acceleration here.
+		v_acc_global_mpss = quaternion_rotateVector(v_acc_frame_mpss,/*quaternion_inverse*/(q_ActualOrientation));
+		v_acc_global_mpss.z += 9.81; // subtract the z acceleration here.
 		
 		float filterAcc = myPar.nav_acc_flt_glob.sValue*0.001;
 		
@@ -545,7 +545,9 @@ void TaskControl(void)
 						#if SIMULATION == 1
 						NAV_SetOrigin_z_m(0.0);
 						#else
-						NAV_SetOrigin_z_m((float) Filter_mem(&heightflt, twi_get_h_mm(),HEIGHTINITFILTER) * 0.001); // todo out of interpolated value!
+						//NAV_SetOrigin_z_m((float) Filter_mem(&heightflt, twi_get_h_mm(),HEIGHTINITFILTER) * 0.001); // todo out of interpolated value!
+						NAV_SetOrigin_z_m(v_pos_act_m.z);
+						
 						#endif
 						// copy actual to setpoint
 						quaternion_copy(&q_RC_Set, &q_ActualOrientation);
@@ -727,9 +729,9 @@ void TaskControl(void)
 					TXData.gx =  debug_der_x*1000;//bank.x * radgra;//v_gyro_raw.x;
 					TXData.gy = debug_der_y*1000;// bank.y * radgra;//v_gyro_raw.y;
 					TXData.gz = fActHeading_rad*radgra;//thrust * 1000;//v_gyro_raw.z;
-					TXData.ax = v_accel_command_mpss.x*1019;//fTrgNavDistance_m;
-					TXData.ay = v_accel_command_mpss.y*1019;//fTrgNavHeading_rad* radgra;
-					TXData.az = v_accel_command_mpss.z*1019;//fHeadingDiff_rad* radgra;
+					TXData.ax = v_accel_glob_flt_mpss.x*1019;//fTrgNavDistance_m;
+					TXData.ay = v_accel_glob_flt_mpss.y*1019;//fTrgNavHeading_rad* radgra;
+					TXData.az = v_accel_glob_flt_mpss.z*1019;//fHeadingDiff_rad* radgra;
 					TXData.mx = v_mag.x;
 					TXData.my = v_mag.y;
 					TXData.mz = v_mag.z;
@@ -893,6 +895,6 @@ void acc_calibrate(vector3_t* cal) // todo : ausquartieren!
 		cal->z = Filter_f(cal->z,r.z,ACCCALFLT);
 	}
 	
-	cal->z -= 9.81;
+	cal->z += 9.81; // normal acceleration goes DOWN!
 	
 }

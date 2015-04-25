@@ -38,6 +38,7 @@
 #include "modules/types.h"
 #include "modules/usart.h"
 #include "../config.h"
+#include "modules/NAV.h"
 
 
 #include "modules/types.h" // for myTWI.h only
@@ -451,10 +452,10 @@ void GetDiagTxt( char* ptxt )
 
 				sprintf(&ptxt[4*21],"RTH:%d Pos:%d HG:%d A:%d", (uint16_t)swRTH, (uint16_t)swPosHold,(uint16_t)swHGov, (uint16_t)swAUX);
 				sprintf(&ptxt[5*21],"Pot %3d %3d %3d",cmd_pot_P,cmd_pot_I,cmd_pot_D);
-				sprintf(&ptxt[6*21],"RunTime: %d",(uint16_t)debug_RunTimeMax);
+				//sprintf(&ptxt[6*21],"RunTime: %d",(uint16_t)debug_RunTimeMax);
 				debug_RunTimeMax = 0;
 				
-				//sprintf(&ptxt[6*21],"Sat %d Dst %dm %d ", GPS_GetNumSats(),/*NAV_info.Dist_m*/0, /*(int16_t)(NAV_info.trg_heading_rad*57.395)*/0);
+				sprintf(&ptxt[6*21],"Sat %d Dst %dm %d ", GPS_GetNumSats(),NAV_info.Dist_m, (int16_t)(NAV_info.trg_heading_rad*57.395));
 				#endif	
 			#endif
 		#endif
