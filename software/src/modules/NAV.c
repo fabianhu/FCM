@@ -144,12 +144,16 @@ acc_mpss: Accerleration world based without gravity in meters / s*s
 pos: gps position and barometer height
 */
 
+vector3_t /* debug_accel,debug_gyro, debug_mag,*/debug_gov;
+
 
 void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 {
 	static vector3_t fltSpeed={0.0,0.0,0.0};
 	static vector3_t oldPos={0.0,0.0,0.0};
 	static vector3_t slowSpeed={0.0,0.0,0.0};
+	static vector3_t speed_error={0.0,0.0,0.0};	
+	static vector3_t pos_error={0.0,0.0,0.0};
 	
 	//fixme use BrownLinearExpo() for accel filtering, maybe outside.
 
@@ -189,10 +193,12 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 	// speed = 0.98 * ( speed + accel * dt  ) + 0.02 * ( slowSpeed)
 	float alfa_pos = (float)myPar.nav_alpha_Pos.sValue * 0.001;
 	float alfa_spd = (float)myPar.nav_alpha_Spd.sValue * 0.001;
+	float alfa_speedrr = (float)myPar.test_P.sValue*0.0001;
+	float alfa_poserr = (float)myPar.test_P.sValue*0.0001;
 
-	fltSpeed.x = alfa_spd*(fltSpeed.x + acc_mpss.x * dt_s) + (1.0-alfa_spd)*slowSpeed.x; // xxxx fork x!##@ we need slowspeed again.
-	fltSpeed.y = alfa_spd*(fltSpeed.y + acc_mpss.y * dt_s) + (1.0-alfa_spd)*slowSpeed.y; 
-	fltSpeed.z = alfa_spd*(fltSpeed.z + acc_mpss.z * dt_s) + (1.0-alfa_spd)*slowSpeed.z; 
+	fltSpeed.x = alfa_spd*(fltSpeed.x - acc_mpss.x * dt_s) + (1.0-alfa_spd)*slowSpeed.x - speed_error.x; // xxxx fork x!##@ we need slowspeed again.
+	fltSpeed.y = alfa_spd*(fltSpeed.y - acc_mpss.y * dt_s) + (1.0-alfa_spd)*slowSpeed.y - speed_error.y; 
+	fltSpeed.z = alfa_spd*(fltSpeed.z - acc_mpss.z * dt_s) + (1.0-alfa_spd)*slowSpeed.z - speed_error.z; 
 
 	// complementary filter for position
 	// new pos = old pos + spd * dt
@@ -205,6 +211,11 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 	slowSpeed.y = (pos_act->y - oldPos.y)/dt_s; 
 	slowSpeed.z = (pos_act->z - oldPos.z)/dt_s; 
 	
+	// speed error is difference between filtered speed and slow speed
+	speed_error.x = Filter_f(speed_error.x,fltSpeed.x-slowSpeed.x,alfa_speedrr);
+	speed_error.y = Filter_f(speed_error.y,fltSpeed.y-slowSpeed.y,alfa_speedrr);
+	speed_error.z = Filter_f(speed_error.z,fltSpeed.z-slowSpeed.z,alfa_speedrr);
+	
 	oldPos.x = pos_act->x;
 	oldPos.y = pos_act->y;
 	oldPos.z = pos_act->z;
@@ -216,7 +227,9 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 	// debug_accel = vector_copy(v_act);
 	// debug_gyro = vector_copy(pos_act);
 	// debug_mag = vector_copy(&acc_mpss);
-	// debug_gov = vector_copy(&slowPos_m);
+	debug_gov.x = speed_error.z;
+	debug_gov.y = fltSpeed.z;
+	debug_gov.z = pos_act->z;
 
 }
 

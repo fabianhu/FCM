@@ -60,6 +60,7 @@
 #include "TaskNavi.h"
 #include "modules/usart.h"
 #include "modules/SIM.h"
+#include "version.h"
 
 void TaskControl(void);
 void acc_calibrate(vector3_t* g);
@@ -706,7 +707,7 @@ void TaskControl(void)
 				if(menu_show_diag)
 				{
 					// special data, if diag screen is on.
-			//		extern vector3_t debug_accel,debug_gyro, debug_mag,debug_gov;
+					extern vector3_t /* debug_accel,debug_gyro, debug_mag,*/debug_gov;
 	
 			// 		TXData.gx = debug_gyro.x*1000;//v_gyro_raw.x;
 			// 		TXData.gy = debug_gyro.y*1000;//v_gyro_raw.y;
@@ -735,9 +736,9 @@ void TaskControl(void)
 					TXData.mx = v_mag.x;
 					TXData.my = v_mag.y;
 					TXData.mz = v_mag.z;
-					TXData.gov_x = ox; // mag_cal.x;	 v_pos_act_m.x*1000;//debug_gov.x*1000;//
-					TXData.gov_y = oy; // mag_cal.y;	 v_pos_act_m.y*1000;//debug_gov.y*1000;//
-					TXData.gov_z = oz; // mag_cal.z;  	 v_pos_act_m.z*1000;//debug_gov.z*1000;//
+					TXData.gov_x = debug_gov.x*1000;//
+					TXData.gov_y = debug_gov.y*1000;//
+					TXData.gov_z = debug_gov.z*1000;//
 					TXData.RC_a = cmd_thr;												   
 					TXData.RC_x = cmd_elev;												   
 					TXData.RC_y = cmd_roll;
