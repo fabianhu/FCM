@@ -43,6 +43,12 @@ float origin_h_m;
 // global info tag for info purposes for communication (not to be used for governing purposes) (not atomic!)
 NAVinfo_t NAV_info;
 
+void vector_lowpass(vector3_t* value, vector3_t* sample, float alfa);  // fixme aufräumen!
+void lowpass(float* value, float sample, float alfa);
+void highpass(float* value, float* offset, float sample, float alfa);
+void vector_highpass(vector3_t* value, vector3_t* offset, vector3_t* sample, float alfa);
+
+
 // set the origin at start, do not use as "home" or "setpoint"
 void NAV_SetOrigin_xy_cm(gps_coordinates_t pos) // tested
 {
@@ -147,23 +153,17 @@ pos: gps position and barometer height
 vector3_t /* debug_accel,debug_gyro, debug_mag,*/debug_gov;
 
 
-void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
+void Superfilter(vector3_t acc_in_mpss, vector3_t* pos_act)
 {
+	static vector3_t acc_fltHP_mpss;
+ 	static vector3_t acc_error_mpss={0.0,0.0,0.0};
 	static vector3_t fltSpeed={0.0,0.0,0.0};
 	static vector3_t oldPos={0.0,0.0,0.0};
 	static vector3_t slowSpeed={0.0,0.0,0.0};
-	static vector3_t speed_error={0.0,0.0,0.0};	
-	static vector3_t pos_error={0.0,0.0,0.0};
-	
+// 	static vector3_t speed_error={0.0,0.0,0.0};	
+// 	static vector3_t pos_error={0.0,0.0,0.0};
+			
 	//fixme use BrownLinearExpo() for accel filtering, maybe outside.
-
-	#if DISABLE_SENSOR_FUSION_GPS == 1
-
-	pos_act->x = slowPos_m.x;
-	pos_act->y = slowPos_m.y;
-	pos_act->z = slowPos_m.z;
-
-	#else
 
 	// SIMULATION is done in GPS task TaskNavi for GPS inputs; acc_mps comes in simulated as well.
 
@@ -193,12 +193,16 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 	// speed = 0.98 * ( speed + accel * dt  ) + 0.02 * ( slowSpeed)
 	float alfa_pos = (float)myPar.nav_alpha_Pos.sValue * 0.001;
 	float alfa_spd = (float)myPar.nav_alpha_Spd.sValue * 0.001;
-	float alfa_speedrr = (float)myPar.test_P.sValue*0.0001;
-	float alfa_poserr = (float)myPar.test_P.sValue*0.0001;
-
-	fltSpeed.x = alfa_spd*(fltSpeed.x - acc_mpss.x * dt_s) + (1.0-alfa_spd)*slowSpeed.x - speed_error.x; // xxxx fork x!##@ we need slowspeed again.
-	fltSpeed.y = alfa_spd*(fltSpeed.y - acc_mpss.y * dt_s) + (1.0-alfa_spd)*slowSpeed.y - speed_error.y; 
-	fltSpeed.z = alfa_spd*(fltSpeed.z - acc_mpss.z * dt_s) + (1.0-alfa_spd)*slowSpeed.z - speed_error.z; 
+// 	float alfa_speedrr = (float)myPar.test_P.sValue*0.001;
+// 	float alfa_poserr = (float)myPar.test_I.sValue*0.001;
+ 	float alfa_accerr = (float)myPar.test_D.sValue*0.001; 
+	 
+	
+	vector_highpass(&acc_fltHP_mpss, &acc_error_mpss, &acc_in_mpss, alfa_accerr); 
+	
+	fltSpeed.x = alfa_spd*(fltSpeed.x - acc_fltHP_mpss.x * dt_s) + (1.0-alfa_spd)*slowSpeed.x; // xxxx fork x!##@ we need slowspeed again.
+	fltSpeed.y = alfa_spd*(fltSpeed.y - acc_fltHP_mpss.y * dt_s) + (1.0-alfa_spd)*slowSpeed.y; 
+	fltSpeed.z = alfa_spd*(fltSpeed.z - acc_fltHP_mpss.z * dt_s) + (1.0-alfa_spd)*slowSpeed.z; 
 
 	// complementary filter for position
 	// new pos = old pos + spd * dt
@@ -206,28 +210,31 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 	pos_act->y = alfa_pos*(pos_act->y + fltSpeed.y * dt_s) + (1.0-alfa_pos)*(slowPos_m.y);
 	pos_act->z = alfa_pos*(pos_act->z + fltSpeed.z * dt_s) + (1.0-alfa_pos)*(slowPos_m.z);
 
+// 	slowSpeed.x = (oldPos.x - pos_act->x)/dt_s; // calculate at: new pos known, and old pos not yet overwritten.
+// 	slowSpeed.y = (oldPos.y - pos_act->y)/dt_s;
+// 	slowSpeed.z = (oldPos.z - pos_act->z)/dt_s;
+
 
 	slowSpeed.x = (pos_act->x - oldPos.x)/dt_s; // calculate at: new pos known, and old pos not yet overwritten.
 	slowSpeed.y = (pos_act->y - oldPos.y)/dt_s; 
 	slowSpeed.z = (pos_act->z - oldPos.z)/dt_s; 
 	
-	// speed error is difference between filtered speed and slow speed
-	speed_error.x = Filter_f(speed_error.x,fltSpeed.x-slowSpeed.x,alfa_speedrr);
-	speed_error.y = Filter_f(speed_error.y,fltSpeed.y-slowSpeed.y,alfa_speedrr);
-	speed_error.z = Filter_f(speed_error.z,fltSpeed.z-slowSpeed.z,alfa_speedrr);
+// 	// speed error is difference between filtered speed and slow speed
+// 	speed_error.x = Filter_f(speed_error.x,fltSpeed.x-slowSpeed.x,alfa_speedrr);
+// 	speed_error.y = Filter_f(speed_error.y,fltSpeed.y-slowSpeed.y,alfa_speedrr);
+// 	speed_error.z = Filter_f(speed_error.z,fltSpeed.z-slowSpeed.z,alfa_speedrr);
 	
 	oldPos.x = pos_act->x;
 	oldPos.y = pos_act->y;
 	oldPos.z = pos_act->z;
 
 
-	// for increased precision (depending on signal quality) one could use the intermediate of new calculated and last speed forpos calculation.
-	#endif
+	// for increased precision (depending on signal quality) one could use the average of new calculated and last speed for pos calculation.
 
 	// debug_accel = vector_copy(v_act);
 	// debug_gyro = vector_copy(pos_act);
 	// debug_mag = vector_copy(&acc_mpss);
-	debug_gov.x = speed_error.z;
+	debug_gov.x = acc_fltHP_mpss.z;
 	debug_gov.y = fltSpeed.z;
 	debug_gov.z = pos_act->z;
 
@@ -239,6 +246,35 @@ float compfilt(float fast, float slow, float alfa)
 {
 	return alfa*(fast)+(1.0-alfa)*slow;
 }
+
+
+void lowpass(float* value, float sample, float alfa)
+{
+	*value = alfa * sample + (1.0-alfa)* *value;  
+}
+
+
+// 1 = no filter ; 0 = no effect of new sample
+void vector_lowpass(vector3_t* value, vector3_t* sample, float alfa)
+{
+	value->x = alfa * sample->x + (1.0-alfa)* value->x;
+	value->y = alfa * sample->y + (1.0-alfa)* value->y;
+	value->z = alfa * sample->z + (1.0-alfa)* value->z;
+}
+
+
+void highpass(float* value, float* offset, float sample, float alfa)
+{
+	lowpass(offset,sample, alfa);
+	*value = *value - *offset;
+}
+
+void vector_highpass(vector3_t* value, vector3_t* offset, vector3_t* sample, float alfa)
+{
+	vector_lowpass(offset, sample, alfa);
+	*value = vector_subtract(sample,offset);
+}
+
 
 /*
 Get the desired speed setpoint out of the distance to trg.
