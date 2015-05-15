@@ -34,6 +34,7 @@
 #include "modules/eic.h"
 #include "TaskControl.h"
 #include "TaskLED.h"
+#include "modules/vector.h"
 #include "modules/governing.h"
 #include "config.h"
 #include "menu/menu.h"

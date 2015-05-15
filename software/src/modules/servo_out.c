@@ -24,6 +24,7 @@
 #include "servo_in.h"
 #include "FabOS_config.h"
 #include "FabOS/FabOS.h"
+#include "vector.h"
 #include "governing.h"
 #include "menu/menu.h"
 #include "menu/menu_variant.h"

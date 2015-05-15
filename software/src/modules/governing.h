@@ -57,6 +57,23 @@ int32_t Filter_mem(int32_t* _memVal, int32_t _newVal, int32_t _base);
 float Filter_f(float _oldVal, float _newVal, float _factor); // float variant
 float BrownLinearExpo(brownfilter_t* inst, float measurement, float alfa);
 
+
+// alfa = 1 means only the fast value.
+// alfa = 0 means only the slow value.
+float compfilt(float fast, float slow, float alfa);
+
+void lowpass(float* value, float sample, float alfa);
+
+// 1 = no filter ; 0 = no effect of new sample
+void vector_lowpass(vector3_t* value, vector3_t* sample, float alfa);
+
+void highpass(float* value, float* offset, float sample, float alfa);
+
+void vector_highpass(vector3_t* value, vector3_t* offset, vector3_t* sample, float alfa);
+
+
+
+
 void test_PIDf(void);
 
 #endif /* GOVERNING_H_ */

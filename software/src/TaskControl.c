@@ -51,10 +51,10 @@
 #include "modules/quaternions/AHRS2.h" // in test !
 #include "modules/emergency.h"
 #include "modules/magnetics_calibration.h"
+#include "modules/vector.h"
 #include "modules/governing.h"
 #include "modules/ParFlash.h"
 #include "config.h"
-#include "modules/vector.h"
 #include "modules/GPS.h"
 #include "modules/NAV.h"
 #include "TaskNavi.h"

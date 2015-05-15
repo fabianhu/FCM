@@ -25,57 +25,43 @@
 #include "../FabOS/FabOS.h"
 #include "vector.h"
 #include "GPS.h"
-#include "governing.h"
 #include "NAV.h"
 #include "../menu/menu.h"
 #include "../menu/menu_variant.h"
 #include "../config.h"
 #include "testsuite.h"
 #include "vector.h"
+#include "governing.h"
 #include "quaternions/quaternions.h"
 #include "SIM.h"
 
 // slowly updated values from GPS and baro
-vector3_t slowPos_m;
-gps_coordinates_t origin;
-float origin_h_m;
+vector3_t NAV_slowPos_m;
+gps_coordinates_t NAV_origin;
+float NAV_origin_h_m;
 
 // global info tag for info purposes for communication (not to be used for governing purposes) (not atomic!)
 NAVinfo_t NAV_info;
 
-void vector_lowpass(vector3_t* value, vector3_t* sample, float alfa);  // fixme aufräumen!
-void lowpass(float* value, float sample, float alfa);
-void highpass(float* value, float* offset, float sample, float alfa);
-void vector_highpass(vector3_t* value, vector3_t* offset, vector3_t* sample, float alfa);
-
-
 // set the origin at start, do not use as "home" or "setpoint"
 void NAV_SetOrigin_xy_cm(gps_coordinates_t pos) // tested
 {
-	origin.lat = pos.lat;
-	origin.lon = pos.lon;
+	NAV_origin.lat = pos.lat;
+	NAV_origin.lon = pos.lon;
 }
 
 // set the origin at start, do not use as "home" or "setpoint"
 void NAV_SetOrigin_z_m(float h) // tested
 {
-	origin_h_m = h;
+	NAV_origin_h_m = h;
 }
-
-// float NAV_Convert_h_to_m(float h_m)
-// {
-// 	float ret;
-// 	ret = h_m - origin_h_m;
-// 	return ret;
-// }
-
 
 vector2_t NAV_ConvertGPS_to_m(gps_coordinates_t set) // tested
 {
 	vector2_t ret;
 	volatile float x,y;
 
-	GPS_distance_xy_m(origin ,set ,&x,&y);
+	GPS_distance_xy_m(NAV_origin ,set ,&x,&y);
 	
 	ret.x = x;
 	ret.y = y;
@@ -99,12 +85,9 @@ bool NAV_GPS_OK(void)
 // timeout is handled in caller (missing event)
 void NAV_UpdatePosition_xy(gps_coordinates_t coords)
 {
-	static vector2_t old; 
-	vector2_t diff;
 	vector2_t act_m;
 
 	uint32_t time = OS_GetTicks();
-//	float dt_s =  (float)(time-lastGPSTime) * 0.001;  // in seconds
 	lastGPSTime = time; // remember the time
 
 	
@@ -112,34 +95,18 @@ void NAV_UpdatePosition_xy(gps_coordinates_t coords)
 	
 	float alfa = (float)myPar.cal_gps_filter.sValue * 0.001;
 	
-	slowPos_m.x = Filter_f(slowPos_m.x,act_m.x,alfa);
-	slowPos_m.y = Filter_f(slowPos_m.y,act_m.y,alfa);
-	
-
-	diff.x = slowPos_m.x - old.x;
-	diff.y = slowPos_m.y - old.y;
-	
-	old.x = slowPos_m.x;
-	old.y = slowPos_m.y;
+	NAV_slowPos_m.x = Filter_f(NAV_slowPos_m.x,act_m.x,alfa);
+	NAV_slowPos_m.y = Filter_f(NAV_slowPos_m.y,act_m.y,alfa);
 }
 
 // Update barometer measurement / async call every baro measurement
 void NAV_UpdatePosition_z_m(float h)
 {
-//	static float lasth;
-//	static uint32_t lastHeightTime;
-//	uint32_t time = OS_GetTicks();
-//	float dt_s =  (float)(time-lastHeightTime) * 0.001;  // in seconds
-//	lastHeightTime = time; // remember the time
-
-	h = h - origin_h_m;
+	h = h - NAV_origin_h_m;
 
 	float alfa = (float)myPar.cal_baro_filter.sValue * 0.001;
 
-	slowPos_m.z = Filter_f(slowPos_m.z,h,alfa);
-
-//	float dh_m = slowPos_m.z - lasth; // in meters
-//	lasth = slowPos_m.z;
+	NAV_slowPos_m.z = Filter_f(NAV_slowPos_m.z,h,alfa);
 }
 
 /*
@@ -160,8 +127,6 @@ void Superfilter(vector3_t acc_in_mpss, vector3_t* pos_act)
 	static vector3_t fltSpeed={0.0,0.0,0.0};
 	static vector3_t oldPos={0.0,0.0,0.0};
 	static vector3_t slowSpeed={0.0,0.0,0.0};
-// 	static vector3_t speed_error={0.0,0.0,0.0};	
-// 	static vector3_t pos_error={0.0,0.0,0.0};
 			
 	//fixme use BrownLinearExpo() for accel filtering, maybe outside.
 
@@ -193,8 +158,7 @@ void Superfilter(vector3_t acc_in_mpss, vector3_t* pos_act)
 	// speed = 0.98 * ( speed + accel * dt  ) + 0.02 * ( slowSpeed)
 	float alfa_pos = (float)myPar.nav_alpha_Pos.sValue * 0.001;
 	float alfa_spd = (float)myPar.nav_alpha_Spd.sValue * 0.001;
-// 	float alfa_speedrr = (float)myPar.test_P.sValue*0.001;
-// 	float alfa_poserr = (float)myPar.test_I.sValue*0.001;
+
  	float alfa_accerr = (float)myPar.test_D.sValue*0.001; 
 	 
 	
@@ -206,23 +170,13 @@ void Superfilter(vector3_t acc_in_mpss, vector3_t* pos_act)
 
 	// complementary filter for position
 	// new pos = old pos + spd * dt
-	pos_act->x = alfa_pos*(pos_act->x + fltSpeed.x * dt_s) + (1.0-alfa_pos)*(slowPos_m.x);
-	pos_act->y = alfa_pos*(pos_act->y + fltSpeed.y * dt_s) + (1.0-alfa_pos)*(slowPos_m.y);
-	pos_act->z = alfa_pos*(pos_act->z + fltSpeed.z * dt_s) + (1.0-alfa_pos)*(slowPos_m.z);
-
-// 	slowSpeed.x = (oldPos.x - pos_act->x)/dt_s; // calculate at: new pos known, and old pos not yet overwritten.
-// 	slowSpeed.y = (oldPos.y - pos_act->y)/dt_s;
-// 	slowSpeed.z = (oldPos.z - pos_act->z)/dt_s;
-
+	pos_act->x = alfa_pos*(pos_act->x + fltSpeed.x * dt_s) + (1.0-alfa_pos)*(NAV_slowPos_m.x);
+	pos_act->y = alfa_pos*(pos_act->y + fltSpeed.y * dt_s) + (1.0-alfa_pos)*(NAV_slowPos_m.y);
+	pos_act->z = alfa_pos*(pos_act->z + fltSpeed.z * dt_s) + (1.0-alfa_pos)*(NAV_slowPos_m.z);
 
 	slowSpeed.x = (pos_act->x - oldPos.x)/dt_s; // calculate at: new pos known, and old pos not yet overwritten.
 	slowSpeed.y = (pos_act->y - oldPos.y)/dt_s; 
 	slowSpeed.z = (pos_act->z - oldPos.z)/dt_s; 
-	
-// 	// speed error is difference between filtered speed and slow speed
-// 	speed_error.x = Filter_f(speed_error.x,fltSpeed.x-slowSpeed.x,alfa_speedrr);
-// 	speed_error.y = Filter_f(speed_error.y,fltSpeed.y-slowSpeed.y,alfa_speedrr);
-// 	speed_error.z = Filter_f(speed_error.z,fltSpeed.z-slowSpeed.z,alfa_speedrr);
 	
 	oldPos.x = pos_act->x;
 	oldPos.y = pos_act->y;
@@ -238,41 +192,6 @@ void Superfilter(vector3_t acc_in_mpss, vector3_t* pos_act)
 	debug_gov.y = fltSpeed.z;
 	debug_gov.z = pos_act->z;
 
-}
-
-// alfa = 1 means only the fast value.
-// alfa = 0 means only the slow value.
-float compfilt(float fast, float slow, float alfa)
-{
-	return alfa*(fast)+(1.0-alfa)*slow;
-}
-
-
-void lowpass(float* value, float sample, float alfa)
-{
-	*value = alfa * sample + (1.0-alfa)* *value;  
-}
-
-
-// 1 = no filter ; 0 = no effect of new sample
-void vector_lowpass(vector3_t* value, vector3_t* sample, float alfa)
-{
-	value->x = alfa * sample->x + (1.0-alfa)* value->x;
-	value->y = alfa * sample->y + (1.0-alfa)* value->y;
-	value->z = alfa * sample->z + (1.0-alfa)* value->z;
-}
-
-
-void highpass(float* value, float* offset, float sample, float alfa)
-{
-	lowpass(offset,sample, alfa);
-	*value = *value - *offset;
-}
-
-void vector_highpass(vector3_t* value, vector3_t* offset, vector3_t* sample, float alfa)
-{
-	vector_lowpass(offset, sample, alfa);
-	*value = vector_subtract(sample,offset);
 }
 
 

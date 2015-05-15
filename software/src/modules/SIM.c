@@ -162,8 +162,6 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	vAccel_mpss.y = 0;
 	vAccel_mpss.z = thrust_mpss;
 	
-	//vAccel_mpss = quaternion_rotateVector(vAccel_mpss,sim_orientation); // rotate into vehicle or. TEST 
-	
 	//reduce the velocity by air resistance
 	// F = r * cw * A * v^2 /2
 	// r = air density in kg/m³
