@@ -122,7 +122,7 @@ vector3_t /* debug_accel,debug_gyro, debug_mag,*/debug_gov;
 
 void Superfilter(vector3_t acc_in_mpss, vector3_t* pos_act)
 {
-	static vector3_t acc_fltHP_mpss;
+	static vector3_t acc_fltHP_mpss={0.0,0.0,0.0};
  	static vector3_t acc_error_mpss={0.0,0.0,0.0};
 	static vector3_t fltSpeed={0.0,0.0,0.0};
 	static vector3_t oldPos={0.0,0.0,0.0};

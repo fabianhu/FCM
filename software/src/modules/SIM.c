@@ -168,21 +168,21 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	// A = area in m²	
 	// F = m*a
 	// a = F / m
-	vAccel_mpss.x -= signf(vel_vehicle.x) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (vel_vehicle.x*vel_vehicle.x)* 0.5) / SIM_COPTERMASS; 
-	vAccel_mpss.y -= signf(vel_vehicle.y) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (vel_vehicle.y*vel_vehicle.y)* 0.5) / SIM_COPTERMASS;
-	vAccel_mpss.z -= signf(vel_vehicle.z) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREATOP* (vel_vehicle.z*vel_vehicle.z)* 0.5) / SIM_COPTERMASS; 
+ 	vAccel_mpss.x -= signf(vel_vehicle.x) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (vel_vehicle.x*vel_vehicle.x)* 0.5) / SIM_COPTERMASS; // fixme maybe wrong way??
+ 	vAccel_mpss.y -= signf(vel_vehicle.y) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (vel_vehicle.y*vel_vehicle.y)* 0.5) / SIM_COPTERMASS;
+ 	vAccel_mpss.z -= signf(vel_vehicle.z) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREATOP* (vel_vehicle.z*vel_vehicle.z)* 0.5) / SIM_COPTERMASS; 
 	OS_DISABLEALLINTERRUPTS
 	sim_accel_frame_mpss = vector_copy(&vAccel_mpss);// simulation output
 	SimDisturbVector(&sim_accel_frame_mpss,&DisturbAngleAcc,(float)myPar.accel_freq.sValue,(float) myPar.accel_ampl.sValue*0.1); // add noise only for simulated measurement
-	sim_accel_frame_mpss = vector_scale(&sim_accel_frame_mpss,-1); // the measured = resulting acceleration is the other way!!
+	sim_accel_frame_mpss = vector_scale(&sim_accel_frame_mpss,-1.0); // the measured = resulting acceleration is the other way!!
 	OS_ENABLEALLINTERRUPTS
 	
-	vAccel_mpss = quaternion_rotateVector(vAccel_mpss,sim_orientation); // rotate into world orientation
+	vector3_t vAccel_world_mpss = quaternion_rotateVector(vAccel_mpss,sim_orientation); // rotate into world orientation
 	
-	vAccel_mpss.z -=9.81; // subtract earths acceleration.
+	vAccel_world_mpss.z -=9.81; // subtract earths acceleration.
 	// in steady state, the earths acceleration and the "o_thrust" acceleration neutralize to 0.
 	
-	vector3_t vDv = vector_scale(&vAccel_mpss,SIM_DT); // multiply by time -> delta v for this step
+	vector3_t vDv = vector_scale(&vAccel_world_mpss,SIM_DT); // multiply by time -> delta v for this step
 	
 	sim_vel_world_mps = vector_add(&sim_vel_world_mps,&vDv);
 	
