@@ -25,48 +25,44 @@
 #include "../FabOS/FabOS.h"
 #include "vector.h"
 #include "GPS.h"
-#include "governing.h"
 #include "NAV.h"
 #include "../menu/menu.h"
 #include "../menu/menu_variant.h"
 #include "../config.h"
 #include "testsuite.h"
 #include "vector.h"
+#include "governing.h"
 #include "quaternions/quaternions.h"
 #include "SIM.h"
 
 // slowly updated values from GPS and baro
-vector3_t slowPos_m;
-gps_coordinates_t origin;
-float origin_h_m;
+vector3_t NAV_slowPos_m;
+gps_coordinates_t NAV_origin;
+float NAV_origin_h_m;
+float raw_h;
+
+// global info tag for info purposes for communication (not to be used for governing purposes) (not atomic!)
+NAVinfo_t NAV_info;
 
 // set the origin at start, do not use as "home" or "setpoint"
 void NAV_SetOrigin_xy_cm(gps_coordinates_t pos) // tested
 {
-	origin.lat = pos.lat;
-	origin.lon = pos.lon;
+	NAV_origin.lat = pos.lat;
+	NAV_origin.lon = pos.lon;
 }
 
 // set the origin at start, do not use as "home" or "setpoint"
-void NAV_SetOrigin_z_m(float h) // tested
+void NAV_SetOrigin_z_m() // tested
 {
-	origin_h_m = h;
+	NAV_origin_h_m = raw_h;
 }
-
-// float NAV_Convert_h_to_m(float h_m)
-// {
-// 	float ret;
-// 	ret = h_m - origin_h_m;
-// 	return ret;
-// }
-
 
 vector2_t NAV_ConvertGPS_to_m(gps_coordinates_t set) // tested
 {
 	vector2_t ret;
 	volatile float x,y;
 
-	GPS_distance_xy_m(origin ,set ,&x,&y);
+	GPS_distance_xy_m(NAV_origin ,set ,&x,&y);
 	
 	ret.x = x;
 	ret.y = y;
@@ -90,12 +86,9 @@ bool NAV_GPS_OK(void)
 // timeout is handled in caller (missing event)
 void NAV_UpdatePosition_xy(gps_coordinates_t coords)
 {
-	static vector2_t old; 
-	vector2_t diff;
 	vector2_t act_m;
 
 	uint32_t time = OS_GetTicks();
-//	float dt_s =  (float)(time-lastGPSTime) * 0.001;  // in seconds
 	lastGPSTime = time; // remember the time
 
 	
@@ -103,34 +96,20 @@ void NAV_UpdatePosition_xy(gps_coordinates_t coords)
 	
 	float alfa = (float)myPar.cal_gps_filter.sValue * 0.001;
 	
-	slowPos_m.x = Filter_f(slowPos_m.x,act_m.x,alfa);
-	slowPos_m.y = Filter_f(slowPos_m.y,act_m.y,alfa);
-	
-
-	diff.x = slowPos_m.x - old.x;
-	diff.y = slowPos_m.y - old.y;
-	
-	old.x = slowPos_m.x;
-	old.y = slowPos_m.y;
+	NAV_slowPos_m.x = Filter_f(NAV_slowPos_m.x,act_m.x,alfa);
+	NAV_slowPos_m.y = Filter_f(NAV_slowPos_m.y,act_m.y,alfa);
 }
 
 // Update barometer measurement / async call every baro measurement
 void NAV_UpdatePosition_z_m(float h)
 {
-//	static float lasth;
-//	static uint32_t lastHeightTime;
-//	uint32_t time = OS_GetTicks();
-//	float dt_s =  (float)(time-lastHeightTime) * 0.001;  // in seconds
-//	lastHeightTime = time; // remember the time
-
-	h = h - origin_h_m;
+	raw_h = Filter_f(raw_h,h,0.1); // remember raw value for 0 calibration
+	
+	h = h - NAV_origin_h_m;
 
 	float alfa = (float)myPar.cal_baro_filter.sValue * 0.001;
 
-	slowPos_m.z = Filter_f(slowPos_m.z,h,alfa);
-
-//	float dh_m = slowPos_m.z - lasth; // in meters
-//	lasth = slowPos_m.z;
+	NAV_slowPos_m.z = Filter_f(NAV_slowPos_m.z,h,alfa);
 }
 
 /*
@@ -141,22 +120,18 @@ acc_mpss: Accerleration world based without gravity in meters / s*s
 pos: gps position and barometer height
 */
 
+vector3_t /* debug_accel,debug_gyro, debug_mag,*/debug_gov;
 
-void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
+
+void Superfilter(vector3_t acc_in_mpss, vector3_t* pos_act)
 {
+	static vector3_t acc_fltHP_mpss={0.0,0.0,0.0};
+ 	static vector3_t acc_error_mpss={0.0,0.0,0.0};
 	static vector3_t fltSpeed={0.0,0.0,0.0};
 	static vector3_t oldPos={0.0,0.0,0.0};
 	static vector3_t slowSpeed={0.0,0.0,0.0};
-	
+			
 	//fixme use BrownLinearExpo() for accel filtering, maybe outside.
-
-	#if DISABLE_SENSOR_FUSION_GPS == 1
-
-	pos_act->x = slowPos_m.x;
-	pos_act->y = slowPos_m.y;
-	pos_act->z = slowPos_m.z;
-
-	#else
 
 	// SIMULATION is done in GPS task TaskNavi for GPS inputs; acc_mps comes in simulated as well.
 
@@ -184,20 +159,21 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 
 
 	// speed = 0.98 * ( speed + accel * dt  ) + 0.02 * ( slowSpeed)
-	float alfa_pos = (float)myPar.nav_alpha_Pos.sValue * 0.001;
 	float alfa_spd = (float)myPar.nav_alpha_Spd.sValue * 0.001;
-
-	fltSpeed.x = alfa_spd*(fltSpeed.x + acc_mpss.x * dt_s) + (1.0-alfa_spd)*slowSpeed.x; // xxxx fork x!##@ we need slowspeed again.
-	fltSpeed.y = alfa_spd*(fltSpeed.y + acc_mpss.y * dt_s) + (1.0-alfa_spd)*slowSpeed.y; 
-	fltSpeed.z = alfa_spd*(fltSpeed.z + acc_mpss.z * dt_s) + (1.0-alfa_spd)*slowSpeed.z; 
-
+	float alfa_pos = (float)myPar.nav_alpha_Pos.sValue * 0.001;
+ 	float alfa_accerr = (float)myPar.test_D.sValue*0.001; 
+	
+	vector_highpass(&acc_fltHP_mpss, &acc_error_mpss, &acc_in_mpss, alfa_accerr); // 1 = unfiltered
+	
+	fltSpeed.x = alfa_spd*(fltSpeed.x - acc_fltHP_mpss.x * dt_s) + (1.0-alfa_spd)*slowSpeed.x; // 1 = acc only 0 = GPS only
+	fltSpeed.y = alfa_spd*(fltSpeed.y - acc_fltHP_mpss.y * dt_s) + (1.0-alfa_spd)*slowSpeed.y; 
+	fltSpeed.z = alfa_spd*(fltSpeed.z - acc_fltHP_mpss.z * dt_s) + (1.0-alfa_spd)*slowSpeed.z; 
 
 	// complementary filter for position
 	// new pos = old pos + spd * dt
-	pos_act->x = alfa_pos*(pos_act->x + fltSpeed.x * dt_s) + (1.0-alfa_pos)*(slowPos_m.x);
-	pos_act->y = alfa_pos*(pos_act->y + fltSpeed.y * dt_s) + (1.0-alfa_pos)*(slowPos_m.y);
-	pos_act->z = alfa_pos*(pos_act->z + fltSpeed.z * dt_s) + (1.0-alfa_pos)*(slowPos_m.z);
-
+	pos_act->x = alfa_pos*(pos_act->x + fltSpeed.x * dt_s) + (1.0-alfa_pos)*(NAV_slowPos_m.x); // 1 = acc only
+	pos_act->y = alfa_pos*(pos_act->y + fltSpeed.y * dt_s) + (1.0-alfa_pos)*(NAV_slowPos_m.y);
+	pos_act->z = alfa_pos*(pos_act->z + fltSpeed.z * dt_s) + (1.0-alfa_pos)*(NAV_slowPos_m.z);
 
 	slowSpeed.x = (pos_act->x - oldPos.x)/dt_s; // calculate at: new pos known, and old pos not yet overwritten.
 	slowSpeed.y = (pos_act->y - oldPos.y)/dt_s; 
@@ -208,22 +184,8 @@ void Superfilter(vector3_t acc_mpss, vector3_t* pos_act)
 	oldPos.z = pos_act->z;
 
 
-	// for increased precision (depending on signal quality) one could use the intermediate of new calculated and last speed forpos calculation.
-	#endif
-
-	// debug_accel = vector_copy(v_act);
-	// debug_gyro = vector_copy(pos_act);
-	// debug_mag = vector_copy(&acc_mpss);
-	// debug_gov = vector_copy(&slowPos_m);
-
 }
 
-// alfa = 1 means only the fast value.
-// alfa = 0 means only the slow value.
-float compfilt(float fast, float slow, float alfa)
-{
-	return alfa*(fast)+(1.0-alfa)*slow;
-}
 
 /*
 Get the desired speed setpoint out of the distance to trg.

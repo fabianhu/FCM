@@ -44,6 +44,7 @@
 #include "modules/vector.h"
 #include "TaskNavi.h"
 #include "../TaskControl.h"
+#include "modules/NAV.h"
 
 extern GPS_interface_t   gps_dataset; // fixme schönes Interface basteln
 
@@ -642,13 +643,13 @@ void _hott_update_gps_msg() {
 		hott_gps_msg->gps_fix_char = 'x';
 		hott_gps_msg->free_char3 = gps_dataset.status.gps3dfix?'3':'2';  //3D Fix according to specs...
 		
-// fix		uint16_t homedist = NAV_info.Dist_m;
+		uint16_t homedist = NAV_info.Dist_m;
 				
-// fix		hott_gps_msg->home_distance_H = homedist >> 8;
-// fix		hott_gps_msg->home_distance_L = homedist  & 0xff;
+		hott_gps_msg->home_distance_H = homedist >> 8;
+		hott_gps_msg->home_distance_L = homedist  & 0xff;
 		
 		int16_t homedir;
-// fix		homedir = NAV_info.trg_heading_rad * 57.295779513;
+		homedir = NAV_info.trg_heading_rad * 57.295779513;
 		homedir = 360 - homedir;
 		homedir /=2;
 		hott_gps_msg->home_direction = homedir; // 2° steps

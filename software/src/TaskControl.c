@@ -51,15 +51,16 @@
 #include "modules/quaternions/AHRS2.h" // in test !
 #include "modules/emergency.h"
 #include "modules/magnetics_calibration.h"
+#include "modules/vector.h"
 #include "modules/governing.h"
 #include "modules/ParFlash.h"
 #include "config.h"
-#include "modules/vector.h"
 #include "modules/GPS.h"
 #include "modules/NAV.h"
 #include "TaskNavi.h"
 #include "modules/usart.h"
 #include "modules/SIM.h"
+#include "version.h"
 
 void TaskControl(void);
 void acc_calibrate(vector3_t* g);
@@ -281,8 +282,8 @@ void TaskControl(void)
 		
 		
 		// calculate normalized acceleration	
-		v_acc_global_mpss = quaternion_rotateVector(v_acc_frame_mpss,quaternion_inverse(q_ActualOrientation));
-		v_acc_global_mpss.z -= 9.81; // subtract the z acceleration here.
+		v_acc_global_mpss = quaternion_rotateVector(v_acc_frame_mpss,/*quaternion_inverse*/(q_ActualOrientation));
+		v_acc_global_mpss.z += 9.81; // subtract the z acceleration here.
 		
 		float filterAcc = myPar.nav_acc_flt_glob.sValue*0.001;
 		
@@ -297,7 +298,8 @@ void TaskControl(void)
 		quaternion_to_euler(q_ActualOrientation, &ax, &ay, &fActHeading_rad); // remember the actual heading
 		
 		// for the other systems:
-		IMUdata.pitch_deg = ax*57.295779f; // fixme is actually wrong, because global!!
+		
+		IMUdata.pitch_deg = ax*57.295779f; 
 		IMUdata.roll_deg = ay*57.295779f;
 		IMUdata.mag_heading_deg = fActHeading_rad*57.295779f;
 		IMUdata.height_dm = v_pos_act_m.z *100; // fixme cm?
@@ -489,11 +491,8 @@ void TaskControl(void)
 		{
 			case FS_init:
 				//Parameters already loaded !
-				#if SIMULATION == 1
-				NAV_SetOrigin_z_m(0.0);
-				#else
-				NAV_SetOrigin_z_m((float) Filter_mem(&heightflt, twi_get_h_mm(),HEIGHTINITFILTER) * 0.001); // todo out of interpolated value! // fixme argl
-				#endif
+				NAV_SetOrigin_z_m();
+
 				// remember GPS position as best idea...
 				gps_coordinates_t gpspos_home_temp;
 				if(GPSgetPos(&gpspos_home_temp)==0)
@@ -512,8 +511,6 @@ void TaskControl(void)
 					abs(IMUdata.pitch_deg) < STARTUP_MAX_ANGLE_DEV_DEG && abs(IMUdata.roll_deg) < STARTUP_MAX_ANGLE_DEV_DEG // todo naming is actually wrong, because global!!
 					)
 					{
-						
-						
 						LED_SetFlightstate(FS_idle);
 					}
 					
@@ -528,6 +525,7 @@ void TaskControl(void)
 	
 				break;
 			case FS_idle:
+				//Filter_mem(&heightflt, twi_get_h_mm(),HEIGHTINITFILTER); //out of interpolated value!
 				if((cmd_thr < 1500) && (cmd_yaw < -3500) && (abs(cmd_elev) < 1000) && (abs(cmd_roll) < 1000))
 				{
 					if(LED_GetLastFlightstateChanged() > 100)
@@ -542,11 +540,9 @@ void TaskControl(void)
 						{
 							// todo set GPS to "failed"
 						}
-						#if SIMULATION == 1
-						NAV_SetOrigin_z_m(0.0);
-						#else
-						NAV_SetOrigin_z_m((float) Filter_mem(&heightflt, twi_get_h_mm(),HEIGHTINITFILTER) * 0.001); // todo out of interpolated value!
-						#endif
+						
+						NAV_SetOrigin_z_m(); 
+						
 						// copy actual to setpoint
 						quaternion_copy(&q_RC_Set, &q_ActualOrientation);
 
@@ -704,7 +700,7 @@ void TaskControl(void)
 				if(menu_show_diag)
 				{
 					// special data, if diag screen is on.
-			//		extern vector3_t debug_accel,debug_gyro, debug_mag,debug_gov;
+					extern vector3_t /* debug_accel,debug_gyro, debug_mag,*/debug_gov;
 	
 			// 		TXData.gx = debug_gyro.x*1000;//v_gyro_raw.x;
 			// 		TXData.gy = debug_gyro.y*1000;//v_gyro_raw.y;
@@ -727,15 +723,15 @@ void TaskControl(void)
 					TXData.gx =  debug_der_x*1000;//bank.x * radgra;//v_gyro_raw.x;
 					TXData.gy = debug_der_y*1000;// bank.y * radgra;//v_gyro_raw.y;
 					TXData.gz = fActHeading_rad*radgra;//thrust * 1000;//v_gyro_raw.z;
-					TXData.ax = v_accel_command_mpss.x*1019;//fTrgNavDistance_m;
-					TXData.ay = v_accel_command_mpss.y*1019;//fTrgNavHeading_rad* radgra;
-					TXData.az = v_accel_command_mpss.z*1019;//fHeadingDiff_rad* radgra;
+					TXData.ax = v_accel_glob_flt_mpss.x*1019;//fTrgNavDistance_m;
+					TXData.ay = v_accel_glob_flt_mpss.y*1019;//fTrgNavHeading_rad* radgra;
+					TXData.az = v_accel_glob_flt_mpss.z*1019;//fHeadingDiff_rad* radgra;
 					TXData.mx = v_mag.x;
 					TXData.my = v_mag.y;
 					TXData.mz = v_mag.z;
-					TXData.gov_x = ox; // mag_cal.x;	 v_pos_act_m.x*1000;//debug_gov.x*1000;//
-					TXData.gov_y = oy; // mag_cal.y;	 v_pos_act_m.y*1000;//debug_gov.y*1000;//
-					TXData.gov_z = oz; // mag_cal.z;  	 v_pos_act_m.z*1000;//debug_gov.z*1000;//
+					TXData.gov_x = debug_gov.x*1000;//
+					TXData.gov_y = debug_gov.y*1000;//
+					TXData.gov_z = debug_gov.z*1000;//
 					TXData.RC_a = cmd_thr;												   
 					TXData.RC_x = cmd_elev;												   
 					TXData.RC_y = cmd_roll;
@@ -893,6 +889,6 @@ void acc_calibrate(vector3_t* cal) // todo : ausquartieren!
 		cal->z = Filter_f(cal->z,r.z,ACCCALFLT);
 	}
 	
-	cal->z -= 9.81;
+	cal->z += 9.81; // normal acceleration goes DOWN!
 	
 }

@@ -54,27 +54,31 @@ void test_run(void)
 	//myPar.nav_alpha_Pos.sValue = ;	// speed filter value (9990) 10000 is fast prio
 	
 	//////////////////////////////////////////////////////////////////////////
-	testcase = 1;
-	TheBigTest();//quaternion_test();
+	testcase = 0;
+	//TheBigTest();
 	
-	//test_GPS_calcHeading();
-
-	//////////////////////////////////////////////////////////////////////////
+	testcase = 1;
+	quaternion_test();
+	
 	testcase = 2;
-	//test_GetSetSpeed();
+	test_GPS_calcHeading();
 
 	//////////////////////////////////////////////////////////////////////////
 	testcase = 3;
-	//test_GetBankAndThrustFromAccel();
+	test_GetSetSpeed();
+
+	//////////////////////////////////////////////////////////////////////////
+	testcase = 4;
+	test_GetBankAndThrustFromAccel();
 
 
 	//////////////////////////////////////////////////////////////////////////
-	testcase = 4;	
+	testcase = 5;	
 	test_PIDf();
 
 
 	//////////////////////////////////////////////////////////////////////////
-	testcase = 5;
+	testcase = 6;
 	// The GPS stuff
 					  	// 	  483827900 , 108526700 // home !!
 	gps_coordinates_t gpssrc ={483829100 , 108527100}; // lat , lon in 10 000 000 th degrees = FCM "Home"
@@ -103,7 +107,7 @@ void test_run(void)
 	
 	
 	//////////////////////////////////////////////////////////////////////////
-	testcase = 6;
+	testcase = 7;
 	// The random stuff	
 	
 	vector3_t vsubtest1 = {1.2,3.4,5.6};
@@ -117,7 +121,7 @@ void test_run(void)
 	assertfequal(vsubtest3.z,0);
 	
 	//////////////////////////////////////////////////////////////////////////
-	testcase = 7;
+	testcase = 8;
 	// GPS and distance stuff
 	
 	NAV_SetOrigin_xy_cm(gpssrc);
@@ -133,7 +137,7 @@ void test_run(void)
 	assert(fabs(resvec.y - 3029)<3);
 	
 	//////////////////////////////////////////////////////////////////////////
-	testcase = 8;
+	testcase = 9;
 	// GPS position update
 	myPar.cal_gps_filter.sValue = 990; // almost no filter
 	
@@ -159,13 +163,13 @@ void test_run(void)
 	assert(fabs(pos_res.y - 3029)<3);
 	
 	//////////////////////////////////////////////////////////////////////////
-	testcase = 9;
+	testcase = 10;
 	// Nav Governor
 	//test_NAV_Governor();
 	
 	
 	//////////////////////////////////////////////////////////////////////////
-	testcase = 10;
+	testcase = 11;
 	
 	volatile quaternion_t testquat;
 	
@@ -193,7 +197,7 @@ void test_run(void)
 	
 	
 	//////////////////////////////////////////////////////////////////////////
-	testcase = 10;
+	testcase = 11;
 	// sensor fusion
 	
 	

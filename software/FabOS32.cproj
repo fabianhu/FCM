@@ -189,6 +189,7 @@
     <UncachedRange />
     <BootSegment>0</BootSegment>
     <UseGdb>False</UseGdb>
+    <preserveEEPROM>true</preserveEEPROM>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputFileName>FabOS32</OutputFileName>

@@ -29,13 +29,4 @@ void NAVi_SetTarget(gps_coordinates_t trg); // Set the target for the navigation
 void Navi_ReSetLastFrameTime(void); // fixme get rid of it, use time from gps frame.
 void NAVi_NotifyClosedLoop(bool act); // notify the navi task, if the output is actually used (closed Loop)
 
-/*typedef struct NAVinfo_tag
-{
-	uint32_t Dist_m;
-	float trg_heading_rad;
-}NAVinfo_t;
-
-extern NAVinfo_t NAV_info;
-*/
-
 #endif /* TASKNAVI_H_ */

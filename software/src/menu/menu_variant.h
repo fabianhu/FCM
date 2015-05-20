@@ -25,7 +25,6 @@
 #define MENU_DRAWALWAYS 1
 
 #include <string.h>
-#include "version.h"
 
 // kill AVR 8 bit-stuff 
 #define strcpy_P strcpy
@@ -370,9 +369,9 @@ myPar_t myPar = { \
 /*a_madg*/ {	0, 1, 100, 1, none}, \
 /*P_mahony*/ {	0, 1, 100, 1, none}, \
 /*I_mahony*/ {	0, 1, 100, 1, none}, \
-/*test_P*/ {	0, 1, 100, 1, none}, \
-/*test_I*/ {	0, 1, 100, 1, none}, \
-/*test_D*/ {	0, 1, 100, 1, none}, \
+/*test_P*/ {	0, 1, 1000, 1, none}, \
+/*test_I*/ {	0, 1, 1000, 1, none}, \
+/*test_D*/ {	0, 1, 1000, 1, none}, \
 /*wind_freq*/ {	0, 0, 100, 5, none}, \
 /*wind_ampl*/ {	0, 0, 100, 5, none}, \
 /*mag_mis_freq*/ {	0, 0, 100, 5, none}, \

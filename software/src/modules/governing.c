@@ -23,6 +23,7 @@
 #include "math.h"
 #include "../FabOS_config.h"
 #include "../FabOS/FabOS.h"
+#include "vector.h"
 #include "governing.h"
 #include "../config.h"
 #include "testsuite.h"
@@ -197,6 +198,42 @@ float BrownLinearExpo(brownfilter_t* inst, float measurement, float alfa)
 	
 	return mx + t; 
 }
+
+// alfa = 1 means only the fast value.
+// alfa = 0 means only the slow value.
+float compfilt(float fast, float slow, float alfa)
+{
+	return alfa*(fast)+(1.0-alfa)*slow;
+}
+
+
+void lowpass(float* value, float sample, float alfa)
+{
+	*value = alfa * sample + (1.0-alfa)* *value;
+}
+
+
+// 1 = no filter ; 0 = no effect of new sample
+void vector_lowpass(vector3_t* value, vector3_t* sample, float alfa)
+{
+	value->x = alfa * sample->x + (1.0-alfa)* value->x;
+	value->y = alfa * sample->y + (1.0-alfa)* value->y;
+	value->z = alfa * sample->z + (1.0-alfa)* value->z;
+}
+
+
+void highpass(float* value, float* offset, float sample, float alfa)
+{
+	lowpass(offset,sample, alfa);
+	*value = *value - *offset;
+}
+
+void vector_highpass(vector3_t* value, vector3_t* offset, vector3_t* sample, float alfa)
+{
+	vector_lowpass(offset, sample, alfa);
+	*value = vector_subtract(sample,offset);
+}
+
 
 
 #if TEST_RUN == 1

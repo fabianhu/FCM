@@ -64,9 +64,9 @@ void debugResetMadgwick(void)
 bool MadgwickStart(void) // cyclic call every 10ms until returns true.
 {
 	// let the Madgwick turn into direction
-	static uint32_t MadgwickStartTicks;
+	static uint32_t MadgwickStartTicks=0;
 	
-	if(OS_GetTicks() - MadgwickStartTicks > 3000) // maybe check for rotation speed instead of wait?
+	if(MadgwickStartTicks++ > 300) // maybe check for rotation speed instead of wait?
 	{
 		MadgwickAHRSSetBetaNormal();
 		return true;
