@@ -39,6 +39,7 @@
 vector3_t NAV_slowPos_m;
 gps_coordinates_t NAV_origin;
 float NAV_origin_h_m;
+float raw_h;
 
 // global info tag for info purposes for communication (not to be used for governing purposes) (not atomic!)
 NAVinfo_t NAV_info;
@@ -51,9 +52,9 @@ void NAV_SetOrigin_xy_cm(gps_coordinates_t pos) // tested
 }
 
 // set the origin at start, do not use as "home" or "setpoint"
-void NAV_SetOrigin_z_m(float h) // tested
+void NAV_SetOrigin_z_m() // tested
 {
-	NAV_origin_h_m = h;
+	NAV_origin_h_m = raw_h;
 }
 
 vector2_t NAV_ConvertGPS_to_m(gps_coordinates_t set) // tested
@@ -102,6 +103,8 @@ void NAV_UpdatePosition_xy(gps_coordinates_t coords)
 // Update barometer measurement / async call every baro measurement
 void NAV_UpdatePosition_z_m(float h)
 {
+	raw_h = Filter_f(raw_h,h,0.1); // remember raw value for 0 calibration
+	
 	h = h - NAV_origin_h_m;
 
 	float alfa = (float)myPar.cal_baro_filter.sValue * 0.001;
@@ -156,21 +159,19 @@ void Superfilter(vector3_t acc_in_mpss, vector3_t* pos_act)
 
 
 	// speed = 0.98 * ( speed + accel * dt  ) + 0.02 * ( slowSpeed)
-	float alfa_pos = (float)myPar.nav_alpha_Pos.sValue * 0.001;
 	float alfa_spd = (float)myPar.nav_alpha_Spd.sValue * 0.001;
-
+	float alfa_pos = (float)myPar.nav_alpha_Pos.sValue * 0.001;
  	float alfa_accerr = (float)myPar.test_D.sValue*0.001; 
-	 
 	
-	vector_highpass(&acc_fltHP_mpss, &acc_error_mpss, &acc_in_mpss, alfa_accerr); 
+	vector_highpass(&acc_fltHP_mpss, &acc_error_mpss, &acc_in_mpss, alfa_accerr); // 1 = unfiltered
 	
-	fltSpeed.x = alfa_spd*(fltSpeed.x - acc_fltHP_mpss.x * dt_s) + (1.0-alfa_spd)*slowSpeed.x; // xxxx fork x!##@ we need slowspeed again.
+	fltSpeed.x = alfa_spd*(fltSpeed.x - acc_fltHP_mpss.x * dt_s) + (1.0-alfa_spd)*slowSpeed.x; // 1 = acc only 0 = GPS only
 	fltSpeed.y = alfa_spd*(fltSpeed.y - acc_fltHP_mpss.y * dt_s) + (1.0-alfa_spd)*slowSpeed.y; 
 	fltSpeed.z = alfa_spd*(fltSpeed.z - acc_fltHP_mpss.z * dt_s) + (1.0-alfa_spd)*slowSpeed.z; 
 
 	// complementary filter for position
 	// new pos = old pos + spd * dt
-	pos_act->x = alfa_pos*(pos_act->x + fltSpeed.x * dt_s) + (1.0-alfa_pos)*(NAV_slowPos_m.x);
+	pos_act->x = alfa_pos*(pos_act->x + fltSpeed.x * dt_s) + (1.0-alfa_pos)*(NAV_slowPos_m.x); // 1 = acc only
 	pos_act->y = alfa_pos*(pos_act->y + fltSpeed.y * dt_s) + (1.0-alfa_pos)*(NAV_slowPos_m.y);
 	pos_act->z = alfa_pos*(pos_act->z + fltSpeed.z * dt_s) + (1.0-alfa_pos)*(NAV_slowPos_m.z);
 
@@ -182,15 +183,6 @@ void Superfilter(vector3_t acc_in_mpss, vector3_t* pos_act)
 	oldPos.y = pos_act->y;
 	oldPos.z = pos_act->z;
 
-
-	// for increased precision (depending on signal quality) one could use the average of new calculated and last speed for pos calculation.
-
-	// debug_accel = vector_copy(v_act);
-	// debug_gyro = vector_copy(pos_act);
-	// debug_mag = vector_copy(&acc_mpss);
-	debug_gov.x = acc_fltHP_mpss.z;
-	debug_gov.y = fltSpeed.z;
-	debug_gov.z = pos_act->z;
 
 }
 

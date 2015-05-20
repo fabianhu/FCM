@@ -1,0 +1,79 @@
+# FCM Settings 2.1.27572
+\GYRO PID\Max Integr	4000
+\GYRO PID\Gov at Max	20
+\GYRO PID\Q Gain	10000
+\GYRO PID\Swash P	66
+\GYRO PID\Swash I	37
+\GYRO PID\Swash D	15
+\GYRO PID\Yaw P  	60
+\GYRO PID\Yaw I  	10
+\GYRO PID\Yaw D  	5
+\NAV\NAV P	15
+\NAV\NAV I	5
+\NAV\NAV D	15
+\NAV\H P  	200
+\NAV\H I  	50
+\NAV\H D  	200
+\NAV\NAV Limits\Max Angle	15
+\NAV\NAV Limits\Max Accel	100
+\NAV\NAV Limits\Max Acc int	30
+\NAV\NAV Limits\Radius NAV	10
+\NAV\NAV Limits\Radius h	1
+\NAV\NAV Filters\Acc Flt glob	800
+\NAV\NAV Filters\alpha pos	990
+\NAV\NAV Filters\alpha spd	990
+\NAV\NAV Compensation\Comp On	0
+\NAV\NAV Compensation\Min Speed	3
+\NAV\NAV Compensation\Min Time	5
+\NAV\NAV Compensation\Filter	5
+\NAV\NAV Compensation\Min Distance	5
+\Settings\Max Power  	7000
+\Settings\Idle Power 	500
+\Settings\Agility fact	1
+\Settings\wait GPS Fix	0
+\Settings\No BT222 cfg	1
+\Settings\Direct Mode	0
+\Settings\SPEKTRUM DSMX	0
+\Calibration\Gyro X	-69
+\Calibration\Gyro Y	23
+\Calibration\Gyro Z	10
+\Calibration\Acc X	0
+\Calibration\Acc Y	0
+\Calibration\Acc Z	0
+\Calibration\MagCal flght	0
+\Calibration\Mag X	348
+\Calibration\Mag Y	8734
+\Calibration\Mag Z	12051
+\Calibration\Filters\Gyro Filter	1
+\Calibration\Filters\Accel Filter	2
+\Calibration\Filters\Magneto Flt	4
+\Calibration\Filters\Baro Filter	50
+\Calibration\Filters\GPS Filter	500
+\RC Channels\Sw  PosHold	8
+\RC Channels\SwP PosHold	1
+\RC Channels\Sw  H Gov	12
+\RC Channels\SwP H Gov	2
+\RC Channels\Sw  RTH	8
+\RC Channels\SwP RTH	2
+\RC Channels\Sw  Aux	0
+\RC Channels\SwP Aux	2
+\RC Channels\Poti P	5
+\RC Channels\Poti I	6
+\RC Channels\Poti D	7
+\Test\Madgwick	1
+\Test\alpha Madg	3
+\Test\prop Mah	50
+\Test\integr Mah	10
+\Test\test P	0
+\Test\test I	0
+\Test\test D	1
+\Test\wind\wind_freq	1
+\Test\wind\wind_ampl	50
+\Test\mag_mis\mag_mis_freq	0
+\Test\mag_mis\mag_mis_ampl	0
+\Test\gyro\gyro_freq	0
+\Test\gyro\gyro_ampl	0
+\Test\accel\accel_freq	0
+\Test\accel\accel_ampl	0
+\Test\magneto\magneto_freq	0
+\Test\magneto\magneto_ampl	0

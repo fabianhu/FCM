@@ -298,7 +298,8 @@ void TaskControl(void)
 		quaternion_to_euler(q_ActualOrientation, &ax, &ay, &fActHeading_rad); // remember the actual heading
 		
 		// for the other systems:
-		IMUdata.pitch_deg = ax*57.295779f; // fixme is actually wrong, because global!!
+		
+		IMUdata.pitch_deg = ax*57.295779f; 
 		IMUdata.roll_deg = ay*57.295779f;
 		IMUdata.mag_heading_deg = fActHeading_rad*57.295779f;
 		IMUdata.height_dm = v_pos_act_m.z *100; // fixme cm?
@@ -490,11 +491,8 @@ void TaskControl(void)
 		{
 			case FS_init:
 				//Parameters already loaded !
-				#if SIMULATION == 1
-				NAV_SetOrigin_z_m(0.0);
-				#else
-				NAV_SetOrigin_z_m((float) Filter_mem(&heightflt, twi_get_h_mm(),HEIGHTINITFILTER) * 0.001); // todo out of interpolated value! // fixme argl
-				#endif
+				NAV_SetOrigin_z_m();
+
 				// remember GPS position as best idea...
 				gps_coordinates_t gpspos_home_temp;
 				if(GPSgetPos(&gpspos_home_temp)==0)
@@ -513,8 +511,6 @@ void TaskControl(void)
 					abs(IMUdata.pitch_deg) < STARTUP_MAX_ANGLE_DEV_DEG && abs(IMUdata.roll_deg) < STARTUP_MAX_ANGLE_DEV_DEG // todo naming is actually wrong, because global!!
 					)
 					{
-						
-						
 						LED_SetFlightstate(FS_idle);
 					}
 					
@@ -529,6 +525,7 @@ void TaskControl(void)
 	
 				break;
 			case FS_idle:
+				//Filter_mem(&heightflt, twi_get_h_mm(),HEIGHTINITFILTER); //out of interpolated value!
 				if((cmd_thr < 1500) && (cmd_yaw < -3500) && (abs(cmd_elev) < 1000) && (abs(cmd_roll) < 1000))
 				{
 					if(LED_GetLastFlightstateChanged() > 100)
@@ -543,13 +540,9 @@ void TaskControl(void)
 						{
 							// todo set GPS to "failed"
 						}
-						#if SIMULATION == 1
-						NAV_SetOrigin_z_m(0.0);
-						#else
-						//NAV_SetOrigin_z_m((float) Filter_mem(&heightflt, twi_get_h_mm(),HEIGHTINITFILTER) * 0.001); // todo out of interpolated value!
-						NAV_SetOrigin_z_m(v_pos_act_m.z);
 						
-						#endif
+						NAV_SetOrigin_z_m(); 
+						
 						// copy actual to setpoint
 						quaternion_copy(&q_RC_Set, &q_ActualOrientation);
 

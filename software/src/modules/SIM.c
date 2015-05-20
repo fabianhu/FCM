@@ -168,7 +168,7 @@ void SimDoLoop(int32_t ox, int32_t oy,int32_t oz, int32_t o_thrust) // input the
 	// A = area in m²	
 	// F = m*a
 	// a = F / m
- 	vAccel_mpss.x -= signf(vel_vehicle.x) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (vel_vehicle.x*vel_vehicle.x)* 0.5) / SIM_COPTERMASS; // fixme maybe wrong way??
+ 	vAccel_mpss.x -= signf(vel_vehicle.x) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (vel_vehicle.x*vel_vehicle.x)* 0.5) / SIM_COPTERMASS; 
  	vAccel_mpss.y -= signf(vel_vehicle.y) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREA* (vel_vehicle.y*vel_vehicle.y)* 0.5) / SIM_COPTERMASS;
  	vAccel_mpss.z -= signf(vel_vehicle.z) * (SIM_AIRDENSITY*SIM_CWVALUE*SIM_COPTERAREATOP* (vel_vehicle.z*vel_vehicle.z)* 0.5) / SIM_COPTERMASS; 
 	OS_DISABLEALLINTERRUPTS

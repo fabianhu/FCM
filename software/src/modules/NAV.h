@@ -37,7 +37,7 @@ extern NAVinfo_t NAV_info;
 
 // set origin (first lock / arm)
 void NAV_SetOrigin_xy_cm(gps_coordinates_t pos);
-void NAV_SetOrigin_z_m(float h);
+void NAV_SetOrigin_z_m(void); // reset to 0
 
 // Convert a GPS position relative to the origin, which has been set with NAV_SetOrigin_xy_cm.
 vector2_t NAV_ConvertGPS_to_m(gps_coordinates_t set);
