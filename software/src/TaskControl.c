@@ -366,7 +366,7 @@ void TaskControl(void)
 				
 			v_accel_command_mpss = NAV_Governor(&v_pos_act_m, &v_pos_target_m); // inner parts tested, not completely!
 
-			if(!swHGov && !RCtimeout)
+			if(swHGov==0 && RCtimeout==0)
 			{
 				v_accel_command_mpss.z = 0; // overwrite Z command to zero, if h governor is off.
 			}

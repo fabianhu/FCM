@@ -95,21 +95,31 @@ gps_coordinates_t SIM_GPS_getpos(void)
 {
 	static vector2_t filtered;
 	
-	static float posx[SIMGPSDELAYBY];
-	static float posy[SIMGPSDELAYBY];
+	static float posx[SIMGPSDELAYBY+1];
+	static float posy[SIMGPSDELAYBY+1];
 	
 	static uint32_t wr = 0;
 	static uint32_t rd = 1;
 	
 	vector3_t v_simul = SimGetPos_m();	
-	posx[wr] = v_simul.x;
-	posy[wr] = v_simul.y;
-
+	
 	gps_coordinates_t ActPosSim = {483829100 , 108527100}; // FCM "home"
 	
-	filtered.x = Filter_f(filtered.x,posx[rd],SIMGPSFILTER);
-	filtered.y = Filter_f(filtered.y,posy[rd],SIMGPSFILTER);
+	#if SIMGPSDELAYBY == 0
 	
+	#define SIMGPSFILTER2 0.5
+		
+		filtered.x = Filter_f(filtered.x,v_simul.x,SIMGPSFILTER2);
+		filtered.y = Filter_f(filtered.y,v_simul.y,SIMGPSFILTER2);
+	
+	#else
+		posx[wr] = v_simul.x;
+		posy[wr] = v_simul.y;
+
+		filtered.x = Filter_f(filtered.x,posx[rd],SIMGPSFILTER);
+		filtered.y = Filter_f(filtered.y,posy[rd],SIMGPSFILTER);
+	
+	#endif
 	
 	ActPosSim.lon += (int32_t)(filtered.x * SIMFACTORLON);
 	ActPosSim.lat += (int32_t)(filtered.y * SIMFACTORLAT);

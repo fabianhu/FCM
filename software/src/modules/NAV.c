@@ -74,11 +74,16 @@ static uint32_t lastGPSTime;
 
 bool NAV_GPS_OK(void)
 {
+	#if SIMULATION ==1
+	return true;
+	#else
+	
 	uint32_t time = OS_GetTicks();
 	if(time- lastGPSTime > NAVGPSTIMEOUT_ms )
 	return false;
 	else
 	return true;
+	#endif
 }	
 	
 // update GPS measurement 
@@ -94,10 +99,8 @@ void NAV_UpdatePosition_xy(gps_coordinates_t coords)
 	
 	act_m = NAV_ConvertGPS_to_m(coords); 
 	
-	float alfa = (float)myPar.cal_gps_filter.sValue * 0.001;
-	
-	NAV_slowPos_m.x = Filter_f(NAV_slowPos_m.x,act_m.x,alfa);
-	NAV_slowPos_m.y = Filter_f(NAV_slowPos_m.y,act_m.y,alfa);
+	NAV_slowPos_m.x = act_m.x;
+	NAV_slowPos_m.y = act_m.y;
 }
 
 // Update barometer measurement / async call every baro measurement
@@ -107,9 +110,7 @@ void NAV_UpdatePosition_z_m(float h)
 	
 	h = h - NAV_origin_h_m;
 
-	float alfa = (float)myPar.cal_baro_filter.sValue * 0.001;
-
-	NAV_slowPos_m.z = Filter_f(NAV_slowPos_m.z,h,alfa);
+	NAV_slowPos_m.z = h;
 }
 
 /*
@@ -130,10 +131,25 @@ void Superfilter(vector3_t acc_in_mpss, vector3_t* pos_act)
 	static vector3_t fltSpeed={0.0,0.0,0.0};
 	static vector3_t oldPos={0.0,0.0,0.0};
 	static vector3_t slowSpeed={0.0,0.0,0.0};
+	static vector3_t SlowPos_m={0.0,0.0,0.0};
 			
 	//fixme use BrownLinearExpo() for accel filtering, maybe outside.
+	
+	float alfa = (float)myPar.cal_gps_filter.sValue * 0.001;
+	float alfah = (float)myPar.cal_baro_filter.sValue * 0.001;
+	
+	SlowPos_m.x = Filter_f(SlowPos_m.x,NAV_slowPos_m.x,alfa);
+	SlowPos_m.y = Filter_f(SlowPos_m.y,NAV_slowPos_m.y,alfa);
+	SlowPos_m.z = Filter_f(SlowPos_m.z,NAV_slowPos_m.z,alfah);
 
 	// SIMULATION is done in GPS task TaskNavi for GPS inputs; acc_mps comes in simulated as well.
+	#if DISABLE_SENSOR_FUSION_GPS == 1
+	// override with
+	pos_act->x = SlowPos_m.x;
+	pos_act->y = SlowPos_m.y;
+	pos_act->z = SlowPos_m.z;
+	
+	#else
 
 	static uint32_t lastFilterTime;
 	uint32_t time = OS_GetTicks();
@@ -168,12 +184,12 @@ void Superfilter(vector3_t acc_in_mpss, vector3_t* pos_act)
 	fltSpeed.x = alfa_spd*(fltSpeed.x - acc_fltHP_mpss.x * dt_s) + (1.0-alfa_spd)*slowSpeed.x; // 1 = acc only 0 = GPS only
 	fltSpeed.y = alfa_spd*(fltSpeed.y - acc_fltHP_mpss.y * dt_s) + (1.0-alfa_spd)*slowSpeed.y; 
 	fltSpeed.z = alfa_spd*(fltSpeed.z - acc_fltHP_mpss.z * dt_s) + (1.0-alfa_spd)*slowSpeed.z; 
-
+	
 	// complementary filter for position
 	// new pos = old pos + spd * dt
-	pos_act->x = alfa_pos*(pos_act->x + fltSpeed.x * dt_s) + (1.0-alfa_pos)*(NAV_slowPos_m.x); // 1 = acc only
-	pos_act->y = alfa_pos*(pos_act->y + fltSpeed.y * dt_s) + (1.0-alfa_pos)*(NAV_slowPos_m.y);
-	pos_act->z = alfa_pos*(pos_act->z + fltSpeed.z * dt_s) + (1.0-alfa_pos)*(NAV_slowPos_m.z);
+	pos_act->x = alfa_pos*(pos_act->x + fltSpeed.x * dt_s) + (1.0-alfa_pos)*(SlowPos_m.x); // 1 = acc only
+	pos_act->y = alfa_pos*(pos_act->y + fltSpeed.y * dt_s) + (1.0-alfa_pos)*(SlowPos_m.y);
+	pos_act->z = alfa_pos*(pos_act->z + fltSpeed.z * dt_s) + (1.0-alfa_pos)*(SlowPos_m.z);
 
 	slowSpeed.x = (pos_act->x - oldPos.x)/dt_s; // calculate at: new pos known, and old pos not yet overwritten.
 	slowSpeed.y = (pos_act->y - oldPos.y)/dt_s; 
@@ -182,6 +198,11 @@ void Superfilter(vector3_t acc_in_mpss, vector3_t* pos_act)
 	oldPos.x = pos_act->x;
 	oldPos.y = pos_act->y;
 	oldPos.z = pos_act->z;
+	
+
+	
+	#endif
+	
 
 
 }
@@ -315,6 +336,10 @@ vector3_t NAV_Governor( vector3_t* pos_act_m, vector3_t* target_m )
 	accel_command.y = PIDf(&pid_nav_y,pos_act_m->y, target_m->y, nav_kp, nav_ki, nav_kd, -nav_max_accelint, nav_max_accelint);
 
 	accel_command.z = PIDf(&pid_nav_z,pos_act_m->z, target_m->z, h_kp,   h_ki,   h_kd,   -nav_max_accelint, nav_max_accelint);
+	
+	debug_gov.x = accel_command.x;
+	debug_gov.y = pid_nav_x.I;
+	debug_gov.z = pid_nav_x.old_diff;
 	
 	accel_command_lim.x = limitf(accel_command.x, -nav_max_accel, nav_max_accel); // tested , works only with volatile variables on AVR32
 	accel_command_lim.y = limitf(accel_command.y, -nav_max_accel, nav_max_accel);
