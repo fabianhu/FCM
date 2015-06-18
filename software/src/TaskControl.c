@@ -484,9 +484,6 @@ void TaskControl(void)
 		}
 
 
-		static int32_t heightflt = 0; // only for filtering the start height
-		
-	
 		switch (LED_GetFlightstate())
 		{
 			case FS_init:

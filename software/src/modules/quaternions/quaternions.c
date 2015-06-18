@@ -256,7 +256,7 @@ volatile int  debug_persign8a, debug_persign8b;
 // v' = qr * v * qr^-1
 vector3_t quaternion_rotateVector(vector3_t _V, quaternion_t _Qi)
 {
-	quaternion_t qv,qi,qq;
+	quaternion_t qv,qi;
 	vector3_t v;
 	
 	qv.w =0;
@@ -278,7 +278,7 @@ vector3_t quaternion_rotateVector(vector3_t _V, quaternion_t _Qi)
 // v' = qr * v * qr^-1
 vector3_t quaternion_rotateVectortest(vector3_t _V, quaternion_t _Qi)
 {
-	quaternion_t qv,qi,qq;
+	quaternion_t qv,qi;
 	vector3_t v;
 	
  	_V = perlsignv8(_V,debug_persign8a); //4 case  4: o[0]= i[0];o[1]=-i[1];o[2]=-i[2]; break;
@@ -314,75 +314,10 @@ vector3_t quaternion_rotateVectortest(vector3_t _V, quaternion_t _Qi)
 	
 }
 
-// Rotate a vector by a Quaternion, w = qvq* 
-vector3_t quaternion_rotateVector3(vector3_t v, quaternion_t rotquaternion)
-{	    
-// 	quaternion_t vquat, wquat, qconj;
-// 	vector3_t w;
-// 	
-// 	//rotquaternion = perlsign(rotquaternion, debug_signtest1);
-// 	rotquaternion = perlmutt24(rotquaternion, debug_permtest24);
-// 	rotquaternion = perlsign16(rotquaternion, debug_signtest16);
-// 	
-// 	v = perlmuttv6(v,debug_permtest6);
-// 		
-// 	vquat.w = 0;
-// 	vquat.x = v.x;
-// 	vquat.y = v.y;
-// 	vquat.z = v.z;
-// 	
-// 	// seems, out vector stuff and the quaternion stuff does not match well...
-// 	
-// 	wquat = quaternion_multiply(rotquaternion, vquat);
-// 	
-// 	qconj = quaternion_inverse(rotquaternion);
-// 	vquat = quaternion_multiply(wquat, qconj);
-// 	
-// 	w.x = vquat.x;
-// 	w.y = vquat.y;
-// 	w.z = vquat.z;
-// 	
-// 	w = perlmuttv6(w,debug_persign8a);
-// 	
-// 	return w;
-}
 
 
-// Rotate a vector by a Quaternion, w = qvq* 
-vector3_t quaternion_rotateVector4(vector3_t vec, quaternion_t quat)
-{
-//hier erst mal die permutationen des quaternions probieren.
 
-// 
-// 	quat = perlsign16(quat, debug_signtest16);
-//	quat = perlmutt24(quat, debug_permtest24);
-//	vec = perlmuttv6(vec,debug_permtest6);
-// 	qv = perlsign(qv, debug_signtest2);
-// // 	qv = perlmutt(qv, debug_permtest2);
-// 
-// 
-// float num = quat.x * 2.0f;
-// float num2 = quat.y * 2.0f;
-// float num3 = quat.z * 2.0f;
-// float num4 = quat.x * num;
-// float num5 = quat.y * num2;
-// float num6 = quat.z * num3;
-// float num7 = quat.x * num2;
-// float num8 = quat.x * num3;
-// float num9 = quat.y * num3;
-// float num10 = quat.w * num;
-// float num11 = quat.w * num2;
-// float num12 = quat.w * num3;
-// vector3_t result;
-// result.x = (1.0f - (num5 + num6)) * vec.x + (num7 - num12) * vec.y + (num8 + num11) * vec.z;
-// result.y = (num7 + num12) * vec.x + (1.0f - (num4 + num6)) * vec.y + (num9 - num10) * vec.z;
-// result.z = (num8 - num11) * vec.x + (num9 + num10) * vec.y + (1.0f - (num4 + num5)) * vec.z;
-// 
-// result = perlmuttv6(result,debug_persign8a);
-// 
-// 
-// return result;
-}
+
 
 #if TEST_RUN == 1
 

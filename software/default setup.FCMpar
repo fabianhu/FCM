@@ -12,8 +12,8 @@
 \NAV\NAV I	5
 \NAV\NAV D	10
 \NAV\H P  	200
-\NAV\H I  	50
-\NAV\H D  	200
+\NAV\H I  	200
+\NAV\H D  	500
 \NAV\NAV Limits\Max Angle	15
 \NAV\NAV Limits\Max Accel	30
 \NAV\NAV Limits\Max Acc int	10
