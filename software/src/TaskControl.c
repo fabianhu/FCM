@@ -299,10 +299,16 @@ void TaskControl(void)
 		
 		// for the other systems:
 		
-		IMUdata.pitch_deg = ax*57.295779f; 
-		IMUdata.roll_deg = ay*57.295779f;
-		IMUdata.mag_heading_deg = fActHeading_rad*57.295779f;
+		IMUdata.pitch_deg = ax*57.295779f; // dupe fixme
+		IMUdata.roll_deg = ay*57.295779f; // dupe fixme
+		IMUdata.mag_heading_deg = fActHeading_rad*57.295779f; // dupe fixme
 		IMUdata.height_dm = v_pos_act_m.z *100; // fixme cm?
+		
+		NAV_info.Pos = vector_copy(&v_pos_act_m);
+		NAV_info.Set = vector_copy(&v_pos_target_m);
+		NAV_info.att_deg.x = ax*57.295779f; 
+		NAV_info.att_deg.y = ay*57.295779f; 
+		NAV_info.att_deg.z = fActHeading_rad*57.295779f; 
 		
 		float thrustfactor=1;
 		extern int32_t debug_TWI_CountOfMisReads;  // dirty hack to keep flying, even if TWI crashes (which it usually only does during debugging)

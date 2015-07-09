@@ -141,7 +141,7 @@ void Superfilter(vector3_t acc_in_mpss, vector3_t* pos_act)
 	SlowPos_m.x = Filter_f(SlowPos_m.x,NAV_slowPos_m.x,alfa);
 	SlowPos_m.y = Filter_f(SlowPos_m.y,NAV_slowPos_m.y,alfa);
 	SlowPos_m.z = Filter_f(SlowPos_m.z,NAV_slowPos_m.z,alfah);
-
+	
 	// SIMULATION is done in GPS task TaskNavi for GPS inputs; acc_mps comes in simulated as well.
 	#if DISABLE_SENSOR_FUSION_GPS == 1
 	// override with

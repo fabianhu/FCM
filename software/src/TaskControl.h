@@ -42,7 +42,7 @@ typedef struct IMUdata_tag
 	int16_t pitch_deg; // degrees
 	int16_t mag_heading_deg; // degrees
 	int16_t height_dm; // dm = 0.1m
-}IMUdata_t;
+}IMUdata_t; // fixme remove / unify !!!!!!!!!!!!!!!!!!!!!!!!!!
 
 extern IMUdata_t IMUdata;
 

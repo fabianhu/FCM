@@ -30,6 +30,9 @@ typedef struct NAVinfo_tag
 {
 	uint32_t Dist_m;
 	float trg_heading_rad;
+	vector3_t Pos; // actual position
+	vector3_t Set; // setpoint
+	vector3_t att_deg; //attitude in degrees
 }NAVinfo_t;
 
 extern NAVinfo_t NAV_info;

@@ -39,6 +39,7 @@
 #include "modules/usart.h"
 #include "../config.h"
 #include "modules/NAV.h"
+#include "TaskControl.h"
 
 
 #include "modules/types.h" // for myTWI.h only
@@ -358,6 +359,7 @@ void GetPotiTxt( char* ptxt )
 //#define SHOWSTACKS
 //#define SHOWCTL
 //#define SHOWGYRO
+#define SHOWNAV
 
 void GetDiagTxt( char* ptxt )
 {
@@ -415,47 +417,56 @@ void GetDiagTxt( char* ptxt )
 				sprintf(&ptxt[5*21],"ovr:%d ",debug_SPI_ovres);
 			#else
 				#ifdef SHOWTWI
-				extern int32_t debug_TWI_CountOfMisReads;
-				extern uint32_t  debug_TWI_noTxComp, debug_TWI_TxComp, debug_TWI_NoRead;
-				extern twitrnsf_t debug_TWI_lastTrnsf;
+					extern int32_t debug_TWI_CountOfMisReads;
+					extern uint32_t  debug_TWI_noTxComp, debug_TWI_TxComp, debug_TWI_NoRead;
+					extern twitrnsf_t debug_TWI_lastTrnsf;
 				
-				sprintf(&ptxt[2*21],"tnc:%d tc:%d", (uint16_t)debug_TWI_noTxComp, (uint16_t)debug_TWI_TxComp);
-				sprintf(&ptxt[3*21],"mis:%d nak:%d",(uint16_t)debug_TWI_CountOfMisReads, (uint16_t)debug_TWI_NoRead);
-				sprintf(&ptxt[4*21],"tim:%d ",(uint16_t)debug_TWI_lastTrnsf.lastTime);
+					sprintf(&ptxt[2*21],"tnc:%d tc:%d", (uint16_t)debug_TWI_noTxComp, (uint16_t)debug_TWI_TxComp);
+					sprintf(&ptxt[3*21],"mis:%d nak:%d",(uint16_t)debug_TWI_CountOfMisReads, (uint16_t)debug_TWI_NoRead);
+					sprintf(&ptxt[4*21],"tim:%d ",(uint16_t)debug_TWI_lastTrnsf.lastTime);
 
 				#else
-				//*** standard view
-				bool swHGov = servo_in_get_ext_channel_switch(myPar.SwitchHGov.sValue,myPar.SwPHGov.sValue);
-				bool swPosHold = servo_in_get_ext_channel_switch(myPar.SwitchPosHold.sValue,myPar.SwPPosHold.sValue);
-				bool swRTH = servo_in_get_ext_channel_switch(myPar.SwitchReturnToHome.sValue,myPar.SwPReturnToHome.sValue);
-				bool swAUX = servo_in_get_ext_channel_switch(myPar.SwitchAux.sValue,myPar.SwPAux.sValue);
-						
-				int32_t cmd_pot_P;
-				servo_in_get_ext_channel(myPar.PotiP.sValue, &cmd_pot_P);
-				int32_t cmd_pot_I;
-				servo_in_get_ext_channel(myPar.PotiI.sValue, &cmd_pot_I);
-				int32_t cmd_pot_D;
-				servo_in_get_ext_channel(myPar.PotiD.sValue, &cmd_pot_D);
-				extern uint32_t debug_RunTimeMax;
-				
-				int32_t ch5val; servo_in_get_ext_channel(5,&ch5val);
-				int32_t ch6val; servo_in_get_ext_channel(6,&ch6val);
-				int32_t ch7val; servo_in_get_ext_channel(7,&ch7val);
-				int32_t ch8val; servo_in_get_ext_channel(8,&ch8val);
-				int32_t ch9val; servo_in_get_ext_channel(9,&ch9val);
-				int32_t ch10val; servo_in_get_ext_channel(10,&ch10val);
-				int32_t ch11val; servo_in_get_ext_channel(11,&ch11val);
-				int32_t ch12val; servo_in_get_ext_channel(12,&ch12val);
-				
-				sprintf(&ptxt[2*21],"%d %d %d %d",ch5val,ch6val,ch7val,ch8val);
-				sprintf(&ptxt[3*21],"%d %d %d %d",ch9val,ch10val,ch11val,ch12val);
+					#ifdef SHOWNAV
 
-				sprintf(&ptxt[4*21],"RTH:%d Pos:%d HG:%d A:%d", (uint16_t)swRTH, (uint16_t)swPosHold,(uint16_t)swHGov, (uint16_t)swAUX);
-				sprintf(&ptxt[5*21],"Pot %3d %3d %3d",cmd_pot_P,cmd_pot_I,cmd_pot_D);
-				//sprintf(&ptxt[6*21],"RunTime: %d",(uint16_t)debug_RunTimeMax);
-				debug_RunTimeMax = 0;
+						sprintf(&ptxt[2*21],"act: %d %d %d", (uint16_t)NAV_info.Pos.x, (uint16_t)NAV_info.Pos.y, (uint16_t)NAV_info.Pos.z);
+						sprintf(&ptxt[3*21],"set: %d %d %d", (uint16_t)NAV_info.Set.x, (uint16_t)NAV_info.Set.y, (uint16_t)NAV_info.Set.z);
+						sprintf(&ptxt[4*21],"Hdg :%d Trg:%d",(uint16_t)IMUdata.mag_heading_deg,(uint16_t)NAV_info.trg_heading_rad*57.395);
+						//sprintf(&ptxt[4*21],"RX-I:%d RX-B:%d ",(uint16_t)debug_RXINTERR,(uint16_t)debug_RXERR);
+						//sprintf(&ptxt[5*21],"ovr:%d ",debug_SPI_ovres);
+					#else
+						//*** standard view
+						bool swHGov = servo_in_get_ext_channel_switch(myPar.SwitchHGov.sValue,myPar.SwPHGov.sValue);
+						bool swPosHold = servo_in_get_ext_channel_switch(myPar.SwitchPosHold.sValue,myPar.SwPPosHold.sValue);
+						bool swRTH = servo_in_get_ext_channel_switch(myPar.SwitchReturnToHome.sValue,myPar.SwPReturnToHome.sValue);
+						bool swAUX = servo_in_get_ext_channel_switch(myPar.SwitchAux.sValue,myPar.SwPAux.sValue);
+						
+						int32_t cmd_pot_P;
+						servo_in_get_ext_channel(myPar.PotiP.sValue, &cmd_pot_P);
+						int32_t cmd_pot_I;
+						servo_in_get_ext_channel(myPar.PotiI.sValue, &cmd_pot_I);
+						int32_t cmd_pot_D;
+						servo_in_get_ext_channel(myPar.PotiD.sValue, &cmd_pot_D);
+						extern uint32_t debug_RunTimeMax;
 				
-				sprintf(&ptxt[6*21],"Sat %d Dst %dm %d ", GPS_GetNumSats(),NAV_info.Dist_m, (int16_t)(NAV_info.trg_heading_rad*57.395));
+						int32_t ch5val; servo_in_get_ext_channel(5,&ch5val);
+						int32_t ch6val; servo_in_get_ext_channel(6,&ch6val);
+						int32_t ch7val; servo_in_get_ext_channel(7,&ch7val);
+						int32_t ch8val; servo_in_get_ext_channel(8,&ch8val);
+						int32_t ch9val; servo_in_get_ext_channel(9,&ch9val);
+						int32_t ch10val; servo_in_get_ext_channel(10,&ch10val);
+						int32_t ch11val; servo_in_get_ext_channel(11,&ch11val);
+						int32_t ch12val; servo_in_get_ext_channel(12,&ch12val);
+				
+						sprintf(&ptxt[2*21],"%d %d %d %d",ch5val,ch6val,ch7val,ch8val);
+						sprintf(&ptxt[3*21],"%d %d %d %d",ch9val,ch10val,ch11val,ch12val);
+
+						sprintf(&ptxt[4*21],"RTH:%d Pos:%d HG:%d A:%d", (uint16_t)swRTH, (uint16_t)swPosHold,(uint16_t)swHGov, (uint16_t)swAUX);
+						sprintf(&ptxt[5*21],"Pot %3d %3d %3d",cmd_pot_P,cmd_pot_I,cmd_pot_D);
+						//sprintf(&ptxt[6*21],"RunTime: %d",(uint16_t)debug_RunTimeMax);
+						debug_RunTimeMax = 0;
+				
+						sprintf(&ptxt[6*21],"Sat %d Dst %dm %d ", GPS_GetNumSats(),NAV_info.Dist_m, (int16_t)(NAV_info.trg_heading_rad*57.395));
+					#endif
 				#endif	
 			#endif
 		#endif
