@@ -428,9 +428,9 @@ void GetDiagTxt( char* ptxt )
 				#else
 					#ifdef SHOWNAV
 
-						sprintf(&ptxt[2*21],"act: %d %d %d", (uint16_t)NAV_info.Pos.x, (uint16_t)NAV_info.Pos.y, (uint16_t)NAV_info.Pos.z);
-						sprintf(&ptxt[3*21],"set: %d %d %d", (uint16_t)NAV_info.Set.x, (uint16_t)NAV_info.Set.y, (uint16_t)NAV_info.Set.z);
-						sprintf(&ptxt[4*21],"Hdg :%d Trg:%d",(uint16_t)IMUdata.mag_heading_deg,(uint16_t)NAV_info.trg_heading_rad*57.395);
+						sprintf(&ptxt[2*21],"act: %d %d %d", (int16_t)NAV_info.Pos.x, (int16_t)NAV_info.Pos.y, (int16_t)NAV_info.Pos.z);
+						sprintf(&ptxt[3*21],"set: %d %d %d", (int16_t)NAV_info.Set.x, (int16_t)NAV_info.Set.y, (int16_t)NAV_info.Set.z);
+						sprintf(&ptxt[4*21],"Hdg :%d Trg:%d",(int16_t)IMUdata.mag_heading_deg,(int16_t)NAV_info.trg_heading_rad*57.395);
 						//sprintf(&ptxt[4*21],"RX-I:%d RX-B:%d ",(uint16_t)debug_RXINTERR,(uint16_t)debug_RXERR);
 						//sprintf(&ptxt[5*21],"ovr:%d ",debug_SPI_ovres);
 					#else
