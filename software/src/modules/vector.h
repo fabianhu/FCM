@@ -45,6 +45,8 @@ vector3_t vector_copy( vector3_t* a );
 vector3_t vector_add (  vector3_t* a, vector3_t* b );
 float rectify_rad( float rad );
 float vector2len(float x, float y);
+float rad_to_deg360( float rad );
+float rad_to_deg180( float rad );
 
 
 #endif /* VECTOR_H_ */

@@ -427,12 +427,16 @@ void GetDiagTxt( char* ptxt )
 
 				#else
 					#ifdef SHOWNAV
-
-						sprintf(&ptxt[2*21],"act: %d %d %d", (int16_t)NAV_info.Pos.x, (int16_t)NAV_info.Pos.y, (int16_t)NAV_info.Pos.z);
-						sprintf(&ptxt[3*21],"set: %d %d %d", (int16_t)NAV_info.Set.x, (int16_t)NAV_info.Set.y, (int16_t)NAV_info.Set.z);
-						sprintf(&ptxt[4*21],"Hdg :%d Trg:%d",(int16_t)IMUdata.mag_heading_deg,(int16_t)NAV_info.trg_heading_rad*57.395);
+						sprintf(&ptxt[1*21],"set: %d %d %d ", (int16_t)(NAV_info.setcmd.x*100), (int16_t)(NAV_info.setcmd.y*100), (int16_t)(NAV_info.setcmd.z*100));
+						sprintf(&ptxt[2*21],"act: %d %d %d ", (int16_t)NAV_info.Pos.x, (int16_t)NAV_info.Pos.y, (int16_t)NAV_info.Pos.z);
+						sprintf(&ptxt[3*21],"set: %d %d %d ", (int16_t)NAV_info.Set.x, (int16_t)NAV_info.Set.y, (int16_t)NAV_info.Set.z);
+						sprintf(&ptxt[4*21],"Hdg :%d Trg:%d ",(int16_t)IMUdata.mag_heading_deg,(int16_t)NAV_info.TrgHeading_deg);
+						sprintf(&ptxt[5*21],"Sat %d Dst %dm ", GPS_GetNumSats(),(int16_t)NAV_info.TrgDist_m);
+						sprintf(&ptxt[6*21],"Rot: %d %d %d ", (int16_t)NAV_info.att_deg.x, (int16_t)NAV_info.att_deg.y, (int16_t)NAV_info.att_deg.z);
+						sprintf(&ptxt[7*21],"RSet: %d %d %d ", (int16_t)NAV_info.attSet_deg.x, (int16_t)NAV_info.attSet_deg.y, (int16_t)NAV_info.attSet_deg.z);  
 						//sprintf(&ptxt[4*21],"RX-I:%d RX-B:%d ",(uint16_t)debug_RXINTERR,(uint16_t)debug_RXERR);
 						//sprintf(&ptxt[5*21],"ovr:%d ",debug_SPI_ovres);
+
 					#else
 						//*** standard view
 						bool swHGov = servo_in_get_ext_channel_switch(myPar.SwitchHGov.sValue,myPar.SwPHGov.sValue);
@@ -465,7 +469,8 @@ void GetDiagTxt( char* ptxt )
 						//sprintf(&ptxt[6*21],"RunTime: %d",(uint16_t)debug_RunTimeMax);
 						debug_RunTimeMax = 0;
 				
-						sprintf(&ptxt[6*21],"Sat %d Dst %dm %d ", GPS_GetNumSats(),NAV_info.Dist_m, (int16_t)(NAV_info.trg_heading_rad*57.395));
+						sprintf(&ptxt[6*21],"Sat %d Dst %dm %d ", GPS_GetNumSats(),NAV_info.TrgDist_m, (int16_t)NAV_info.TrgHeading_deg);
+						sprintf(&ptxt[7*21],"(c) 2015 huslik.net");
 					#endif
 				#endif	
 			#endif
@@ -474,7 +479,7 @@ void GetDiagTxt( char* ptxt )
 	
 	//1:1234 2:1234 3:1234
 	//					 123456789012345678901
-	sprintf(&ptxt[7*21],"(c) 2015 huslik.net");
+	
 }
 
 

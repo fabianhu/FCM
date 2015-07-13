@@ -34,11 +34,12 @@
 #define SIM_COPTERAREATOP	0.2		// im m² 
 #define SIM_COPTERMASS		0.8		// in kg
 
+#define RADGRA 57.295779513f
 #define SIM_MAGFIELD_nT 60000.0f
 #define SIM_MAGINC_DEG  60.0f
 #define SIM_MAGDEFAULT_X 0.0f
-#define SIM_MAGDEFAULT_Y cos(SIM_MAGINC_DEG/radgra)*SIM_MAGFIELD_nT
-#define SIM_MAGDEFAULT_Z -sin(SIM_MAGINC_DEG/radgra)*SIM_MAGFIELD_nT
+#define SIM_MAGDEFAULT_Y cos(SIM_MAGINC_DEG/RADGRA)*SIM_MAGFIELD_nT
+#define SIM_MAGDEFAULT_Z -sin(SIM_MAGINC_DEG/RADGRA)*SIM_MAGFIELD_nT
 
 #define SIMFACTORLAT1 111.3 // gives m from degrees, correct only around "home"
 #define SIMFACTORLON1 74.47 // gives m from degrees

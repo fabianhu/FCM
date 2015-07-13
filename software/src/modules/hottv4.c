@@ -643,15 +643,14 @@ void _hott_update_gps_msg() {
 		hott_gps_msg->gps_fix_char = 'x';
 		hott_gps_msg->free_char3 = gps_dataset.status.gps3dfix?'3':'2';  //3D Fix according to specs...
 		
-		uint16_t homedist = NAV_info.Dist_m;
+		uint16_t homedist = NAV_info.TrgDist_m;
 				
 		hott_gps_msg->home_distance_H = homedist >> 8;
 		hott_gps_msg->home_distance_L = homedist  & 0xff;
 		
 		int16_t homedir;
-		homedir = NAV_info.trg_heading_rad * 57.295779513;
-		homedir = 360 - homedir;
-		homedir /=2;
+		homedir = NAV_info.TrgHeading_deg;
+		homedir /=2; // Graupner scaling
 		hott_gps_msg->home_direction = homedir; // 2° steps
 		
 	} 
@@ -699,8 +698,8 @@ void _hott_update_gps_msg() {
 	hott_gps_msg->pos_EW_bb_H = GraGLbbbb >> 8;
 	hott_gps_msg->pos_EW_bb_L = GraGLbbbb & 0xff;
 	
-	hott_gps_msg->altitude_H = (IMUdata.height_dm/10 + 500) >> 8;  //meters above ground +500
-	hott_gps_msg->altitude_L = (IMUdata.height_dm/10 + 500) & 0xff;  //meters above ground +500
+	hott_gps_msg->altitude_H = (IMUdata.height_dm + 500) >> 8;  //meters above ground +500
+	hott_gps_msg->altitude_L = (IMUdata.height_dm + 500) & 0xff;  //meters above ground +500
 
 	hott_gps_msg->climbrate_H = 30000 >> 8; // climb_rate +30000 ;
 	hott_gps_msg->climbrate_L = 30000  & 0xff; // climb_rate +30000 ;

@@ -160,3 +160,8 @@ void fcmcp_setStreamState(fcmcp_state_t e)
 {
 	fcmcp_state = e;
 }
+
+void fcmcp_send(uint8_t* pData, uint32_t len)
+{
+	USART_Send(0,pData,len);
+}

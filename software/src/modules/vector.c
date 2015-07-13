@@ -103,6 +103,23 @@ float rectify_rad( float rad )
 	return rad;
 }
 
+float rad_to_deg360( float rad )
+{
+	float deg;
+	deg = rad*57.295779513f;
+	if(rad > 360.0) deg -= 360.0;
+	if(rad < 0.0) deg += 360.0;
+	return deg;
+}
+
+float rad_to_deg180( float rad )
+{
+	float deg;
+	deg = rad*57.295779513f;
+	if(rad > 180.0) deg -= 360.0;
+	if(rad < -180.0) deg += 360.0;
+	return deg;
+}
 
 float vector2len(float x, float y)
 {

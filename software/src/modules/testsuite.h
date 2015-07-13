@@ -48,7 +48,6 @@ extern uint8_t TestProcessed[MAXTESTCASES]; // test passed array (number of proc
 
 #define fequal(x,y) (fabs((x) - (y)) < epsilon)
 #define assertfequal(x,y) assert(fequal(x,y))
-#define radgra 57.295779513f
 
 void test_run(void);
 

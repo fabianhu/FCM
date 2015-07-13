@@ -299,16 +299,16 @@ void TaskControl(void)
 		
 		// for the other systems:
 		
-		IMUdata.pitch_deg = ax*57.295779f; // dupe fixme
-		IMUdata.roll_deg = ay*57.295779f; // dupe fixme
-		IMUdata.mag_heading_deg = fActHeading_rad*57.295779f; // dupe fixme
-		IMUdata.height_dm = v_pos_act_m.z *100; // fixme cm?
+		IMUdata.pitch_deg = rad_to_deg180(ax); // dupe fixme
+		IMUdata.roll_deg = rad_to_deg180(ay); // dupe fixme
+		IMUdata.mag_heading_deg = 360.0 - rad_to_deg360(fActHeading_rad);  // dupe fixme
+		IMUdata.height_dm = v_pos_act_m.z *10; // fixme cm?
 		
 		NAV_info.Pos = vector_copy(&v_pos_act_m);
 		NAV_info.Set = vector_copy(&v_pos_target_m);
-		NAV_info.att_deg.x = ax*57.295779f; 
-		NAV_info.att_deg.y = ay*57.295779f; 
-		NAV_info.att_deg.z = fActHeading_rad*57.295779f; 
+		NAV_info.att_deg.x = rad_to_deg180(ax); 
+		NAV_info.att_deg.y = rad_to_deg180(ay); 
+		NAV_info.att_deg.z = rad_to_deg360(fActHeading_rad); 
 		
 		float thrustfactor=1;
 		extern int32_t debug_TWI_CountOfMisReads;  // dirty hack to keep flying, even if TWI crashes (which it usually only does during debugging)
@@ -350,7 +350,8 @@ void TaskControl(void)
 			v_TrgDistance_m = vector_subtract(&v_pos_target_m,&v_pos_act_m); // get the 3D-vector to the target
 			
 			fTrgNavDistance_m = vector2len(v_TrgDistance_m.x,v_TrgDistance_m.y); // distance over ground
-			if(fTrgNavDistance_m > 0.1)
+			NAV_info.TrgDist_m = fTrgNavDistance_m;
+			if(fTrgNavDistance_m > 0.1) // fixme put NAV_ROTATTETOTARGET_m here?
 			{
 				fTrgNavHeading_rad = GPS_calcHeading(v_TrgDistance_m.x,v_TrgDistance_m.y); // target heading over ground
 			
@@ -358,6 +359,8 @@ void TaskControl(void)
 			{
 				fTrgNavHeading_rad = fActHeading_rad;
 			}
+			
+			NAV_info.TrgHeading_deg =  360.0 - rad_to_deg360(fTrgNavHeading_rad);
 				
 			// Get vehicle heading to calculate the vector.
 			if(fTrgNavDistance_m > NAV_ROTATTETOTARGET_m && (swRTH || swPosHold) )
@@ -382,8 +385,15 @@ void TaskControl(void)
 				v_accel_command_mpss.x = 0; // overwrite command to zero, if pos governor is not possible.
 				v_accel_command_mpss.y = 0;
 			}
+			
+// 			NAV_info.attSet_deg.x = v_accel_command_mpss.x*100;
+// 			NAV_info.attSet_deg.y = v_accel_command_mpss.y*100;
+// 			NAV_info.attSet_deg.z = v_accel_command_mpss.z*100;
 				
 			GetBankAndThrustFromAccel(v_accel_command_mpss, &bank, &thrustfactor); // tested
+			NAV_info.setcmd.x = bank.x;
+			NAV_info.setcmd.y = bank.y;
+			NAV_info.setcmd.z = thrustfactor;
 
 			// obtain rotation offset by RC command input
 			fSetHeading_rad += (float)cmd_yaw*0.00001; // magic number (try)
@@ -417,12 +427,16 @@ void TaskControl(void)
 
 			q_set_global = quaternion_multiply_flip_norm(q_nav_global,q_RC_Set);
 
+			
+// 			NAV_info.attSet_deg.x = rad_to_deg180(bank.x);
+// 			NAV_info.attSet_deg.y = rad_to_deg180(bank.y);
+// 			NAV_info.attSet_deg.z = rad_to_deg180(fSetHeading_rad);
+
 
  			q_Diff = quaternion_multiply_flip_norm(quaternion_inverse(q_ActualOrientation),q_set_global); // calc difference in global orientation
 		
 			// transition to euler
 			quaternion_to_euler(q_Diff,&v_diff_rad.x,&v_diff_rad.y,&v_diff_rad.z); // this is the difference in local orientation, because the global was inverse-multiplied (= "difference")
-
 			
 			#define NAV_MAX_CONTROL 2000 // acro mode scale is max 4000 // todo convert to rad/s
 			
@@ -434,6 +448,11 @@ void TaskControl(void)
 			res_cmd.z = v_diff_rad.z * myPar.quat_amp.sValue/2;
 			res_cmd.z = limitf(res_cmd.z,-NAV_MAX_CONTROL,NAV_MAX_CONTROL);	
 			
+			NAV_info.attSet_deg.x = v_diff_rad.x*100;
+			NAV_info.attSet_deg.y = v_diff_rad.y*100;
+			NAV_info.attSet_deg.z = v_diff_rad.z*100;
+
+
 		
 		}
 		else // acro mode
@@ -470,7 +489,6 @@ void TaskControl(void)
 			
 		oa = limit((int32_t)thr,0,myPar.max_power.sValue); // always needed.
 
-		
 
 		if(cmd_thr < 1200) // set output to zero on stick max low.
 		{
@@ -683,7 +701,6 @@ void TaskControl(void)
 
 		}
 		
-		#define radgra 57.295779513f
 		static uint8_t fcmcp_TXdelayctr;
 		
 		if(fcmcp_TXdelayctr > 0)
@@ -697,76 +714,31 @@ void TaskControl(void)
 			if (fcmcp_getStreamState() == fcmcp_stream_conv)
 			{
 				strncpy(TXData.hdr,"---D",4);
-	
-				extern uint8_t menu_show_diag;
-	
-				if(menu_show_diag)
-				{
-					// special data, if diag screen is on.
-					extern vector3_t /* debug_accel,debug_gyro, debug_mag,*/debug_gov;
-	
-			// 		TXData.gx = debug_gyro.x*1000;//v_gyro_raw.x;
-			// 		TXData.gy = debug_gyro.y*1000;//v_gyro_raw.y;
-			// 		TXData.gz = debug_gyro.z*1000;//v_gyro_raw.z;
-			// 		TXData.ax = debug_accel.x*1000; // 10000 = 1g
-			// 		TXData.ay = debug_accel.y*1000;
-			// 		TXData.az = debug_accel.z*1000;
-			// 		TXData.mx = debug_mag.x*1000;// v_accel_command_mpss.x*1019; //v_mag.x;
-			// 		TXData.my = debug_mag.y*1000;// v_accel_command_mpss.y*1019; //v_mag.y;
-			// 		TXData.mz = debug_mag.z*1000;// v_accel_command_mpss.z*1019; //v_mag.z;
-			// 		TXData.gov_x = debug_gov.x*1000;// v_accel_glob_flt_mpss.x*1019;//; //ox; // mag_cal.x;
-			// 		TXData.gov_y = debug_gov.y*1000;// v_accel_glob_flt_mpss.y*1019;//0;// oy; // mag_cal.y;
-			// 		TXData.gov_z = debug_gov.z*1000;// v_accel_glob_flt_mpss.z*1019;//0;// oz; // mag_cal.z;
-			// 		TXData.RC_a = cmd_thr;
-			// 		TXData.RC_x = cmd_elev;
-			// 		TXData.RC_y = cmd_roll;
-			// 		TXData.RC_z = cmd_yaw;
-		
-		
-					TXData.gx =  debug_der_x*1000;//bank.x * radgra;//v_gyro_raw.x;
-					TXData.gy = debug_der_y*1000;// bank.y * radgra;//v_gyro_raw.y;
-					TXData.gz = fActHeading_rad*radgra;//thrust * 1000;//v_gyro_raw.z;
-					TXData.ax = v_accel_glob_flt_mpss.x*1019;//fTrgNavDistance_m;
-					TXData.ay = v_accel_glob_flt_mpss.y*1019;//fTrgNavHeading_rad* radgra;
-					TXData.az = v_accel_glob_flt_mpss.z*1019;//fHeadingDiff_rad* radgra;
-					TXData.mx = v_mag.x;
-					TXData.my = v_mag.y;
-					TXData.mz = v_mag.z;
-					TXData.gov_x = debug_gov.x*1000;//
-					TXData.gov_y = debug_gov.y*1000;//
-					TXData.gov_z = debug_gov.z*1000;//
-					TXData.RC_a = cmd_thr;												   
-					TXData.RC_x = cmd_elev;												   
-					TXData.RC_y = cmd_roll;
-					TXData.RC_z = cmd_yaw;
-				}
-				else
-				{
-					// "normal" data
-					TXData.gx = v_gyro_radps.x*radgra;
-					TXData.gy = v_gyro_radps.y*radgra;
-					TXData.gz = v_gyro_radps.z*radgra;
-					TXData.ax = v_acc_frame_mpss.x*1019;
-					TXData.ay = v_acc_frame_mpss.y*1019;
-					TXData.az = v_acc_frame_mpss.z*1019;
-					TXData.mx =  v_mag.x;
-					TXData.my =  v_mag.y;
-					TXData.mz =  v_mag.z;
-					TXData.gov_x = res_cmd.x;
-					TXData.gov_y = res_cmd.y;
-					TXData.gov_z = res_cmd.z;
-					TXData.RC_a = cmd_thr;
-					TXData.RC_x = cmd_elev;
-					TXData.RC_y = cmd_roll;
-					TXData.RC_z = cmd_yaw;
-				}
-	
+				
+				// "normal" data
+				TXData.gx = v_gyro_radps.x*RADGRA;
+				TXData.gy = v_gyro_radps.y*RADGRA;
+				TXData.gz = v_gyro_radps.z*RADGRA;
+				TXData.ax = v_acc_frame_mpss.x*1019;
+				TXData.ay = v_acc_frame_mpss.y*1019;
+				TXData.az = v_acc_frame_mpss.z*1019;
+				TXData.mx =  v_mag.x;
+				TXData.my =  v_mag.y;
+				TXData.mz =  v_mag.z;
+				TXData.gov_x = res_cmd.x;
+				TXData.gov_y = res_cmd.y;
+				TXData.gov_z = res_cmd.z;
+				TXData.RC_a = cmd_thr;
+				TXData.RC_x = cmd_elev;
+				TXData.RC_y = cmd_roll;
+				TXData.RC_z = cmd_yaw;
+				
 	
 				TXData.h = v_pos_act_m.z;
 				TXData.temp[0] = twi_get_temp();
 				strncpy(TXData.footer,"~~~",3);
 
-				USART_Send(0,(uint8_t*)&TXData,sizeof(fcm_data_t));
+				fcmcp_send((uint8_t*)&TXData,sizeof(fcm_data_t));
 			}else if  (fcmcp_getStreamState() == fcmcp_stream_quat)
 			{
 				strncpy(TXQuaternions.hdr,"---Q",4);
@@ -831,7 +803,7 @@ void TaskControl(void)
 				
 				strncpy(TXQuaternions.footer,"~~~",3);
 
-				USART_Send(0,(uint8_t*)&TXQuaternions,sizeof(fcm_quaternion_t));
+				fcmcp_send((uint8_t*)&TXQuaternions,sizeof(fcm_quaternion_t));
 			}else if(fcmcp_getStreamState() == fcmcp_stream_GPS)
 			{
 				gps_coordinates_t txpos;
@@ -852,7 +824,7 @@ void TaskControl(void)
 			
 				strncpy(TXGPSdata.footer,"~~~",3);
 
-				USART_Send(0,(uint8_t*)&TXGPSdata,sizeof(fcm_GPSdata_t));
+				fcmcp_send((uint8_t*)&TXGPSdata,sizeof(fcm_GPSdata_t));
 			}
 		}// delay counter
 

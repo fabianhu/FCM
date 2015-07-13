@@ -35,6 +35,7 @@
 #include "TaskLED.h"
 #include "testsuite.h"
 #include "quaternions/quaternions.h"
+#include "modules/SIM.h"
 
 #if TEST_RUN == 1
 
@@ -92,7 +93,7 @@ void test_run(void)
 	GPS_distance_xy_m(gpssrc,gpsdst,&distx_m,&disty_m);
 	
 	dist_m = vector2len(distx_m,disty_m);
-	heading_deg = GPS_calcHeading(distx_m, disty_m)*radgra;
+	heading_deg = GPS_calcHeading(distx_m, disty_m)*RADGRA;
 		
 	assert(fabs(heading_deg - 333)<3.0); // measured 333°
 	assert(fabs(dist_m-3381)< 10); // measured 
@@ -100,7 +101,7 @@ void test_run(void)
 	GPS_distance_xy_m(gpssrc,gpsdst2,&distx_m,&disty_m);
 	
 	dist_m = vector2len(distx_m,disty_m);
-	heading_deg = GPS_calcHeading(distx_m, disty_m)*radgra;
+	heading_deg = GPS_calcHeading(distx_m, disty_m)*RADGRA;
 	
 	assert(fabs(heading_deg - 55)<10.0); // estimated ca. 55°
 	assert(fabs(dist_m-1289)< 10); // measured
@@ -173,7 +174,7 @@ void test_run(void)
 	
 	volatile quaternion_t testquat;
 	
-	testquat = quaternion_from_euler(33.0/radgra,44.0/radgra,55.0/radgra);
+	testquat = quaternion_from_euler(33.0/RADGRA,44.0/RADGRA,55.0/RADGRA);
 	
 	if(testquat.w <0)
 		quaternion_flip(&testquat);
@@ -185,15 +186,15 @@ void test_run(void)
 	
 	volatile float tx,ty,tz;
 	quaternion_to_euler(testquat,&tx,&ty,&tz);
-	assertfequal(tx*radgra,33.0);
-	assertfequal(ty*radgra,44.0);
-	assertfequal(tz*radgra,55.0);
+	assertfequal(tx*RADGRA,33.0);
+	assertfequal(ty*RADGRA,44.0);
+	assertfequal(tz*RADGRA,55.0);
 	
-	testquat = quaternion_from_euler(-33/radgra,-44/radgra,-55/radgra);
+	testquat = quaternion_from_euler(-33/RADGRA,-44/RADGRA,-55/RADGRA);
 	quaternion_to_euler(testquat,&tx,&ty,&tz);
-	assertfequal(tx,-33/radgra);
-	assertfequal(ty,-44/radgra);
-	assertfequal(tz,-55/radgra);
+	assertfequal(tx,-33/RADGRA);
+	assertfequal(ty,-44/RADGRA);
+	assertfequal(tz,-55/RADGRA);
 	
 	
 	//////////////////////////////////////////////////////////////////////////

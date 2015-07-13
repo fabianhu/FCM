@@ -80,5 +80,6 @@ void fcmcp_analyzePacket(char* buf);
 fcmcp_state_t fcmcp_getStreamState(void);
 uint8_t fcmcp_getTXDelay(void);
 void fcmcp_setStreamState(fcmcp_state_t e);
+void fcmcp_send(uint8_t* pData, uint32_t len);
 
 #endif /* FCMCP_H_ */

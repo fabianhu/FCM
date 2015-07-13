@@ -24,8 +24,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */ 
 
-#define radgra 57.295779513f
-
 #include <asf.h>
 #include <fastmath.h>
 #include "modules/vector.h"
