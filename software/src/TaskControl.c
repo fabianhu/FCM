@@ -391,7 +391,7 @@ void TaskControl(void)
 // 			NAV_info.attSet_deg.z = v_accel_command_mpss.z*100;
 				
 			GetBankAndThrustFromAccel(v_accel_command_mpss, &bank, &thrustfactor); // tested
-			NAV_info.setcmd.x = bank.x;
+			NAV_info.setcmd.x = bank.x; // fixme not filled in acro mode
 			NAV_info.setcmd.y = bank.y;
 			NAV_info.setcmd.z = thrustfactor;
 

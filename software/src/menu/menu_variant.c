@@ -375,7 +375,6 @@ void GetDiagTxt( char* ptxt )
 	s = s % 60;
 	ms = ms % 1000;
 	
-	sprintf(&ptxt[1*21],"Time: %3d:%2d:%3d", m,s,ms);
 	
 	#ifdef SHOWSTACKS
 		static uint16_t t1,t2,t3,t4,t5,t6,t7;
@@ -410,7 +409,7 @@ void GetDiagTxt( char* ptxt )
 				extern int32_t debug_GY_NoMeasure, debug_Gy_INcomplete, debug_Gy_complete;
 				extern uint32_t debug_RXINTERR,debug_RXERR,debug_Gy_RECONFIG,debug_SPI_ovres;
 				extern int32_t debug_TWI_CountOfMisReads;
-				
+				sprintf(&ptxt[1*21],"Time: %3d:%2d:%3d", m,s,ms);
 				sprintf(&ptxt[2*21],"No Gyro:%d REC:%d", (uint16_t)debug_GY_NoMeasure, (uint16_t)debug_Gy_RECONFIG);
 				sprintf(&ptxt[3*21],"Inc :%d CPL:%d",(uint16_t)debug_Gy_INcomplete,(uint16_t)debug_Gy_complete);
 				sprintf(&ptxt[4*21],"RX-I:%d RX-B:%d ",(uint16_t)debug_RXINTERR,(uint16_t)debug_RXERR);
@@ -420,20 +419,20 @@ void GetDiagTxt( char* ptxt )
 					extern int32_t debug_TWI_CountOfMisReads;
 					extern uint32_t  debug_TWI_noTxComp, debug_TWI_TxComp, debug_TWI_NoRead;
 					extern twitrnsf_t debug_TWI_lastTrnsf;
-				
+				    sprintf(&ptxt[1*21],"Time: %3d:%2d:%3d", m,s,ms);
 					sprintf(&ptxt[2*21],"tnc:%d tc:%d", (uint16_t)debug_TWI_noTxComp, (uint16_t)debug_TWI_TxComp);
 					sprintf(&ptxt[3*21],"mis:%d nak:%d",(uint16_t)debug_TWI_CountOfMisReads, (uint16_t)debug_TWI_NoRead);
 					sprintf(&ptxt[4*21],"tim:%d ",(uint16_t)debug_TWI_lastTrnsf.lastTime);
 
 				#else
 					#ifdef SHOWNAV
-						sprintf(&ptxt[1*21],"set: %d %d %d ", (int16_t)(NAV_info.setcmd.x*100), (int16_t)(NAV_info.setcmd.y*100), (int16_t)(NAV_info.setcmd.z*100));
-						sprintf(&ptxt[2*21],"act: %d %d %d ", (int16_t)NAV_info.Pos.x, (int16_t)NAV_info.Pos.y, (int16_t)NAV_info.Pos.z);
-						sprintf(&ptxt[3*21],"set: %d %d %d ", (int16_t)NAV_info.Set.x, (int16_t)NAV_info.Set.y, (int16_t)NAV_info.Set.z);
-						sprintf(&ptxt[4*21],"Hdg :%d Trg:%d ",(int16_t)IMUdata.mag_heading_deg,(int16_t)NAV_info.TrgHeading_deg);
-						sprintf(&ptxt[5*21],"Sat %d Dst %dm ", GPS_GetNumSats(),(int16_t)NAV_info.TrgDist_m);
-						sprintf(&ptxt[6*21],"Rot: %d %d %d ", (int16_t)NAV_info.att_deg.x, (int16_t)NAV_info.att_deg.y, (int16_t)NAV_info.att_deg.z);
-						sprintf(&ptxt[7*21],"RSet: %d %d %d ", (int16_t)NAV_info.attSet_deg.x, (int16_t)NAV_info.attSet_deg.y, (int16_t)NAV_info.attSet_deg.z);  
+						sprintf(&ptxt[1*21],"set: %d %d %d", (int16_t)(NAV_info.setcmd.x*100), (int16_t)(NAV_info.setcmd.y*100), (int16_t)(NAV_info.setcmd.z*100));
+						sprintf(&ptxt[2*21],"act: %d %d %d", (int16_t)NAV_info.Pos.x, (int16_t)NAV_info.Pos.y, (int16_t)NAV_info.Pos.z);
+						sprintf(&ptxt[3*21],"set: %d %d %d", (int16_t)NAV_info.Set.x, (int16_t)NAV_info.Set.y, (int16_t)NAV_info.Set.z);
+						sprintf(&ptxt[4*21],"Hdg :%d Trg:%d",(int16_t)IMUdata.mag_heading_deg,(int16_t)NAV_info.TrgHeading_deg);
+						sprintf(&ptxt[5*21],"Sat %d Dst %dm", GPS_GetNumSats(),(int16_t)NAV_info.TrgDist_m);
+						sprintf(&ptxt[6*21],"Rot: %d %d %d", (int16_t)NAV_info.att_deg.x, (int16_t)NAV_info.att_deg.y, (int16_t)NAV_info.att_deg.z);
+						sprintf(&ptxt[7*21],"RSet: %d %d %d", (int16_t)NAV_info.attSet_deg.x, (int16_t)NAV_info.attSet_deg.y, (int16_t)NAV_info.attSet_deg.z);  
 						//sprintf(&ptxt[4*21],"RX-I:%d RX-B:%d ",(uint16_t)debug_RXINTERR,(uint16_t)debug_RXERR);
 						//sprintf(&ptxt[5*21],"ovr:%d ",debug_SPI_ovres);
 
@@ -460,7 +459,7 @@ void GetDiagTxt( char* ptxt )
 						int32_t ch10val; servo_in_get_ext_channel(10,&ch10val);
 						int32_t ch11val; servo_in_get_ext_channel(11,&ch11val);
 						int32_t ch12val; servo_in_get_ext_channel(12,&ch12val);
-				
+						sprintf(&ptxt[1*21],"Time: %3d:%2d:%3d", m,s,ms);
 						sprintf(&ptxt[2*21],"%d %d %d %d",ch5val,ch6val,ch7val,ch8val);
 						sprintf(&ptxt[3*21],"%d %d %d %d",ch9val,ch10val,ch11val,ch12val);
 

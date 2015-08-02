@@ -45,9 +45,9 @@
 //usart0 = upper, 
 // select only one!
 
-#define COM0_FCMCP 0
+#define COM0_FCMCP 1
 #define COM0_MAVLINK 0
-#define COM0_HOTT 1
+#define COM0_HOTT 0
 
 // PPM signal is inverted for FUTABA -> 1 ; todo make auto.
 #define PPMINVERTED 1 // fixme positive PPM does not work!
