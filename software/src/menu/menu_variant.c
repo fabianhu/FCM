@@ -426,9 +426,9 @@ void GetDiagTxt( char* ptxt )
 
 				#else
 					#ifdef SHOWNAV
-						sprintf(&ptxt[1*21],"set: %d %d %d", (int16_t)(NAV_info.setcmd.x*100), (int16_t)(NAV_info.setcmd.y*100), (int16_t)(NAV_info.setcmd.z*100));
-						sprintf(&ptxt[2*21],"act: %d %d %d", (int16_t)NAV_info.Pos.x, (int16_t)NAV_info.Pos.y, (int16_t)NAV_info.Pos.z);
-						sprintf(&ptxt[3*21],"set: %d %d %d", (int16_t)NAV_info.Set.x, (int16_t)NAV_info.Set.y, (int16_t)NAV_info.Set.z);
+						sprintf(&ptxt[1*21],"Cset: %d %d %d", (int16_t)(NAV_info.setcmd.x*100), (int16_t)(NAV_info.setcmd.y*100), (int16_t)(NAV_info.setcmd.z*100));
+						sprintf(&ptxt[2*21],"Pact: %d %d %d", (int16_t)NAV_info.Pos.x, (int16_t)NAV_info.Pos.y, (int16_t)NAV_info.Pos.z);
+						sprintf(&ptxt[3*21],"Pset: %d %d %d", (int16_t)NAV_info.Set.x, (int16_t)NAV_info.Set.y, (int16_t)NAV_info.Set.z);
 						sprintf(&ptxt[4*21],"Hdg :%d Trg:%d",(int16_t)IMUdata.mag_heading_deg,(int16_t)NAV_info.TrgHeading_deg);
 						sprintf(&ptxt[5*21],"Sat %d Dst %dm", GPS_GetNumSats(),(int16_t)NAV_info.TrgDist_m);
 						sprintf(&ptxt[6*21],"Rot: %d %d %d", (int16_t)NAV_info.att_deg.x, (int16_t)NAV_info.att_deg.y, (int16_t)NAV_info.att_deg.z);
@@ -558,7 +558,7 @@ void menue_sendpar(uint8_t item)
 	}
 		
 	strncpy(&resp[sizeof(Parinfo_t)+6],"~~~",3);
-	USART_Send(0,(uint8_t*)&resp,sizeof(Parinfo_t)+9); // needs xxx ms
+	USART_Send(0,(uint8_t*)&resp,sizeof(Parinfo_t)+9); // needs xxx ms // fixme modularize
 
 	OS_WaitTicks(OSALM_MENUWAIT,10);
 	#endif

@@ -63,7 +63,7 @@ void fcmcp_analyzePacket(char* buf) // in ISR
 		fcmcp_buf[10]= (MENUESIZE>>8);
 		fcmcp_buf[11]= (MENUESIZE&0xff);
 		strncpy((char*)&fcmcp_buf[12],"~~~",3);
-		USART_Send(0,fcmcp_buf,9+4+2); 
+		USART_Send(0,fcmcp_buf,9+4+2);  // fixme modularize
 		
 		return;
 	}	
@@ -163,5 +163,5 @@ void fcmcp_setStreamState(fcmcp_state_t e)
 
 void fcmcp_send(uint8_t* pData, uint32_t len)
 {
-	USART_Send(0,pData,len);
+	USART_Send(0,pData,len); // fixme modularize
 }

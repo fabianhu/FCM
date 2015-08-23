@@ -1,4 +1,4 @@
-# FCM Settings 2.1.38969
+# FCM Settings 2.1.31091
 \GYRO PID\Max Integr	5000
 \GYRO PID\Gov at Max	20
 \GYRO PID\Q Gain	5000
@@ -34,12 +34,12 @@
 \Settings\No BT222 cfg	1
 \Settings\Direct Mode	0
 \Settings\SPEKTRUM DSMX	0
-\Calibration\Gyro X	0
-\Calibration\Gyro Y	0
+\Calibration\Gyro X	20
+\Calibration\Gyro Y	-16
 \Calibration\Gyro Z	0
-\Calibration\Acc X	0
-\Calibration\Acc Y	0
-\Calibration\Acc Z	0
+\Calibration\Acc X	98
+\Calibration\Acc Y	-104
+\Calibration\Acc Z	-267
 \Calibration\MagCal flght	0
 \Calibration\Mag X	0
 \Calibration\Mag Y	0

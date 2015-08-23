@@ -68,7 +68,7 @@ void TaskMenu(void)
 				}
 			
 				strncpy(&resp[sizeof(Parinfo_t)+6],"~~~",3);
-				USART_Send(0,(uint8_t*)&resp,sizeof(Parinfo_t)+9); // needs xxx ms
+				USART_Send(0,(uint8_t*)&resp,sizeof(Parinfo_t)+9); // needs xxx ms // fixme modularize
 			}
 			OS_WaitTicks(OSALM_MENUWAIT,10);
 		}
@@ -181,7 +181,7 @@ void ProduceMenu(void)
 	{
 		// send message back
 		strncpy((char*)&gl_Menu_pBuf[HOTT_TEXTMODE_MSG_TEXT_LEN],"~~~",3);
-		USART_Send(0,gl_Menu_pBuf-6,9+HOTT_TEXTMODE_MSG_TEXT_LEN+1);
+		USART_Send(0,gl_Menu_pBuf-6,9+HOTT_TEXTMODE_MSG_TEXT_LEN+1); // fixme modularize
 	}
 		
 	gl_MenuCommand = 0; // set back to idle = handled
