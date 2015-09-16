@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
- fixme FIXME todo TODO (yepp) This whole file needs complete rework!
+ fixme FIXME todo TODO: This whole file needs complete rework!
  
  git rev-parse --short=8 HEAD
  
@@ -408,7 +408,7 @@ void TaskControl(void)
 
 			#define ANGLE30DEG_rad 0.5235987
 			#define ANGLE15DEG_rad 0.2617993
-			if(fDiffheading_rad > ANGLE15DEG_rad) // limit the instant heading change to 15°
+			if(fDiffheading_rad > ANGLE15DEG_rad) // limit the instant heading change to 15Â°
 			{
 				fSetHeading_rad = fActHeading_rad - ANGLE15DEG_rad;
 			}
@@ -587,7 +587,7 @@ void TaskControl(void)
 				// wait for zero g and go to fly then...
 				if(0) // zeroG
 				{
-					// switch höhenregler on and add 5000mm to setpoint
+					// switch hÃ¶henregler on and add 5000mm to setpoint
 					LED_SetFlightstate(FS_fly);
 				}
 				break;	
@@ -678,7 +678,7 @@ void TaskControl(void)
 				servo_out_set(4,cmd_thr);
 				servo_out_set(5,cmd_thr);
 			}
-			else if(myPar.DirectMode.sValue <0 && abs(IMUdata.pitch_deg) < 10 && abs(IMUdata.roll_deg) < 10 ) //direct mode with negative numbers runs individual motors, but only if angle <10° // todo naming is actually wrong, because global!!
+			else if(myPar.DirectMode.sValue <0 && abs(IMUdata.pitch_deg) < 10 && abs(IMUdata.roll_deg) < 10 ) //direct mode with negative numbers runs individual motors, but only if angle <10Â° // todo naming is actually wrong, because global!!
 			{
 				for(int i=0;i<6;i++)
 				{
@@ -834,7 +834,7 @@ void TaskControl(void)
 
 #define ACCCALFLT 0.01
 
-// operates in m/s²
+// operates in m/sÂ²
 void acc_calibrate(vector3_t* cal) // todo : ausquartieren!
 {
 	vector3_t r;
@@ -842,7 +842,7 @@ void acc_calibrate(vector3_t* cal) // todo : ausquartieren!
 	OS_WaitTicks(OSALM_CTRLWAIT,10);
 	
 	twi_getAccel_flt(&r);
-	r = vector_scale(&r,ACC_SCALE); // scale to m/s²
+	r = vector_scale(&r,ACC_SCALE); // scale to m/sÂ²
 
 	cal->x=r.x; // pre-load the filters with actual value
 	cal->y=r.y;
@@ -857,7 +857,7 @@ void acc_calibrate(vector3_t* cal) // todo : ausquartieren!
 		{
 			emstop(3);
 		}
-		r = vector_scale(&r,ACC_SCALE); // scale to m/s²
+		r = vector_scale(&r,ACC_SCALE); // scale to m/sÂ²
 		
 		cal->x = Filter_f(cal->x,r.x,ACCCALFLT);
 		cal->y = Filter_f(cal->y,r.y,ACCCALFLT);
