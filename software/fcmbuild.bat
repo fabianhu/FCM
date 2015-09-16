@@ -29,3 +29,4 @@ echo finished... %mytime%
 
 rem re-run script
 TIMEOUT /T 60 /NOBREAK
+fcmbuild.bat
